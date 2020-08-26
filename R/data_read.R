@@ -2,9 +2,9 @@
 .read_tree <- function(tree_file) {
     if (!is.null(tree_file)) {
         if (endsWith(tree_file$datapath, ".nex")) {
-            .data$tree <- ggtree::read.nexus(file = tree_file$datapath)
+            .data$tree <- treeio::read.nexus(file = tree_file$datapath)
         } else if (endsWith(tree_file$datapath, ".nwk")) {
-            .data$tree <- ggtree::read.newick(file = tree_file$datapath)
+            .data$tree <- treeio::read.newick(file = tree_file$datapath)
         } else {
             .data$tree <- NULL
             print("Unknown format for tree file: missing suffix .nex or .nwk.")
