@@ -135,7 +135,7 @@
                                 shiny::br(), shiny::br(),
                                 vegawidget::vegawidgetOutput("circular_plot"),
                                 shiny::br(), shiny::br(),
-                                shiny::h4("Click regions to zoom into gene view.")
+                                shiny::h4("Click and shift-click regions to zoom into gene view. Clicking (and shift-clicking) the genes opens lists on the right side of the plot.")
                 )
             )
         )
