@@ -1,5 +1,5 @@
 # Define server logic for application.
-.server <- function(input, output) {
+.server <- function(input, output, session) {
 
     # Generation logic for plots and tables.
     .generate_outliers_table <- function(input) {
@@ -79,6 +79,14 @@
         output$circular_plot <- vegawidget::renderVegawidget(.data$edges)
     }
 
+    .update_select_phenotype_input <- function() {
+        m <- as.list(0)
+        names(m) <- " "
+        n <- as.list(1:ncol(.data$phenotype))
+        names(n) <- colnames(.data$phenotype)
+        shiny::updateSelectInput(session, inputId = "select_phenotype", choices = c(m, n))
+    }
+
     # Define an object for storing reactive values used for zooming in the Manhattan GWES plot.
     mh_gwes_ranges <- shiny::reactiveValues(x = NULL, y = NULL)
 
@@ -93,14 +101,21 @@
         .read_data(file_tree = input$file_tree,
                   file_fasta = input$file_fasta,
                   file_loci = input$file_loci,
+                  file_phenotype = input$file_phenotype,
                   file_outliers = input$file_outliers,
                   file_gff = input$file_gff)
         shinyjs::show("reading_data_div")
         output$data_loaded <- shiny::renderText({"Data loaded!"})
 
+        # Update Shiny SelectInput if phenotype data was read.
+        if (.phenotype_is_not_null()) {
+            .update_select_phenotype_input()
+        }
+
         # Update outlier columns based on what was read.
         outlier_columns <- c("Pos_1", "Pos_2", "Distance", "MI", "MI_wogaps")
         if (.gff_is_not_null()) { outlier_columns <<- append(outlier_columns, c("Pos_1_gene", "Pos_2_gene")) }
+
         # Render plots after reading data was completed.
         .generate_outliers_table(input)
         .render_tree_plot(input)

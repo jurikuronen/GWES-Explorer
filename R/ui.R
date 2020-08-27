@@ -9,7 +9,7 @@
             ),
             shiny::tags$hr(),
 
-            shiny::tags$p("Tree plot requires tree, fasta and loci files."),
+            shiny::tags$p("Tree plot requires tree, fasta and loci files. Optionally, you can upload a phenotypic data file."),
             shiny::fileInput(
                 inputId = "file_tree",
                 label = "Tree file (Newick [.nwk] or Nexus [.nex]):",
@@ -24,6 +24,11 @@
                 inputId = "file_loci",
                 label = "Loci file (.loci):",
                 accept = ".loci"
+            ),
+            shiny::fileInput(
+                inputId = "file_phenotype",
+                label = "Phenotypic data file (.csv, .txt):",
+                accept = c(".csv", ".txt")
             ),
             shiny::tags$hr(),
 
@@ -87,6 +92,12 @@
     shiny::sidebarLayout(
         # Sidebar panel - a DT table listing the direct outliers
         shiny::sidebarPanel(
+            # Select phenotype
+            shiny::selectInput(
+                inputId = "select_phenotype",
+                label = "Select phenotype:",
+                choices = ""
+            ),
             # Input - select one or multiple rows
             shiny::radioButtons(
                 inputId = "select_row_type",
