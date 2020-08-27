@@ -17,4 +17,4 @@ LazyData: true
 RoxygenNote: 7.1.1
 Imports:
     ape, BiocManager, dplyr, DT, ggtree, ggplot2, jsonlite, operators, purrr, readr, rlang, seqinr,
-    shiny, shinyjs, stats, stringi, tibble, tidyverse, utils, vegawidget, viridis
+    shiny, shinyjs, stats, stringi, tibble, tidyverse, treeio, utils, vegawidget, viridis
