@@ -168,10 +168,10 @@
 
 # Read files uploaded from the Shiny UI.
 .read_data <- function(file_tree = NULL, file_fasta = NULL, file_loci = NULL, file_phenotype = NULL, file_outliers = NULL, file_gff = NULL) {
+    .read_outliers(file_outliers)
     .read_tree(file_tree)
     .read_msa(file_fasta, file_loci)
     .read_phenotype(file_phenotype)
-    .read_outliers(file_outliers)
     .read_gff(file_gff)
     if (.gff_is_not_null()) { # Might move these routines under .read_gff() function.
         .precompute_circular_plot_data()

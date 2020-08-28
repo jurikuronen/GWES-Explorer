@@ -16,5 +16,5 @@ Encoding: UTF-8
 LazyData: true
 RoxygenNote: 7.1.1
 Imports:
-    ape, BiocManager, dplyr, DT, ggtree, ggplot2, jsonlite, operators, purrr, readr, rlang, seqinr,
-    shiny, shinyjs, stats, stringi, tibble, tidyverse, treeio, utils, vegawidget, viridis
+    ape, BiocManager, dplyr, DT, ggnewscale, ggplot2, ggtree, jsonlite, operators, readr, rlang, seqinr,
+    shiny, shinyjs, shinyWidgets, stats, stringi, tibble, tidyverse, treeio, utils, vegawidget, viridis

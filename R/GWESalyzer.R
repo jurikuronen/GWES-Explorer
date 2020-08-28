@@ -27,6 +27,7 @@ launch_GWESalyzer <- function() {
 .data$outliers_direct <- NULL
 .data$msa <- NULL
 .data$tree <- NULL
+.data$phenotype <- NULL
 .data$gff <- NULL
 .data$gff_genes <- NULL
 .data$pos1_genes <- NULL
