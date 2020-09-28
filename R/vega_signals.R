@@ -14,6 +14,8 @@
         list(name = "textSize", value = textSize),
         list(name = "innerTextSize", value = innerTextSize),
         list(name = "right_side_start", update = "height + 20"),
+        list(name = "right_side_x_adj", value = .settings$circular_plot_right_side_adjustment),
+        list(name = "right_side_y_adj", value = .settings$circular_plot_right_side_vertical_adjustment),
         list(name = "origoX", update = "height / 2"), # Width includes right side of the plot.
         list(name = "origoY", update = "height / 2")
     )
@@ -93,7 +95,6 @@
                 list(events = list(type = "click", markname = "selected_position_text_2", filter = "!event.shiftKey"), update = "datum.target_gene"),
                 list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "!event.shiftKey"), update = "datum.target_gene"),
                 list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "!event.shiftKey"), update = "datum.target_gene"),
-                list(events = list(type = "click", markname = "gene_circle", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"), update = "null")
             )
         ),
@@ -112,7 +113,6 @@
                 list(events = list(type = "click", markname = "selected_position_text_2", filter = "event.shiftKey"), update = "datum.target_gene"),
                 list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "event.shiftKey"), update = "datum.target_gene"),
                 list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "event.shiftKey"), update = "datum.target_gene"),
-                list(events = list(type = "click", markname = "gene_circle", filter = "event.shiftKey"), update = "null"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"), update = "null")
             )
         ),
@@ -135,7 +135,6 @@
                 list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "selected_position_main_gene_text_1", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "selected_position_main_gene_text_2", filter = "!event.shiftKey"), update = "null"),
-                list(events = list(type = "click", markname = "gene_circle", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"), update = "null")
             )
         ),
@@ -156,7 +155,6 @@
                 list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "selected_position_main_gene_text_1", filter = "event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "selected_position_main_gene_text_2", filter = "event.shiftKey"), update = "null"),
-                list(events = list(type = "click", markname = "gene_circle", filter = "event.shiftKey"), update = "null"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"), update = "null")
             )
         )

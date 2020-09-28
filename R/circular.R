@@ -47,7 +47,9 @@
     # Add gene data.
     gene_data <- .create_gene_data()
     pos_data <- .create_pos_data()
-    edges$data <- append(edges$data, .get_gene_data(gene_data, pos_data))
+    pos_links <- .cpp_create_pos_links(.data$outliers_direct, pos_data)
+    pos_links$weight <- .rescale_weights(pos_links$weight, 0.5, 1)
+    edges$data <- append(edges$data, .get_gene_data(gene_data, pos_data, pos_links))
     edges$marks <- append(edges$marks, .get_gene_marks())
 
     .data$edges <- edges
@@ -195,76 +197,3 @@
 
     return(pos_data)
 }
-
-# Not used yet.
-.create_pos_links <- function(pos_data) {
-    pos_links <- data.frame(
-        source = numeric(0),
-        #source_gene_name = numeric(0),
-        #source_region = numeric(0),
-        #source_gene = numeric(0),
-        target = numeric(0),
-        target_gene_name = character(0),
-        target_region = numeric(0),
-        stringsAsFactors = FALSE
-    )
-    for (i in 1:nrow(pos_data)) {
-        pos <- pos_data$name[i]
-        matches_pos_1 <- which(.data$outliers_direct$Pos_1 == pos)
-        matches_pos_2 <- which(.data$outliers_direct$Pos_2 == pos)
-        if (!rlang::is_empty(matches_pos_1)) {
-            pos_links <- rbind(pos_links, data.frame(
-                source = pos,
-                #source_gene_name = gff$Name[pos_data$parent[i]],
-                #source_region = pos_data$region[i],
-                #source_gene = pos_data$parent[i],
-                target = .data$outliers_direct$Pos_2[matches_pos_1],
-                target_gene_name = .data$outliers_direct$Pos_2_gene[matches_pos_1],
-                target_region = .data$outliers_direct$Pos_2_region[matches_pos_1],
-                stringsAsFactors = FALSE
-            ))
-        }
-        if (!rlang::is_empty(matches_pos_2)) {
-            pos_links <- rbind(pos_links, data.frame(
-                source = pos,
-                #source_gene_name = gff$Name[pos_data$parent[i]],
-                #source_region = pos_data$region[i],
-                #source_gene = pos_data$parent[i],
-                target = .data$outliers_direct$Pos_1[matches_pos_2],
-                target_gene_name = .data$outliers_direct$Pos_1_gene[matches_pos_2],
-                target_region = .data$outliers_direct$Pos_1_region[matches_pos_2]
-            ))
-        }
-    }
-    target_gene <- numeric(nrow(pos_links))
-    for (i in 1:nrow(pos_links)) {
-        target_gene[i] <- pos_data$parent[which(pos_data$name == pos_links$target[i])]
-    }
-    pos_links <- cbind(pos_links, target_gene)
-}
-
-# get_idx <- function(gene_data, pos) {
-#     gene_data[which(gene_data[, 2] == pos), 1]
-# }
-#
-# create_region_links <- function(gene_data, map_min = 0.5, map_max = 0.9) {
-#     n_links <- nrow(outliers_direct)
-#     positional_data <- filter(gene_data, gene_data$parent > 0)
-#     if (nrow(positional_data) > 0) {
-#         region_dependencies <- data.frame(
-#             source = positional_data$id,
-#             target = positional_data$parent,
-#             weight = outliers_direct$MI[positional_data$idx],
-#             count = 1
-#         )
-#
-#         # Remap to (0.1, 0.5)
-#         min_mi <- min(region_dependencies[, 3])
-#         max_mi <- max(region_dependencies[, 3])
-#         region_dependencies[, 3] <- (region_dependencies[, 3] - min_mi) * (map_max - map_min) / (max_mi - min_mi) + map_min
-#     } else {
-#         region_dependencies <- data.frame(source = numeric(0), target = numeric(0), weight = numeric(0), count = numeric(0))
-#     }
-#     return(region_dependencies)
-# }
-

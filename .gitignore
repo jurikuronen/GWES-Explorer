@@ -7,3 +7,7 @@
 # Vim temporary files
 *.swp
 *.swo
+
+# C++ object and shared library files
+*.o
+*.so

@@ -5,6 +5,18 @@
 
 using namespace Rcpp;
 
+// create_pos_links
+Rcpp::DataFrame create_pos_links(Rcpp::List outliers_direct, Rcpp::List pos_data);
+RcppExport SEXP _GWESalyzer_create_pos_links(SEXP outliers_directSEXP, SEXP pos_dataSEXP) {
+BEGIN_RCPP
+    Rcpp::RObject rcpp_result_gen;
+    Rcpp::RNGScope rcpp_rngScope_gen;
+    Rcpp::traits::input_parameter< Rcpp::List >::type outliers_direct(outliers_directSEXP);
+    Rcpp::traits::input_parameter< Rcpp::List >::type pos_data(pos_dataSEXP);
+    rcpp_result_gen = Rcpp::wrap(create_pos_links(outliers_direct, pos_data));
+    return rcpp_result_gen;
+END_RCPP
+}
 // extract_gff_name_from_attributes
 Rcpp::CharacterVector extract_gff_name_from_attributes(Rcpp::CharacterVector attributes);
 RcppExport SEXP _GWESalyzer_extract_gff_name_from_attributes(SEXP attributesSEXP) {
@@ -43,6 +55,7 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
+    {"_GWESalyzer_create_pos_links", (DL_FUNC) &_GWESalyzer_create_pos_links, 2},
     {"_GWESalyzer_extract_gff_name_from_attributes", (DL_FUNC) &_GWESalyzer_extract_gff_name_from_attributes, 1},
     {"_GWESalyzer_add_igrs_to_gff", (DL_FUNC) &_GWESalyzer_add_igrs_to_gff, 3},
     {"_GWESalyzer_compute_outlier_genes", (DL_FUNC) &_GWESalyzer_compute_outlier_genes, 2},

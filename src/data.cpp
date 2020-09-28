@@ -1,3 +1,8 @@
+#include <algorithm>
+#include <cstdint>
+#include <string>
+#include <vector>
+
 #include <Rcpp.h>
 
 // [[Rcpp::plugins(cpp11)]]
