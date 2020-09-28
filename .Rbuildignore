@@ -6,3 +6,7 @@
 ^\.travis\.yml$     # Used for continuous integration testing with travis
 GWESalyzer.Rproj
 LICENSE
+
+# Vim temporary files
+^.*\.swp$
+^.*\.swo$

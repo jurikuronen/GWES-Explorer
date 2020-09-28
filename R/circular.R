@@ -1,3 +1,58 @@
+# Calculate region boundaries.
+# Returns a string vector with "start-end" strings.
+.get_region_boundaries <- function(region_indices) {
+    region_boundaries <- c(paste(1, "-", region_indices[1], sep = ""))
+    for (i in 2:length(region_indices)) { region_boundaries[i] <- c(paste(region_indices[i - 1] + 1, "-", region_indices[i], sep = "")) }
+    return(region_boundaries)
+}
+
+.get_region_indices <- function(n_regions) {
+    n_genes <- nrow(.data$gff)
+    c(ceiling(1:(n_regions-1) * (n_genes / n_regions)), n_genes)
+}
+
+.compute_gene_regions <- function(n_regions) {
+    region_indices <- .get_region_indices(n_regions)
+    gene_regions <- numeric(max(region_indices))
+    for (r in 1:n_regions) {
+        if (r > 1) {
+            start <- region_indices[r - 1] + 1
+        } else { start <- 1 }
+        end <- region_indices[r]
+        gene_regions[start:end] <- r
+    }
+    return(gene_regions)
+}
+
+# Precomputes necessary data for rendering the circular plot.
+.precompute_circular_plot_data <- function() {
+    n_regions <- .settings$circular_plot_n_groups * .settings$circular_plot_n_regions
+    .data$gff$gene_regions <- .compute_gene_regions(n_regions)
+
+    # Precompute pos gene/region information.
+    pos_genes <- .cpp_compute_outlier_genes(.data$gff, .data$outliers_direct)
+
+    .data$outliers_direct$Pos_1_gene <- pos_genes$pos1_gene
+    .data$outliers_direct$Pos_2_gene <- pos_genes$pos2_gene
+    .data$outliers_direct$Pos_1_gene_name <- .data$gff$Name[pos_genes$pos1_gene]
+    .data$outliers_direct$Pos_2_gene_name <- .data$gff$Name[pos_genes$pos2_gene]
+    .data$outliers_direct$Pos_1_region <- .data$gff$gene_regions[pos_genes$pos1_gene]
+    .data$outliers_direct$Pos_2_region <- .data$gff$gene_regions[pos_genes$pos2_gene]
+
+    # Precompute main plot.
+    circular_data <- .create_circular_data()
+    top_level_dependencies <- .create_top_level_links(circular_data)
+    edges <- .get_circular_vega_spec(circular_data, top_level_dependencies)
+
+    # Add gene data.
+    gene_data <- .create_gene_data()
+    pos_data <- .create_pos_data()
+    edges$data <- append(edges$data, .get_gene_data(gene_data, pos_data))
+    edges$marks <- append(edges$marks, .get_gene_marks())
+
+    .data$edges <- edges
+}
+
 .rescale_weights <- function(weights, a, b) {
     min_w <- min(weights)
     max_w <- max(weights)
@@ -5,14 +60,14 @@
 }
 
 .create_circular_data <- function() {
-    n_genes <- nrow(.data$gff_genes)
+    n_genes <- nrow(.data$gff)
     n_groups <- .settings$circular_plot_n_groups
     n_regions_per_group <- .settings$circular_plot_n_regions
     n_regions <- n_groups * n_regions_per_group
     sz <- n_groups + n_groups * n_regions_per_group + 1
 
-    group_names <- .get_region_boundaries(.data$gff_genes$end[.get_region_indices(n_groups)])
-    #region_boundaries <- get_region_boundaries(gff_genes$end[get_region_indices(n_groups * n_regions_per_group)])
+    group_names <- .get_region_boundaries(.data$gff$end[.get_region_indices(n_groups)])
+    #region_boundaries <- get_region_boundaries(gff$end[get_region_indices(n_groups * n_regions_per_group)])
 
     circular_data <- data.frame(
         id = 1:sz,
@@ -46,12 +101,8 @@
     )
     region_indices <- .get_region_indices(n_groups * n_regions_per_group)
     for (i in 1:n_links) {
-        gene1 <- .get_gene(.data$outliers_direct$Pos_1[i])
-        region1 <- .get_region_index(region_indices, gene1)
-        dependencies$source[i] <- region1
-        gene2 <- .get_gene(.data$outliers_direct$Pos_2[i])
-        region2 <- .get_region_index(region_indices, gene2)
-        dependencies$target[i] <- region2
+        dependencies$source[i] <-  .data$outliers_direct$Pos_1_region[i]
+        dependencies$target[i] <- .data$outliers_direct$Pos_2_region[i]
         dependencies$weight[i] <- .data$outliers_direct$MI[i]
     }
     for (i in 1:nrow(dependencies)) {
@@ -77,10 +128,10 @@
     )
     n_regions <- n_groups * n_regions_per_group
     for (region in 1:n_regions) {
-        region_genes <- which(.data$gene_regions == region)
+        region_genes <- which(.data$gff$gene_regions == region)
         gene_data <- rbind(gene_data, data.frame(
             id = region_genes,
-            name = .data$gff_genes$Name[region_genes],
+            name = .data$gff$Name[region_genes],
             region = region,
             angle_step = seq(1 / length(region_genes), 1, 1 / length(region_genes)),
             step_size = 1 / length(region_genes),
@@ -102,11 +153,11 @@
         stringsAsFactors = FALSE)
     n_regions <- n_groups * n_regions_per_group
     for (region in 1:n_regions) {
-        region_pos <- which(.data$pos1_regions == region)
+        region_pos <- which(.data$outliers_direct$Pos_1_region == region)
         if (!rlang::is_empty(region_pos)) {
             pos_data <- rbind(pos_data, data.frame(
                 name = .data$outliers_direct$Pos_1[region_pos],
-                parent = .data$pos1_genes[region_pos],
+                parent = .data$outliers_direct$Pos_1_gene[region_pos],
                 idx = region_pos,
                 region = region,
                 weight = .data$outliers_direct$MI[region_pos],
@@ -114,11 +165,11 @@
             ))
         }
 
-        region_pos <- which(.data$pos2_regions == region)
+        region_pos <- which(.data$outliers_direct$Pos_2_region == region)
         if (!rlang::is_empty(region_pos)) {
             pos_data <- rbind(pos_data, data.frame(
                 name = .data$outliers_direct$Pos_2[region_pos],
-                parent = .data$pos2_genes[region_pos],
+                parent = .data$outliers_direct$Pos_2_gene[region_pos],
                 idx = region_pos,
                 region = region,
                 weight = .data$outliers_direct$MI[region_pos],
@@ -135,8 +186,8 @@
     pos_in_gene <- numeric(nrow(pos_data))
     for (i in 1:nrow(pos_data)) {
         gene_id <- pos_data$parent[i]
-        start <- .data$gff_genes$start[gene_id]
-        end <- .data$gff_genes$end[gene_id]
+        start <- .data$gff$start[gene_id]
+        end <- .data$gff$end[gene_id]
         gene_length <- end - start
         pos_in_gene[i] <- max(0.1, min(0.9, (pos_data$name[i] - start) / gene_length))
     }
@@ -164,7 +215,7 @@
         if (!rlang::is_empty(matches_pos_1)) {
             pos_links <- rbind(pos_links, data.frame(
                 source = pos,
-                #source_gene_name = gff_genes$Name[pos_data$parent[i]],
+                #source_gene_name = gff$Name[pos_data$parent[i]],
                 #source_region = pos_data$region[i],
                 #source_gene = pos_data$parent[i],
                 target = .data$outliers_direct$Pos_2[matches_pos_1],
@@ -176,7 +227,7 @@
         if (!rlang::is_empty(matches_pos_2)) {
             pos_links <- rbind(pos_links, data.frame(
                 source = pos,
-                #source_gene_name = gff_genes$Name[pos_data$parent[i]],
+                #source_gene_name = gff$Name[pos_data$parent[i]],
                 #source_region = pos_data$region[i],
                 #source_gene = pos_data$parent[i],
                 target = .data$outliers_direct$Pos_1[matches_pos_2],

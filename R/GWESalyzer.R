@@ -29,12 +29,8 @@ launch_GWESalyzer <- function() {
 .data$tree <- NULL
 .data$phenotype <- NULL
 .data$gff <- NULL
-.data$gff_genes <- NULL
 .data$pos1_genes <- NULL
 .data$pos2_genes <- NULL
 .data$pos1_regions <- NULL
 .data$pos2_regions <- NULL
 
-# These will be updated when the outliers and gff files are uploaded.
-.data$region_start <- 1
-.data$region_end <- 1

@@ -167,12 +167,12 @@
 
     # Handle data reading.
     shiny::observeEvent(input$read_data_button, {
-        .read_data(file_tree = input$file_tree,
-                   file_fasta = input$file_fasta,
-                   file_loci = input$file_loci,
-                   file_phenotype = input$file_phenotype,
-                   file_outliers = input$file_outliers,
-                   file_gff = input$file_gff)
+        .read_data(file_outliers = input$file_outliers,
+                    file_tree = input$file_tree,
+                    file_fasta = input$file_fasta,
+                    file_loci = input$file_loci,
+                    file_phenotype = input$file_phenotype,
+                    file_gff = input$file_gff)
         shinyjs::show("reading_data_div")
         output$data_loaded <- shiny::renderText({"Data loaded!"})
 
@@ -181,7 +181,7 @@
 
         # Update outlier columns based on what was read.
         outlier_columns <- c("Pos_1", "Pos_2", "Distance", "MI", "MI_wogaps")
-        if (.gff_is_not_null()) { outlier_columns <<- append(outlier_columns, c("Pos_1_gene", "Pos_2_gene")) }
+        if (.gff_is_not_null()) { outlier_columns <<- append(outlier_columns, c("Pos_1_gene_name", "Pos_2_gene_name")) }
 
         # Render plots after reading data was completed.
         .generate_outliers_table(input)

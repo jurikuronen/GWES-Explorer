@@ -118,7 +118,7 @@
     )
 }
 
-.get_circular_spec <- function(data, dependencies, rotate = 0, extent = 360, padding = 5, textSize = 10, innerTextSize = 8,
+.get_circular_vega_spec <- function(data, dependencies, rotate = 0, extent = 360, padding = 5, textSize = 10, innerTextSize = 8,
     colorScheme = "purples", colorSchemeSelected = "reds", colorSchemeSelected2 = "teals") {
     # Some ad-hoc code to scale the plot correctly.
     size = .settings$circular_plot_size
