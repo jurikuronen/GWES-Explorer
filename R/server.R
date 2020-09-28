@@ -190,32 +190,10 @@
         .render_circular_plot(input)
     })
 
-    # Handle new settings.
-    shiny::observeEvent(input$apply_settings_button, {
-        .settings$circular_plot_size <- input$circular_plot_size
-        .settings$circular_plot_n_groups <- input$circular_plot_n_groups
-        .settings$circular_plot_n_regions <- input$circular_plot_n_regions
-        .settings$circular_plot_tension <- input$circular_plot_tension
 
-        if (.gff_is_not_null()) {
-            .precompute_circular_plot_data()
-            .add_gene_info_to_outliers()
-        }
-
-        .generate_outliers_table(input)
-        .render_tree_plot(input)
-        .render_manhattan_plot(input)
-        .render_circular_plot(input)
-
-        shinyjs::show("settings_div")
-        output$settings_applied <- shiny::renderText({"Done!"})
-    })
-
-
-    # Hide data read / settings applied text when moving away from the tab.
+    # Hide data read applied text when moving away from the tab.
     # (This doesn't work.)
     shiny::observeEvent(input$tabs, {
-        shinyjs::hide("settings_div")
         shinyjs::hide("reading_data_div")
     })
 

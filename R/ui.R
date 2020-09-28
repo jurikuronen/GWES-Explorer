@@ -1,3 +1,7 @@
+.div_inline_block <- function(width, content) { shiny::div(style = paste0("display: inline-block; vertical-align: top; width: ", width, "cm"), content)}
+.div_inline_br_block <- function(width) { .div_inline_block(width, shiny::br()) }
+.prettySwitch <- function(id, name) { shinyWidgets::prettySwitch(id, name, fill = TRUE, status = "primary", value = FALSE) }
+
 .data_sidebar_layout <- function() {
     shiny::sidebarLayout(
         shiny::sidebarPanel(
@@ -42,13 +46,8 @@
             shiny::tags$hr(),
 
             shiny::actionButton(inputId = "read_data_button", label = "Read in data"),
-            shiny::div(style="display: inline-block; vertical-align:top; width: 100px;", shiny::br()),
-
-            shiny::div(
-                style = "display: inline-block; vertical-align:top; width: 150px;",
-                shinyjs::hidden(shiny::p(id = "reading_data_div", shiny::textOutput("data_loaded")))
-            )
-
+            .div_inline_br_block(3),
+            .div_inline_block(4.5, shinyjs::hidden(shiny::p(id = "reading_data_div", shiny::textOutput("data_loaded"))))
         ),
 
         shiny::mainPanel(
@@ -56,44 +55,6 @@
         )
     )
 }
-
-.settings_sidebar_layout <- function() {
-    shiny::sidebarLayout(
-        shiny::sidebarPanel(
-            shiny::tags$p("Circular plot: Plot size in pixels."),
-            shiny::sliderInput("circular_plot_size", "Size", 500, 1200,
-                               value = .settings$circular_plot_size, step = 10),
-            shiny::tags$p("Circular plot: Split chromosome into this many groups."),
-            shiny::sliderInput("circular_plot_n_groups", "Number of groups", 8, 24,
-                               value = .settings$circular_plot_n_groups, step = 1),
-            shiny::tags$p("Circular plot: Have each group further contain this many regions."),
-            shiny::sliderInput("circular_plot_n_regions", "Number of regions per group", 8, 24,
-                               value = .settings$circular_plot_n_regions, step = 1),
-            shiny::tags$p("Circular plot: Edge tension parameter."),
-            shiny::sliderInput("circular_plot_tension", "Tension", 0, 1, value = 0.7, step = 0.05),
-
-            shiny::tags$hr(),
-
-            shiny::actionButton(inputId = "apply_settings_button", label = "Apply settings"),
-            shiny::div(style="display: inline-block; vertical-align:top; width: 100px;", shiny::br()),
-
-            shiny::div(
-                style = "display: inline-block; vertical-align:top; width: 150px;",
-                shinyjs::hidden(shiny::p(id = "settings_div", shiny::textOutput("settings_applied")))
-            )
-        ),
-        shiny::mainPanel(
-            shiny::h4("Settings for plots.")
-        )
-    )
-}
-
-.div_inline_block <- function(width, content) {
-    shiny::div(style = paste("display: inline-block; vertical-align: top; width:", width, "cm"), content)
-}
-
-.div_inline_br_block <- function(width) { .div_inline_block(width, shiny::br()) }
-.prettySwitch <- function(id, name) { shinyWidgets::prettySwitch(id, name, fill = TRUE, status = "primary", value = FALSE) }
 
 .tree_plot_panel <- function() {
     shiny::tabPanel("Tree-MSA",
@@ -202,7 +163,6 @@
                ),
 
                shiny::tabPanel(title = "Upload data", .data_sidebar_layout()),
-               shiny::tabPanel(title = "Plot settings", .settings_sidebar_layout()),
                shiny::tabPanel(title = "Analyse SpydrPick output", .plot_sidebar_layout())
     )
 )
