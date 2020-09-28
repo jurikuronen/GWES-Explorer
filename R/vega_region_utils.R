@@ -113,28 +113,6 @@
     )
 }
 
-.add_gene_circle <- function() {
-    list(
-        type = "arc",
-        name = "gene_circle",
-        encode = list(
-            enter = list(fill = list(value = "#ffffff"), stroke = list(value = "#000000"), strokeWidth = list(value = 1)),
-            update = list(
-                x = list(signal = "origoX"),
-                y = list(signal = "origoY"),
-                startAngle = list(value = 0),
-                endAngle = list(signal = "2 * PI"),
-                innerRadius = list(value = 0),
-                outerRadius = list(signal = "small_radius"),
-                opacity = list(
-                    list(test = "selected_region_1 != null || selected_region_2 != null", value = 0.8),
-                    list(value = 0)
-                )
-            )
-        )
-    )
-}
-
 .add_gene_text <- function(selection) {
     align_text <- "right"
     if (selection == 2) align_text <- "left"
@@ -373,7 +351,6 @@
 
 .get_gene_marks <- function() {
     list(
-        .add_gene_circle(),
         .add_gene_text(1),
         .add_gene_arcs(1),
         .add_gene_text(2),
