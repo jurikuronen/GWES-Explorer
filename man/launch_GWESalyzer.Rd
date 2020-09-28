@@ -4,7 +4,10 @@
 \alias{launch_GWESalyzer}
 \title{Launch GWESalyzer}
 \usage{
-launch_GWESalyzer()
+launch_GWESalyzer(launch_in_browser = TRUE)
+}
+\arguments{
+\item{launch_in_browser}{Boolean value, true by default. If set to true, launches GWESalyzer in the user's default browser.}
 }
 \description{
 Launch the Shiny app for GWESalyzer.

@@ -3,11 +3,13 @@
 #'
 #' @description Launch the Shiny app for GWESalyzer.
 #'
+#' @param launch_in_browser Boolean value, true by default. If set to true, launches GWESalyzer in the user's default browser.
+#'
 #' @return NULL
 #'
 #' @export launch_GWESalyzer
-launch_GWESalyzer <- function() {
-    shiny::shinyApp(.ui, .server)
+launch_GWESalyzer <- function(launch_in_browser = TRUE) {
+    shiny::shinyApp(.ui, .server, options = list(launch.browser = launch_in_browser))
 }
 
 # Global environments, where data and settings are stored.
@@ -29,8 +31,4 @@ launch_GWESalyzer <- function() {
 .data$tree <- NULL
 .data$phenotype <- NULL
 .data$gff <- NULL
-.data$pos1_genes <- NULL
-.data$pos2_genes <- NULL
-.data$pos1_regions <- NULL
-.data$pos2_regions <- NULL
 

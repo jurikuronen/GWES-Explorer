@@ -87,11 +87,11 @@
         .render_tree_plot(input)
         selected_rows <- input$outliers_table_rows_selected
         if (.gff_is_not_null() && length(selected_rows) > 0) {
-            vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_1", .data$pos1_regions[selected_rows[1]])
-            vegawidget::vw_shiny_set_signal("circular_plot", "selected_gene_1", .data$pos1_genes[selected_rows[1]])
+            vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_1", .data$outliers_direct$Pos_1_region[selected_rows[1]])
+            vegawidget::vw_shiny_set_signal("circular_plot", "selected_gene_1", .data$outliers_direct$Pos_1_gene[selected_rows[1]])
             vegawidget::vw_shiny_set_signal("circular_plot", "selected_position_1", .data$outliers_direct$Pos_1[selected_rows[1]])
-            vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_2", .data$pos2_regions[selected_rows[1]])
-            vegawidget::vw_shiny_set_signal("circular_plot", "selected_gene_2", .data$pos2_genes[selected_rows[1]])
+            vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_2", .data$outliers_direct$Pos_2_region[selected_rows[1]])
+            vegawidget::vw_shiny_set_signal("circular_plot", "selected_gene_2", .data$outliers_direct$Pos_2_gene[selected_rows[1]])
             vegawidget::vw_shiny_set_signal("circular_plot", "selected_position_2", .data$outliers_direct$Pos_2[selected_rows[1]])
         }
     })
