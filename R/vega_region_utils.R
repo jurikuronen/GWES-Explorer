@@ -27,7 +27,8 @@
                 list(type = "formula", as = "x_leftside", expr = "origoX + (small_radius - 55) * cos(PI * datum.angle_leftside / 180)"),
                 list(type = "formula", as = "y_leftside", expr = "origoY + (small_radius - 55) * sin(PI * datum.angle_leftside / 180)"),
                 list(type = "formula", as = "x_rightside", expr = "origoX + (small_radius - 55) * cos(PI * datum.angle_rightside / 180)"),
-                list(type = "formula", as = "y_rightside", expr = "origoY + (small_radius - 55) * sin(PI * datum.angle_rightside / 180)")
+                list(type = "formula", as = "y_rightside", expr = "origoY + (small_radius - 55) * sin(PI * datum.angle_rightside / 180)"),
+                list(type = "formula", as = "parent_gene", expr = "data('gene_data')[datum.parent - 1].name")
             )
         ),
         list(
@@ -117,8 +118,13 @@
         type = "text",
         from = list(data = paste0("gene_data_selected_", selection)),
         name = paste0("gene_text_", selection),
+        interactive = TRUE,
         encode = list(
-            enter = list(text = list(field = "name"), baseline = list(value = "middle")),
+            enter = list(
+                text = list(field = "name"),
+                baseline = list(value = "middle"),
+                tooltip = list(signal = "{title: datum.name, 'Info about': 'outliers comes here'}")
+            ),
             update = list(
                 x = list(field = "x"),
                 y = list(field = "y"),
@@ -142,8 +148,12 @@
         type = "arc",
         from = list(data = paste0("gene_data_selected_", selection)),
         name = paste0("gene_arc_", selection),
+        interactive = TRUE,
         encode = list(
-            enter = list(fill = list(value = "#3399ff")),
+            enter = list(
+                fill = list(value = "#3399ff"),
+                tooltip = list(signal = "{title: datum.name, 'Info about': 'outliers comes here'}")
+            ),
             update = list(
                 x = list(signal = "origoX"),
                 y = list(signal = "origoY"),
@@ -168,11 +178,13 @@
         type = "symbol",
         name = paste0("pos_symbol_", selection),
         from = list(data = paste0("pos_data_gene_", selection)),
+        interactive = TRUE,
         encode = list(
             enter = list(
                 fill = list(value = "#d3d3d3"),
                 stroke = list(value = "#cc3300"),
-                strokeWidth = list(value = 0.5)
+                strokeWidth = list(value = 0.5),
+                tooltip = list(signal = "{title: datum.name, 'Gene': datum.parent_gene, 'Other info': 'comes here'}")
             ),
             update = list(
                 x = list(field = "x"),
