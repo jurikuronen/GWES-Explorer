@@ -1,4 +1,4 @@
-.vega_signals <- function(tension, radius, extent, rotate, textSize, innerTextSize, colorScheme, colorSchemeSelected, colorSchemeSelected2) {
+.circular_plot_vega_signals <- function(tension, radius, extent, rotate, textSize, innerTextSize, colorScheme, colorSchemeSelected, colorSchemeSelected2) {
     signals <- .main_parameter_signals(tension, radius, extent, rotate, textSize, innerTextSize)
     signals <- append(signals, .color_scheme_signals(colorScheme, colorSchemeSelected, colorSchemeSelected2))
     signals <- append(signals, .event_listener_signals())
@@ -9,7 +9,8 @@
         list(name = "tension", value = tension),
         list(name = "radius", value = radius),
         list(name = "extent", value = extent),
-        list(name = "small_radius", value = 0.6 * radius), # Radius for inner circle.
+        list(name = "radius_genes_1", value = radius - .settings$circular_plot_radius_offset1),
+        list(name = "radius_genes_2", value = radius - .settings$circular_plot_radius_offset2),
         list(name = "rotate", value = rotate),
         list(name = "textSize", value = textSize),
         list(name = "innerTextSize", value = innerTextSize),

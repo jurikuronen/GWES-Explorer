@@ -1,4 +1,7 @@
-.render_circular_plot <- function() { return(vegawidget::renderVegawidget(.data$edges)) }
+.render_circular_plot <- function() {
+    if (is.null(.data$edges)) return(NULL)
+    return(vegawidget::renderVegawidget(.data$edges))
+}
 
 .set_circular_plot_signals <- function(selected_row) {
     vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_1", .data$outliers_direct$Pos_1_region[selected_row])
@@ -53,15 +56,17 @@
     # Precompute main plot.
     circular_data <- .create_circular_data()
     top_level_dependencies <- .create_top_level_links(circular_data)
-    edges <- .get_circular_vega_spec(circular_data, top_level_dependencies)
+    edges <- .circular_plot_vega_spec(circular_data, top_level_dependencies)
 
     # Add gene data.
     gene_data <- .create_gene_data()
     pos_data <- .create_pos_data()
     pos_links <- .cpp_create_pos_links(.data$outliers_direct, pos_data)
     pos_links$weight <- .rescale_weights(pos_links$weight, 0.5, 1)
-    edges$data <- append(edges$data, .get_gene_data(gene_data, pos_data, pos_links))
-    edges$marks <- append(edges$marks, .get_gene_marks())
+    edges$data <- append(edges$data, .circular_plot_vega_gene_data(gene_data))
+    edges$data <- append(edges$data, .circular_plot_vega_pos_data_and_links(pos_data, pos_links))
+    edges$marks <- append(edges$marks, .circular_plot_vega_gene_marks())
+    edges$marks <- append(edges$marks, .circular_plot_vega_pos_marks())
 
     .data$edges <- edges
 }
