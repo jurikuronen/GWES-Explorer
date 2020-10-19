@@ -6,10 +6,10 @@
 .set_circular_plot_signals <- function(selected_row) {
     vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_1", .data$outliers_direct$Pos_1_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot", "selected_gene_1", .data$outliers_direct$Pos_1_gene[selected_row])
-    # vegawidget::vw_shiny_set_signal("circular_plot", "selected_position_1", .data$outliers_direct$Pos_1[selected_row])
+    vegawidget::vw_shiny_set_signal("circular_plot", "selected_position_1", .data$outliers_direct$Pos_1[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_2", .data$outliers_direct$Pos_2_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot", "selected_gene_2", .data$outliers_direct$Pos_2_gene[selected_row])
-    # vegawidget::vw_shiny_set_signal("circular_plot", "selected_position_2", .data$outliers_direct$Pos_2[selected_row])
+    vegawidget::vw_shiny_set_signal("circular_plot", "selected_position_2", .data$outliers_direct$Pos_2[selected_row])
 }
 
 # Calculate region boundaries.
@@ -40,7 +40,7 @@
 
 # Precomputes necessary data for rendering the circular plot.
 .precompute_circular_plot_data <- function() {
-    n_regions <- .settings$circular_plot_n_groups * .settings$circular_plot_n_regions
+    n_regions <- .get_cp_groups() * .get_cp_regions()
     .data$gff$gene_regions <- .compute_gene_regions(n_regions)
 
     # Precompute pos gene/region information.
@@ -79,8 +79,8 @@
 
 .create_circular_data <- function() {
     n_genes <- nrow(.data$gff)
-    n_groups <- .settings$circular_plot_n_groups
-    n_regions_per_group <- .settings$circular_plot_n_regions
+    n_groups <- .get_cp_groups()
+    n_regions_per_group <- .get_cp_regions()
     n_regions <- n_groups * n_regions_per_group
     sz <- n_groups + n_groups * n_regions_per_group + 1
 
@@ -108,8 +108,8 @@
 }
 
 .create_top_level_links <- function(circular_data) {
-    n_groups <- .settings$circular_plot_n_groups
-    n_regions_per_group <- .settings$circular_plot_n_regions
+    n_groups <- .get_cp_groups()
+    n_regions_per_group <- .get_cp_regions()
     n_links <- nrow(.data$outliers_direct)
     dependencies <- data.frame(
         source = numeric(n_links),
@@ -134,8 +134,8 @@
 }
 
 .create_gene_data <- function() {
-    n_groups <- .settings$circular_plot_n_groups
-    n_regions_per_group <- .settings$circular_plot_n_regions
+    n_groups <- .get_cp_groups()
+    n_regions_per_group <- .get_cp_regions()
     gene_data <- data.frame(
         id = numeric(0),
         name = numeric(0),
@@ -160,8 +160,8 @@
 }
 
 .create_pos_data <- function() {
-    n_groups <- .settings$circular_plot_n_groups
-    n_regions_per_group <- .settings$circular_plot_n_regions
+    n_groups <- .get_cp_groups()
+    n_regions_per_group <- .get_cp_regions()
     pos_data <- data.frame(
         name = numeric(0),
         parent = numeric(0),

@@ -39,15 +39,14 @@
 }
 
 # Initial Vega spec.
-.circular_plot_vega_spec <- function(data, dependencies, rotate = 0, extent = 360, padding = 5, textSize = 10, innerTextSize = 6,
+.circular_plot_vega_spec <- function(data, dependencies, rotate = 0, extent = 360,
     colorScheme = "purples", colorSchemeSelected = "reds", colorSchemeSelected2 = "teals") {
-    # Some ad-hoc code to scale the plot correctly.
-    radius = .settings$circular_plot_radius
-    # width_adj = .settings$circular_plot_right_side_size
-    size = 2.05 * radius # Ad-hoc computation to make sure the circular plot fits within the main Shiny panel.
-    tension = .settings$circular_plot_tension
-    if (size >= 800) { textSize <- textSize + 1 }
-    if (size >= 1000) { textSize <- textSize + 1 }
+    radius = .get_cp_radius()
+    size = 2.05 * radius # Make sure the circular plot fits within the main Shiny panel.
+    padding = .get_cp_padding()
+    tension = .get_cp_tension()
+    textSize = .get_cp_text_size()
+    innerTextSize = .get_cp_small_text_size()
     vegawidget::as_vegaspec(append(.initialize_circular_spec(width = size, height = size, padding = padding), list(
         signals = .circular_plot_vega_signals(tension, radius, extent, rotate, textSize, innerTextSize, colorScheme, colorSchemeSelected, colorSchemeSelected2),
         data = .circular_plot_vega_region_data(data, dependencies),

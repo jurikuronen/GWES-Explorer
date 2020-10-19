@@ -10,10 +10,8 @@
 }
 
 .circular_plot_vega_gene_data <- function(gene_data) {
-    arc_angle1 <- .settings$circular_plot_gene_circle_arc_angle1
-    arc_angle2 <- .settings$circular_plot_gene_circle_arc_angle2
-    print(arc_angle1)
-    print(arc_angle2)
+    arc_angle1 <- .get_cp_gene_arc_angle(1)
+    arc_angle2 <- .get_cp_gene_arc_angle(2)
     list(
         list(
             name = "gene_data",
@@ -105,8 +103,7 @@
 }
 
 .circular_plot_vega_gene_marks_background <- function(selection) {
-    if (selection == 1) arc_angle <- .settings$circular_plot_gene_circle_arc_angle1
-    else arc_angle <- .settings$circular_plot_gene_circle_arc_angle2
+    arc_angle <- .get_cp_gene_arc_angle(selection)
     list(
         type = "arc",
         from = list(data = paste0("gene_data_selected_region_", selection)),

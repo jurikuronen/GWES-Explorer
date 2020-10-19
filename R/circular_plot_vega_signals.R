@@ -9,14 +9,11 @@
         list(name = "tension", value = tension),
         list(name = "radius", value = radius),
         list(name = "extent", value = extent),
-        list(name = "radius_genes_1", value = radius - .settings$circular_plot_radius_offset1),
-        list(name = "radius_genes_2", value = radius - .settings$circular_plot_radius_offset2),
+        list(name = "radius_genes_1", value = radius - .get_cp_radius_offset(1)),
+        list(name = "radius_genes_2", value = radius - .get_cp_radius_offset(2)),
         list(name = "rotate", value = rotate),
         list(name = "textSize", value = textSize),
         list(name = "innerTextSize", value = innerTextSize),
-        # list(name = "right_side_start", update = "height + 20"),
-        # list(name = "right_side_x_adj", value = .settings$circular_plot_right_side_adjustment),
-        # list(name = "right_side_y_adj", value = .settings$circular_plot_right_side_vertical_adjustment),
         list(name = "origoX", update = "width / 2"),
         list(name = "origoY", update = "height / 2")
     )
