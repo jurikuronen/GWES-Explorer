@@ -151,7 +151,7 @@
             id = region_genes,
             name = .data$gff$Name[region_genes],
             region = region,
-            angle_step = seq(1 / length(region_genes), 1, 1 / length(region_genes)),
+            angle_step = seq(0, 1, length.out = length(region_genes)),
             step_size = 1 / length(region_genes),
             stringsAsFactors = FALSE
         ))
