@@ -27,8 +27,8 @@
                 .vega_formula("parent_gene", .vega_data_query("gene_data", "datum.parent - 1", "name"))
             )
         ),
-        .vega_simple_filter("pos_data_gene_1", "pos_data", "datum.region === selected_region_1"),
-        .vega_simple_filter("pos_data_gene_2", "pos_data", "datum.region === selected_region_2")
+        .vega_simple_filter("pos_data_gene_1", "pos_data", .is_selected_region("datum.region", 1)),
+        .vega_simple_filter("pos_data_gene_2", "pos_data", .is_selected_region("datum.region", 2))
         # list(
         #     name = "pos_data_selected_1",
         #     source = "pos_data",
@@ -62,7 +62,7 @@
                 .vega_formula("y2", .vega_data_query("pos_data", "datum.pos_data_idx_2", "y_2"))
             )
         ),
-        .vega_simple_filter("pos_links_selected", "pos_links", "datum.region_1 === selected_region_1 && datum.region_2 === selected_region_2")
+        .vega_simple_filter("pos_links_selected", "pos_links", .and(.is_selected_region("datum.region_1", 1), .is_selected_region("datum.region_2", 2)))
     )
 }
 
@@ -101,21 +101,19 @@
                 x = list(field = "x"), y = list(field = "y"),
                 x2 = list(field = "x2"), y2 = list(field = "y2"),
                 stroke = list(
-                    list(test = "(selected_gene_1 === null && selected_gene_2 === datum.gene_2)
-                         || (selected_gene_2 === null && selected_gene_1 === datum.gene_1)
-                         || (selected_gene_1 === datum.gene_1 && selected_gene_2 === datum.gene_2)", value = "#8800cc"),
+                    list(test = .or(.and(.is_connected_to_selected_gene(), .negate(.both_genes_are_selected())), .pos_link_is_selected()), value = "#8800cc"),
                     list(value = "#0099CC")
                 ),
                 strokeWidth = list(
-                    list(test = "selected_gene_1 === datum.gene_1 && selected_gene_2 === datum.gene_2", value = 0.8),
-                    list(test = "selected_gene_1 != null && selected_gene_2 != null", value = 0.25),
-                    list(test = "selected_gene_1 === datum.gene_1 || selected_gene_2 === datum.gene_2", value = 0.65),
+                    list(test = .pos_link_is_selected(), value = 0.8),
+                    list(test = .both_genes_are_selected(), value = 0.25),
+                    list(test = .is_connected_to_selected_gene(), value = 0.65),
                     list(value = 0.5)
                 ),
                 opacity = list(
-                    list(test = "selected_gene_1 === datum.gene_1 && selected_gene_2 === datum.gene_2", value = 1),
-                    list(test = "selected_gene_1 != null && selected_gene_2 != null", value = 0.25),
-                    list(test = "selected_gene_1 === datum.gene_1 || selected_gene_2 === datum.gene_2", value = 0.75),
+                    list(test = .pos_link_is_selected(), value = 1),
+                    list(test = .both_genes_are_selected(), value = 0.25),
+                    list(test = .is_connected_to_selected_gene(), value = 0.75),
                     list(value = 0.5)
                 )
                 #opacity = list(field = "datum.weight")

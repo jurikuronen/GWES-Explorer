@@ -48,10 +48,9 @@
             values = region_links,
             transform = list(.vega_formula("treepath", "treePath('region_data_tree', datum.source, datum.target)", TRUE))
         ),
-        .vega_simple_filter("region_links_selected", "region_links",
-            # Filter expression
-            paste("((datum.source === selected_region_1 || datum.target === selected_region_1) && selected_region_2 === null) ||",
-                "((datum.source === selected_region_2 || datum.target === selected_region_2) && selected_region_1 === null)"))
+        .vega_simple_filter("region_links_connected_to_selected_region", "region_links",
+            # Filter expression.
+            .and(.only_one_region_is_selected(), .or(.is_one_of_selected_regions("datum.source"), .is_one_of_selected_regions("datum.target"))))
     )
 }
 
@@ -90,10 +89,10 @@
                 outerRadius = list(signal = "radius + 10"),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = "datum.id === selected_region_1 || datum.id === selected_region_2", value = 1),
-                    list(test = "datum.id === active_region", value = 1),
-                    list(test = "indata('region_links_selected', 'source', datum.id) || indata('region_links_selected', 'target', datum.id)", value = 0.5),
-                    list(test = "selected_region_1 != null || selected_region_2 != null", value = 0.2),
+                    list(test = .is_one_of_selected_regions("datum.id"), value = 1),
+                    list(test = .is_active_region("datum.id"), value = 1),
+                    list(test = "indata('region_links_connected_to_selected_region', 'source', datum.id) || indata('region_links_connected_to_selected_region', 'target', datum.id)", value = 0.5),
+                    list(test = .some_region_is_selected(), value = 0.2),
                     list(value = 0.6)
                 )
             )
@@ -113,16 +112,16 @@
                 enter = list(interpolate = list(value = "bundle"), strokeWidth = list(signal = "parent.count")),
                 update = list(
                     stroke = list(
-                        list(test = "(parent.source === selected_region_1 && parent.target === selected_region_2) || (parent.source === selected_region_2 && parent.target === selected_region_1)", scale = "colorScaleSelected", signal = "parent.weight"),
-                        list(test = "parent.source === active_region || parent.target === active_region", scale = "colorScaleSelected2", value = 1),
-                        list(test = "indata('region_links_selected', 'source', parent.source) && indata('region_links_selected', 'target', parent.target)", scale = "colorScaleSelected", signal = "parent.weight"),
-                        list(test = "selected_region_1 != null || selected_region_2 != null", scale = "greyScale", signal = "parent.weight"),
+                        list(test = .region_link_is_selected(), scale = "colorScaleSelected", signal = "parent.weight"),
+                        list(test = .region_link_is_active(), scale = "colorScaleSelected2", value = 1),
+                        list(test = .is_connected_to_selected_region(), scale = "colorScaleSelected", signal = "parent.weight"),
+                        list(test = .some_region_is_selected(), scale = "greyScale", signal = "parent.weight"),
                         list(scale = "colorScale", signal = "parent.weight")
                     ),
                     strokeOpacity = list(
-                        list(test = "(parent.source === selected_region_1 && parent.target === selected_region_2) || (parent.source === selected_region_2 && parent.target === selected_region_1)", signal = "parent.weight"),
-                        list(test = "parent.source === active_region || parent.target === active_region", value = 1),
-                        list(test = "(selected_region_1 != null || selected_region_2 != null) && !(indata('region_links_selected', 'source', parent.source) && indata('region_links_selected', 'target', parent.target))", value = 0.2),
+                        list(test = .region_link_is_selected(), signal = "parent.weight"),
+                        list(test = .region_link_is_active(), value = 1),
+                        list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), value = 0.2),
                         list(signal = "parent.weight")
                     ),
                     tension = list(signal = "tension"),

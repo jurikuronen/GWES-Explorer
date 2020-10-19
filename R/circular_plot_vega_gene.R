@@ -1,11 +1,11 @@
 .circular_plot_vega_gene_marks <- function() {
     list(
+        .circular_plot_vega_gene_marks_background(1),
         .circular_plot_vega_gene_marks_text(1),
         .circular_plot_vega_gene_marks_arcs(1),
-        .circular_plot_vega_gene_marks_background(1),
+        .circular_plot_vega_gene_marks_background(2),
         .circular_plot_vega_gene_marks_text(2),
-        .circular_plot_vega_gene_marks_arcs(2),
-        .circular_plot_vega_gene_marks_background(2)
+        .circular_plot_vega_gene_marks_arcs(2)
     )
 }
 
@@ -28,10 +28,10 @@
                 .vega_formula("leftside", paste0("inrange(", .vega_get_region_angle(), ", [90, 270])"))
             )
         ),
-        .vega_simple_filter("gene_data_selected_1", "gene_data", "datum.region === selected_region_1"),
-        .vega_simple_filter("gene_data_selected_2", "gene_data", "datum.region === selected_region_2"),
-        .vega_simple_filter("gene_data_selected_region_1", "region_data", "datum.id === selected_region_1"),
-        .vega_simple_filter("gene_data_selected_region_2", "region_data", "datum.id === selected_region_2")
+        .vega_simple_filter("gene_data_selected_1", "gene_data", .is_selected_region("datum.region", 1)),
+        .vega_simple_filter("gene_data_selected_2", "gene_data", .is_selected_region("datum.region", 2)),
+        .vega_simple_filter("gene_data_selected_region_1", "region_data", .is_selected_region("datum.id", 1)),
+        .vega_simple_filter("gene_data_selected_region_2", "region_data", .is_selected_region("datum.id", 2))
     )
 }
 
@@ -62,7 +62,7 @@
                 align = list(signal = align_signal),
                 fontSize = list(signal = "innerTextSize"),
                 fontWeight = list(
-                    list(test = paste0("selected_gene_", selection, " === datum.id"), value = "bold"),
+                    list(test = .is_selected_gene("datum.id", selection), value = "bold"),
                     list(value = "normal")
                 ),
                 fill = list(value = "black"),
@@ -92,8 +92,8 @@
                 outerRadius = list(signal = paste0("radius_genes_", selection)),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = paste0("selected_gene_", selection, " === datum.id"), value = 1),
-                    list(test = paste0("selected_gene_", selection, " != null"), value = 0.2),
+                    list(test = .is_selected_gene("datum.id", selection), value = 1),
+                    list(test = .gene_is_selected(selection), value = 0.2),
                     list(value = 0.6)
                 ),
                 opacity = list(value = 1)
