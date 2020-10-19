@@ -74,6 +74,7 @@
 }
 
 .circular_plot_vega_region_marks_arcs <- function() {
+    connected_regions <- "indata('region_links_connected_to_selected_region', 'source', datum.id) || indata('region_links_connected_to_selected_region', 'target', datum.id)"
     list(
         type = "arc",
         name = "region_arc",
@@ -89,11 +90,11 @@
                 outerRadius = list(signal = "radius + 10"),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_one_of_selected_regions("datum.id"), value = 1),
-                    list(test = .is_active_region("datum.id"), value = 1),
-                    list(test = "indata('region_links_connected_to_selected_region', 'source', datum.id) || indata('region_links_connected_to_selected_region', 'target', datum.id)", value = 0.5),
-                    list(test = .some_region_is_selected(), value = 0.2),
-                    list(value = 0.6)
+                    list(test = .is_one_of_selected_regions("datum.id"), value = .get_cp_opacity_selected()),
+                    list(test = .is_active_region("datum.id"), value = .get_cp_opacity_active()),
+                    list(test = connected_regions, value = .get_cp_opacity_connected()),
+                    list(test = .some_region_is_selected(), value = .get_cp_opacity_inactive()),
+                    list(value = .get_cp_opacity_default())
                 )
             )
         )
@@ -113,15 +114,15 @@
                 update = list(
                     stroke = list(
                         list(test = .region_link_is_selected(), scale = "colorScaleSelected", signal = "parent.weight"),
-                        list(test = .region_link_is_active(), scale = "colorScaleSelected2", value = 1),
+                        list(test = .region_link_is_active(), scale = "colorScaleSelected2", value = .get_cp_opacity_active()),
                         list(test = .is_connected_to_selected_region(), scale = "colorScaleSelected", signal = "parent.weight"),
                         list(test = .some_region_is_selected(), scale = "greyScale", signal = "parent.weight"),
                         list(scale = "colorScale", signal = "parent.weight")
                     ),
                     strokeOpacity = list(
                         list(test = .region_link_is_selected(), signal = "parent.weight"),
-                        list(test = .region_link_is_active(), value = 1),
-                        list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), value = 0.2),
+                        list(test = .region_link_is_active(), value = .get_cp_opacity_active()),
+                        list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), value = .get_cp_opacity_inactive()),
                         list(signal = "parent.weight")
                     ),
                     tension = list(signal = "tension"),

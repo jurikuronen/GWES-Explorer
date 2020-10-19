@@ -17,3 +17,10 @@
     r2 <- .get_cp_radius() - .get_cp_radius_offset(2)
     return(.get_cp_gene_arc_angle(1) * r1 / r2)
 }
+
+.get_cp_opacity_selected <- function() { .settings$circular_plot_opacity_selected }
+.get_cp_opacity_active <- function() { .settings$circular_plot_opacity_active }
+.get_cp_opacity_connected <- function() { .settings$circular_plot_opacity_connected }
+.get_cp_opacity_inactive <- function() { .settings$circular_plot_opacity_inactive }
+.get_cp_opacity_default <- function() { .settings$circular_plot_opacity_default }
+.get_cp_opacity_background <- function() { .settings$circular_plot_opacity_background }

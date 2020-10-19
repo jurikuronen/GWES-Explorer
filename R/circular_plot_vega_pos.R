@@ -105,9 +105,9 @@
                     list(value = "#0099CC")
                 ),
                 strokeWidth = list(
-                    list(test = .pos_link_is_selected(), value = 0.8),
-                    list(test = .both_genes_are_selected(), value = 0.25),
-                    list(test = .is_connected_to_selected_gene(), value = 0.65),
+                    list(test = .pos_link_is_selected(), value = .get_cp_opacity_selected()),
+                    list(test = .both_genes_are_selected(), value = .get_cp_opacity_inactive()),
+                    list(test = .is_connected_to_selected_gene(), value = .get_cp_opacity_connected()),
                     list(value = 0.5)
                 ),
                 opacity = list(

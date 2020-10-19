@@ -92,11 +92,10 @@
                 outerRadius = list(signal = paste0("radius_genes_", selection)),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_selected_gene("datum.id", selection), value = 1),
-                    list(test = .gene_is_selected(selection), value = 0.2),
-                    list(value = 0.6)
-                ),
-                opacity = list(value = 1)
+                    list(test = .is_selected_gene("datum.id", selection), value = .get_cp_opacity_selected()),
+                    list(test = .gene_is_selected(selection), value = .get_cp_opacity_inactive()),
+                    list(value = .get_cp_opacity_default())
+                )
             )
         )
     )
@@ -114,7 +113,7 @@
                 fill = list(value = "#66b3ff"),
                 stroke = list(value = "#000000"),
                 strokeWidth = list(value = 0.5),
-                fillOpacity = list(value = 0.2),
+                fillOpacity = list(value = .get_cp_opacity_background()),
                 strokeOpacity = list(value = 0.4)
             ),
             update = list(

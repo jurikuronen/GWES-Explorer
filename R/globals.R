@@ -13,6 +13,13 @@
 .settings$circular_plot_radius_offset <- 120
 .settings$circular_plot_gene_circle_arc_angle <- 45
 
+.settings$circular_plot_opacity_selected <- 1
+.settings$circular_plot_opacity_active <- 1
+.settings$circular_plot_opacity_connected <- 0.5
+.settings$circular_plot_opacity_inactive <- 0.2
+.settings$circular_plot_opacity_default <- 0.6
+.settings$circular_plot_opacity_background <- 0.2
+
 # Initialize data keys.
 .data$outliers <- NULL
 .data$outliers_direct <- NULL
