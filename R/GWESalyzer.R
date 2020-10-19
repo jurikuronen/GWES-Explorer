@@ -23,8 +23,8 @@ launch_GWESalyzer <- function(launch_in_browser = TRUE) {
 .settings$circular_plot_right_side_size <- 240
 .settings$circular_plot_right_side_adjustment<- 110
 .settings$circular_plot_right_side_vertical_adjustment <- 100
-.settings$circular_plot_radius_offset1 <- 75
-.settings$circular_plot_radius_offset2 <- 125
+.settings$circular_plot_radius_offset1 <- 100
+.settings$circular_plot_radius_offset2 <- 150
 .settings$circular_plot_gene_circle_arc_angle1 <- 45
 .settings$circular_plot_gene_circle_arc_angle2 <- .settings$circular_plot_gene_circle_arc_angle1 * (.settings$circular_plot_size/2 - .settings$circular_plot_radius_offset1) / (.settings$circular_plot_size/2 - .settings$circular_plot_radius_offset2)
 

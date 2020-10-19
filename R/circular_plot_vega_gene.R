@@ -2,8 +2,10 @@
     list(
         .circular_plot_vega_gene_marks_text(1),
         .circular_plot_vega_gene_marks_arcs(1),
+        .circular_plot_vega_gene_marks_background(1),
         .circular_plot_vega_gene_marks_text(2),
-        .circular_plot_vega_gene_marks_arcs(2)
+        .circular_plot_vega_gene_marks_arcs(2),
+        .circular_plot_vega_gene_marks_background(2)
     )
 }
 
@@ -27,7 +29,9 @@
             )
         ),
         .vega_simple_filter("gene_data_selected_1", "gene_data", "datum.region === selected_region_1"),
-        .vega_simple_filter("gene_data_selected_2", "gene_data", "datum.region === selected_region_2")
+        .vega_simple_filter("gene_data_selected_2", "gene_data", "datum.region === selected_region_2"),
+        .vega_simple_filter("gene_data_selected_region_1", "region_data", "datum.id === selected_region_1"),
+        .vega_simple_filter("gene_data_selected_region_2", "region_data", "datum.id === selected_region_2")
     )
 }
 
@@ -93,6 +97,34 @@
                     list(value = 0.6)
                 ),
                 opacity = list(value = 1)
+            )
+        )
+    )
+}
+
+.circular_plot_vega_gene_marks_background <- function(selection) {
+    if (selection == 1) arc_angle <- .settings$circular_plot_gene_circle_arc_angle1
+    else arc_angle <- .settings$circular_plot_gene_circle_arc_angle2
+    list(
+        type = "arc",
+        from = list(data = paste0("gene_data_selected_region_", selection)),
+        name = paste0("gene_background_", selection),
+        #interactive = TRUE,
+        encode = list(
+            enter = list(
+                fill = list(value = "#66b3ff"),
+                stroke = list(value = "#000000"),
+                strokeWidth = list(value = 0.5),
+                fillOpacity = list(value = 0.2),
+                strokeOpacity = list(value = 0.4)
+            ),
+            update = list(
+                x = list(signal = "origoX"),
+                y = list(signal = "origoY"),
+                startAngle = list(signal = paste0("PI / 2 + (datum.angle - ", arc_angle / 2, " - ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * ", arc_angle, ") * PI / 180")),
+                endAngle = list(signal = paste0("PI / 2 + (datum.angle + ", arc_angle / 2, " + ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * ", arc_angle, ") * PI / 180")),
+                innerRadius = list(signal = paste0("radius_genes_", selection, " - 20 - ", 60 * (selection == 2))),
+                outerRadius = list(signal = paste0("radius_genes_", selection, " + 80 - ", 60 * (selection == 2)))
             )
         )
     )
