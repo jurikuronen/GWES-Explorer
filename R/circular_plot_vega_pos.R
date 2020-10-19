@@ -28,25 +28,25 @@
             )
         ),
         .vega_simple_filter("pos_data_gene_1", "pos_data", "datum.region === selected_region_1"),
-        .vega_simple_filter("pos_data_gene_2", "pos_data", "datum.region === selected_region_2"),
-        list(
-            name = "pos_data_selected_1",
-            source = "pos_data",
-            transform = list(
-                list(type = "filter", expr = "datum.parent === selected_gene_1"),
-                list(type = "identifier", as = "vertical_offset"),
-                .vega_formula("x", expr = "right_side_start")
-            )
-        ),
-        list(
-            name = "pos_data_selected_2",
-            source = "pos_data",
-            transform = list(
-                list(type = "filter", expr = "datum.parent === selected_gene_2"),
-                list(type = "identifier", as = "vertical_offset"),
-                .vega_formula("x", expr = "right_side_start + right_side_x_adj")
-            )
-        )
+        .vega_simple_filter("pos_data_gene_2", "pos_data", "datum.region === selected_region_2")
+        # list(
+        #     name = "pos_data_selected_1",
+        #     source = "pos_data",
+        #     transform = list(
+        #         list(type = "filter", expr = "datum.parent === selected_gene_1"),
+        #         list(type = "identifier", as = "vertical_offset"),
+        #         .vega_formula("x", expr = "right_side_start")
+        #     )
+        # ),
+        # list(
+        #     name = "pos_data_selected_2",
+        #     source = "pos_data",
+        #     transform = list(
+        #         list(type = "filter", expr = "datum.parent === selected_gene_2"),
+        #         list(type = "identifier", as = "vertical_offset"),
+        #         .vega_formula("x", expr = "right_side_start + right_side_x_adj")
+        #     )
+        # )
     )
 }
 

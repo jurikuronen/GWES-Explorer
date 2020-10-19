@@ -12,6 +12,8 @@
 .circular_plot_vega_gene_data <- function(gene_data) {
     arc_angle1 <- .settings$circular_plot_gene_circle_arc_angle1
     arc_angle2 <- .settings$circular_plot_gene_circle_arc_angle2
+    print(arc_angle1)
+    print(arc_angle2)
     list(
         list(
             name = "gene_data",
