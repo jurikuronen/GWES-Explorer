@@ -3,8 +3,10 @@
 .get_cp_groups <- function() { .settings$circular_plot_n_groups }
 .get_cp_regions <- function() { .settings$circular_plot_n_regions }
 .get_cp_text_size <- function() { .settings$circular_plot_text_size }
+.get_cp_center_text_size <- function() { .settings$circular_plot_center_text_size }
 .get_cp_small_text_size <- function(){ .settings$circular_plot_small_text_size }
-.get_cp_padding <- function(){ .settings$circular_plot_padding }
+.get_cp_padding <- function() { .settings$circular_plot_padding }
+.get_cp_size <- function() { 2.05 * .get_cp_radius() }
 
 .get_cp_radius_offset <- function(selection = 1) {
     return(.settings$circular_plot_radius_offset + (selection == 2) * 70)

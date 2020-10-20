@@ -6,6 +6,7 @@
 .settings$circular_plot_tension <- 0.7
 .settings$circular_plot_radius <- 450
 .settings$circular_plot_text_size <- 12
+.settings$circular_plot_center_text_size <- 10
 .settings$circular_plot_small_text_size <- 7
 .settings$circular_plot_padding <- 5
 .settings$circular_plot_n_groups <- 12

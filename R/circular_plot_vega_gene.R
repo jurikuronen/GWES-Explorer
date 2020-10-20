@@ -5,7 +5,9 @@
         .circular_plot_vega_gene_marks_arcs(1),
         .circular_plot_vega_gene_marks_background(2),
         .circular_plot_vega_gene_marks_text(2),
-        .circular_plot_vega_gene_marks_arcs(2)
+        .circular_plot_vega_gene_marks_arcs(2),
+        .circular_plot_vega_gene_marks_hover_background(),
+        .circular_plot_vega_gene_marks_hover_text()
     )
 }
 
@@ -52,7 +54,7 @@
             enter = list(
                 text = list(field = "name"),
                 baseline = list(value = "middle"),
-                tooltip = list(signal = "{title: datum.name, 'Info about': 'outliers comes here'}")
+                tooltip = list(signal = "{title: datum.name, 'Outliers': datum.count, 'Genes linked to': datum.n_genes_linked_to}")
             ),
             update = list(
                 x = list(field = paste0("x_", selection)),
@@ -101,13 +103,71 @@
     )
 }
 
+.circular_plot_vega_gene_marks_hover_text <- function() {
+    list(
+        type = "text",
+        from = list(data = "gene_data"),
+        name = paste0("gene_hover_text"),
+        interactive = FALSE,
+        encode = list(
+            enter = list(
+                text = list(field = "genes_linked_to"),
+                baseline = list(value = "middle")
+            ),
+            update = list(
+                x = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
+                y = list(signal = "origoY - datum.n_genes_linked_to * 5"),
+                align = list(value = "center"),
+                fontSize = list(signal = "centerTextSize"),
+                fontWeight = list(list(value = "normal")),
+                fill = list(value = "black"),
+                opacity = list(
+                    list(test = .is_active_gene("datum.id"), value = 1),
+                    list(value = 0)
+                )
+            )
+        )
+    )
+}
+
+.circular_plot_vega_gene_marks_hover_background <- function() {
+    list(
+        type = "rect",
+        from = list(data = "gene_data"),
+        name = "gene_hover_background",
+        interactive = FALSE,
+        encode = list(
+            enter = list(
+                fill = list(value = .get_cp_color_background()),
+                stroke = list(value = "#000000"),
+                strokeWidth = list(value = 0.5),
+                cornerRadius = list(value = 5)
+            ),
+            update = list(
+                xc = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
+                y = list(signal = "origoY - datum.n_genes_linked_to * 5 - 10"),
+                width = list(value = 275),
+                height = list(signal = "datum.n_genes_linked_to * 12 + 10"),
+                strokeOpacity = list(
+                    list(test = .is_active_gene("datum.id"), value = .get_cp_opacity_background()),
+                    list(value = 0)
+                ),
+                fillOpacity = list(
+                    list(test = .is_active_gene("datum.id"), value = 0.4),
+                    list(value = 0)
+                )
+            )
+        )
+    )
+}
+
 .circular_plot_vega_gene_marks_background <- function(selection) {
     arc_angle <- .get_cp_gene_arc_angle(selection)
     list(
         type = "arc",
         from = list(data = paste0("gene_data_selected_region_", selection)),
         name = paste0("gene_background_", selection),
-        #interactive = TRUE,
+        interactive = FALSE,
         encode = list(
             enter = list(
                 fill = list(value = .get_cp_color_background()),

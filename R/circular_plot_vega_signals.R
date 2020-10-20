@@ -1,19 +1,20 @@
-.circular_plot_vega_signals <- function(tension, radius, extent, rotate, textSize, innerTextSize, colorScheme, colorSchemeSelected, colorSchemeSelected2) {
-    signals <- .main_parameter_signals(tension, radius, extent, rotate, textSize, innerTextSize)
+.circular_plot_vega_signals <- function(extent, rotate, colorScheme, colorSchemeSelected, colorSchemeSelected2) {
+    signals <- .main_parameter_signals(extent, rotate)
     signals <- append(signals, .color_scheme_signals(colorScheme, colorSchemeSelected, colorSchemeSelected2))
     signals <- append(signals, .event_listener_signals())
 }
 
-.main_parameter_signals <- function(tension, radius, extent, rotate, textSize, innerTextSize) {
+.main_parameter_signals <- function(extent, rotate) {
     list(
-        list(name = "tension", value = tension),
-        list(name = "radius", value = radius),
+        list(name = "tension", value = .get_cp_tension()),
+        list(name = "radius", value = .get_cp_radius()),
         list(name = "extent", value = extent),
-        list(name = "radius_genes_1", value = radius - .get_cp_radius_offset(1)),
-        list(name = "radius_genes_2", value = radius - .get_cp_radius_offset(2)),
+        list(name = "radius_genes_1", value = .get_cp_radius() - .get_cp_radius_offset(1)),
+        list(name = "radius_genes_2", value = .get_cp_radius() - .get_cp_radius_offset(2)),
         list(name = "rotate", value = rotate),
-        list(name = "textSize", value = textSize),
-        list(name = "innerTextSize", value = innerTextSize),
+        list(name = "textSize", value = .get_cp_text_size()),
+        list(name = "centerTextSize", value = .get_cp_center_text_size()),
+        list(name = "innerTextSize", value = .get_cp_small_text_size()),
         list(name = "origoX", update = "width / 2"),
         list(name = "origoY", update = "height / 2")
     )
@@ -38,7 +39,18 @@
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
-
+        # Mouseovered gene
+        list(
+            name = "active_gene",
+            value = NULL,
+            on = list(
+                list(events = "@gene_arc_1:mouseover", update = "datum.id"),
+                list(events = "@gene_arc_2:mouseover", update = "datum.id"),
+                list(events = "@gene_text_1:mouseover", update = "datum.id"),
+                list(events = "@gene_text_2:mouseover", update = "datum.id"),
+                list(events = "mouseover[!event.item]", update = "null")
+            )
+        ),
         # Selected regions.
         list(
             name = "selected_region_1",

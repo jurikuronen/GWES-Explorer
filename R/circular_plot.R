@@ -61,8 +61,10 @@
     # Add gene data.
     gene_data <- .create_gene_data()
     pos_data <- .create_pos_data()
+    gene_data <- .add_outlier_counts_to_gene_data(gene_data, pos_data)
+    gene_data <- .add_linked_genes_to_gene_data(gene_data, pos_links)
     pos_links <- .cpp_create_pos_links(.data$outliers_direct, pos_data)
-    pos_links$weight <- .rescale_weights(pos_links$weight, 0.5, 1)
+    pos_links$weight <- .rescale_weights(pos_links$MI, 0.5, 1)
     edges$data <- append(edges$data, .circular_plot_vega_gene_data(gene_data))
     edges$data <- append(edges$data, .circular_plot_vega_pos_data_and_links(pos_data, pos_links))
     edges$marks <- append(edges$marks, .circular_plot_vega_gene_marks())
@@ -212,4 +214,35 @@
     pos_data <- cbind(pos_data, pos_in_gene)
 
     return(pos_data)
+}
+
+.add_outlier_counts_to_gene_data <- function(gene_data, pos_data) {
+    count <- numeric(nrow(gene_data))
+    t <- table(pos_data$parent)
+    keys <- as.numeric(names(t))
+    values <- as.numeric(t)
+    count[keys] <- values
+    gene_data$count <- count
+    return(gene_data)
+}
+
+.add_linked_genes_to_gene_data <- function(gene_data, pos_links) {
+    x <- pos_links[order(pos_links$gene_1), c("gene_1", "gene_2", "MI")] # Already sorted by MI.
+    genes_linked_to <- character(nrow(gene_data))
+    genes_linked_to <- sapply(genes_linked_to, function(x) NULL)
+    for (i in 1:nrow(x)) {
+        gene1 <- x$gene_1[i]
+        gene2 <- x$gene_2[i]
+        update <- paste0(.data$gff$Name[gene2], " ", x$MI[i], " (", .data$gff$start[gene2], "-", .data$gff$end[gene2], ")")
+        if (is.null(genes_linked_to[gene1][[1]])) {
+            genes_linked_to[gene1][[1]] <- append("Linked to following genes:", update)
+        } else {
+            genes_linked_to[gene1][[1]] <- append(genes_linked_to[gene1][[1]], update)
+        }
+    }
+    n_genes_linked_to <- numeric(nrow(gene_data))
+    for (i in 1:nrow(gene_data)) n_genes_linked_to[i] <- length(genes_linked_to[i][[1]])
+    gene_data$genes_linked_to <- genes_linked_to
+    gene_data$n_genes_linked_to <- n_genes_linked_to
+    return(gene_data)
 }

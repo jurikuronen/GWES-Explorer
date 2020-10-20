@@ -38,6 +38,6 @@ Rcpp::DataFrame create_pos_links(Rcpp::List outliers_direct, Rcpp::List pos_data
             Rcpp::Named("gene_2") = Rcpp::wrap(gene_2),
             Rcpp::Named("pos_data_idx_1") = Rcpp::wrap(pos_data_idx_1),
             Rcpp::Named("pos_data_idx_2") = Rcpp::wrap(pos_data_idx_2),
-            Rcpp::Named("weight") = Rcpp::wrap(weight));
+            Rcpp::Named("MI") = Rcpp::wrap(weight));
 }
 

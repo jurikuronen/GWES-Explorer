@@ -31,24 +31,18 @@
 .initialize_circular_spec <- function(width, height, padding) {
     list(
         `$schema` = "https://vega.github.io/schema/vega/v5.json",
-        width = width,
-        height = height,
+        width = .get_cp_size(),
+        height = .get_cp_size(),
         autosize = "none",
-        padding = padding
+        padding = .get_cp_padding()
     )
 }
 
 # Initial Vega spec.
 .circular_plot_vega_spec <- function(data, dependencies, rotate = 0, extent = 360,
     colorScheme = "purples", colorSchemeSelected = "reds", colorSchemeSelected2 = "teals") {
-    radius = .get_cp_radius()
-    size = 2.05 * radius # Make sure the circular plot fits within the main Shiny panel.
-    padding = .get_cp_padding()
-    tension = .get_cp_tension()
-    textSize = .get_cp_text_size()
-    innerTextSize = .get_cp_small_text_size()
-    vegawidget::as_vegaspec(append(.initialize_circular_spec(width = size, height = size, padding = padding), list(
-        signals = .circular_plot_vega_signals(tension, radius, extent, rotate, textSize, innerTextSize, colorScheme, colorSchemeSelected, colorSchemeSelected2),
+    vegawidget::as_vegaspec(append(.initialize_circular_spec(), list(
+        signals = .circular_plot_vega_signals(extent, rotate, colorScheme, colorSchemeSelected, colorSchemeSelected2),
         data = .circular_plot_vega_region_data(data, dependencies),
         marks = .circular_plot_vega_region_marks(),
         scales = .circular_plot_vega_region_scales()
@@ -73,6 +67,7 @@
 .region_link_is_active <- function() { .or(.is_active_region("parent.source"), .is_active_region("parent.target")) }
 
 .gene_is_selected <- function(selection) { paste0("(selected_gene_", selection, " != null)") }
+.is_active_gene <- function(element) { paste0("(", element, " === active_gene)") }
 .is_selected_gene <- function(element, selection) { paste0("(", element, " === selected_gene_", selection, ")") }
 .some_gene_is_selected <- function() { .or(.gene_is_selected(1), .gene_is_selected(2)) }
 .both_genes_are_selected <- function() { .and(.gene_is_selected(1), .gene_is_selected(2)) }
