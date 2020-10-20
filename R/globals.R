@@ -18,7 +18,19 @@
 .settings$circular_plot_opacity_connected <- 0.5
 .settings$circular_plot_opacity_inactive <- 0.2
 .settings$circular_plot_opacity_default <- 0.6
-.settings$circular_plot_opacity_background <- 0.2
+.settings$circular_plot_opacity_background <- 1
+.settings$circular_plot_opacity_pos_link_selected <- 1
+.settings$circular_plot_opacity_pos_link_connected <- 0.9
+.settings$circular_plot_opacity_pos_link_inactive <- 0.8
+.settings$circular_plot_opacity_pos_link_default <- 1
+
+.settings$circular_plot_color_pos_link_selected <- "#8800cc"
+.settings$circular_plot_color_pos_link_connected <- "#9b39cc"
+.settings$circular_plot_color_pos_link_inactive <- "#9dbec9"
+.settings$circular_plot_color_pos_link_default <- "#0099cc"
+.settings$circular_plot_color_background <- "#bfdfff"
+.settings$circular_plot_color_pos_symbol_fill <- "#d3d3d3"
+.settings$circular_plot_color_pos_symbol_stroke <- "#cc3300"
 
 # Initialize data keys.
 .data$outliers <- NULL

@@ -59,6 +59,7 @@
 .or <- function(callback1, callback2) { paste0("(", callback1, " || ", callback2, ")") }
 .and <- function(callback1, callback2) { paste0("(", callback1, " && ", callback2, ")") }
 .negate <- function(callback) { paste0("(!", callback, ")") }
+
 .region_is_selected <- function(selection) { paste0("(selected_region_", selection, " != null)") }
 .is_active_region <- function(element) { paste0("(", element, " === active_region)") }
 .is_selected_region <- function(element, selection) { paste0("(", element, " === selected_region_", selection, ")") }
@@ -66,12 +67,15 @@
 .some_region_is_selected <- function() { .or(.region_is_selected(1), .region_is_selected(2)) }
 .both_regions_are_selected <- function() { .and(.region_is_selected(1), .region_is_selected(2)) }
 .only_one_region_is_selected <- function() { .and(.some_region_is_selected(), .negate(.both_regions_are_selected())) }
-.region_link_is_selected <- function() { .and(.is_one_of_selected_regions("parent.source"), .is_one_of_selected_regions("parent.target")) }
+
+.region_link_is_selected <- function() { .or(.and(.is_selected_region("parent.source", 1), .is_selected_region("parent.target", 2)), .and(.is_selected_region("parent.source", 2), .is_selected_region("parent.target", 1))) }
 .is_connected_to_selected_region <- function() { .or(.is_one_of_selected_regions("parent.source"), .is_one_of_selected_regions("parent.target")) }
 .region_link_is_active <- function() { .or(.is_active_region("parent.source"), .is_active_region("parent.target")) }
 
 .gene_is_selected <- function(selection) { paste0("(selected_gene_", selection, " != null)") }
 .is_selected_gene <- function(element, selection) { paste0("(", element, " === selected_gene_", selection, ")") }
+.some_gene_is_selected <- function() { .or(.gene_is_selected(1), .gene_is_selected(2)) }
 .both_genes_are_selected <- function() { .and(.gene_is_selected(1), .gene_is_selected(2)) }
+
 .pos_link_is_selected <- function() { .and(.is_selected_gene("datum.gene_1", 1), .is_selected_gene("datum.gene_2", 2)) }
 .is_connected_to_selected_gene <- function() { .or(.is_selected_gene("datum.gene_1", 1), .is_selected_gene("datum.gene_2", 2)) }

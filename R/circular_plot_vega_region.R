@@ -115,6 +115,7 @@
                     stroke = list(
                         list(test = .region_link_is_selected(), scale = "colorScaleSelected", signal = "parent.weight"),
                         list(test = .region_link_is_active(), scale = "colorScaleSelected2", value = .get_cp_opacity_active()),
+                        list(test = .both_regions_are_selected(), scale = "greyScale", signal = "parent.weight"),
                         list(test = .is_connected_to_selected_region(), scale = "colorScaleSelected", signal = "parent.weight"),
                         list(test = .some_region_is_selected(), scale = "greyScale", signal = "parent.weight"),
                         list(scale = "colorScale", signal = "parent.weight")
@@ -122,6 +123,7 @@
                     strokeOpacity = list(
                         list(test = .region_link_is_selected(), signal = "parent.weight"),
                         list(test = .region_link_is_active(), value = .get_cp_opacity_active()),
+                        list(test = .both_regions_are_selected(), value = .get_cp_opacity_inactive()),
                         list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), value = .get_cp_opacity_inactive()),
                         list(signal = "parent.weight")
                     ),

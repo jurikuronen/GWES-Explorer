@@ -110,7 +110,7 @@
         #interactive = TRUE,
         encode = list(
             enter = list(
-                fill = list(value = "#66b3ff"),
+                fill = list(value = .get_cp_color_background()),
                 stroke = list(value = "#000000"),
                 strokeWidth = list(value = 0.5),
                 fillOpacity = list(value = .get_cp_opacity_background()),

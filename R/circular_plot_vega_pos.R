@@ -74,8 +74,8 @@
         interactive = TRUE,
         encode = list(
             enter = list(
-                fill = list(value = "#d3d3d3"),
-                stroke = list(value = "#cc3300"),
+                fill = list(value = .get_cp_color_pos_symbol_fill()),
+                stroke = list(value = .get_cp_color_pos_symbol_stroke()),
                 strokeWidth = list(value = 0.5),
                 tooltip = list(signal = "{title: datum.name, 'Gene': datum.parent_gene, 'Other info': 'comes here'}")
             ),
@@ -101,20 +101,17 @@
                 x = list(field = "x"), y = list(field = "y"),
                 x2 = list(field = "x2"), y2 = list(field = "y2"),
                 stroke = list(
-                    list(test = .or(.and(.is_connected_to_selected_gene(), .negate(.both_genes_are_selected())), .pos_link_is_selected()), value = "#8800cc"),
-                    list(value = "#0099CC")
+                    list(test = .pos_link_is_selected(), value = .get_cp_color_pos_link_selected()),
+                    list(test = .and(.is_connected_to_selected_gene(), .negate(.both_genes_are_selected())), value = .get_cp_color_pos_link_connected()),
+                    list(test = .some_gene_is_selected(), value = .get_cp_color_pos_link_inactive()),
+                    list(value = .get_cp_color_pos_link_default())
                 ),
-                strokeWidth = list(
-                    list(test = .pos_link_is_selected(), value = .get_cp_opacity_selected()),
-                    list(test = .both_genes_are_selected(), value = .get_cp_opacity_inactive()),
-                    list(test = .is_connected_to_selected_gene(), value = .get_cp_opacity_connected()),
-                    list(value = 0.5)
-                ),
-                opacity = list(
-                    list(test = .pos_link_is_selected(), value = 1),
-                    list(test = .both_genes_are_selected(), value = 0.25),
-                    list(test = .is_connected_to_selected_gene(), value = 0.75),
-                    list(value = 0.5)
+                strokeWidth = list(field = "weight"),
+                strokeOpacity = list(
+                    list(test = .pos_link_is_selected(), value = .get_cp_opacity_pos_link_selected()),
+                    list(test = .both_genes_are_selected(), value = .get_cp_opacity_pos_link_inactive()),
+                    list(test = .is_connected_to_selected_gene(), value = .get_cp_opacity_pos_link_connected()),
+                    list(value = .get_cp_opacity_pos_link_default())
                 )
                 #opacity = list(field = "datum.weight")
             )
