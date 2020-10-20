@@ -149,10 +149,12 @@
                 width = list(value = 275),
                 height = list(signal = "datum.n_genes_linked_to * 12 + 10"),
                 strokeOpacity = list(
+                    list(test = "datum.n_genes_linked_to === 0", value = 0),
                     list(test = .is_active_gene("datum.id"), value = .get_cp_opacity_background()),
                     list(value = 0)
                 ),
                 fillOpacity = list(
+                    list(test = "datum.n_genes_linked_to === 0", value = 0),
                     list(test = .is_active_gene("datum.id"), value = 0.4),
                     list(value = 0)
                 )
