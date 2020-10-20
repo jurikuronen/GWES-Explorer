@@ -167,7 +167,7 @@
         type = "arc",
         from = list(data = paste0("gene_data_selected_region_", selection)),
         name = paste0("gene_background_", selection),
-        interactive = FALSE,
+        interactive = TRUE,
         encode = list(
             enter = list(
                 fill = list(value = .get_cp_color_background()),
