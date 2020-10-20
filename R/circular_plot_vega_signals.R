@@ -48,6 +48,8 @@
                 list(events = "@gene_arc_2:mouseover", update = "datum.id"),
                 list(events = "@gene_text_1:mouseover", update = "datum.id"),
                 list(events = "@gene_text_2:mouseover", update = "datum.id"),
+                list(events = "@gene_background_1:mouseover", update = "null"),
+                list(events = "@gene_background_2:mouseover", update = "null"),
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
