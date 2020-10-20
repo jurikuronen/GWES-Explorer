@@ -77,7 +77,7 @@
                 fill = list(value = .get_cp_color_pos_symbol_fill()),
                 stroke = list(value = .get_cp_color_pos_symbol_stroke()),
                 strokeWidth = list(value = 0.5),
-                tooltip = list(signal = "{title: datum.name, 'Gene': datum.parent_gene, 'Other info': 'comes here'}")
+                tooltip = list(signal = "{title: datum.name, 'Gene': datum.parent_gene}")
             ),
             update = list(
                 x = list(field = paste0("x_", selection)),
