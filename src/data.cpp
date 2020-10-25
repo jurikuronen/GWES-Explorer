@@ -65,7 +65,8 @@ Rcpp::DataFrame add_igrs_to_gff(Rcpp::List gff, Rcpp::List outliers_direct, Rcpp
     for (auto i = 0; i < igr_ranges.size(); ++i) {
         gff_start.push_back(igr_ranges[i].first);
         gff_end.push_back(igr_ranges[i].second);
-        gff_names.push_back("IGR");
+        int64_t rough_position = (igr_ranges[i].second + igr_ranges[i].first) / 2 / 1000;
+        gff_names.push_back("IGR_" + std::to_string(rough_position) + "k");
     }
     return Rcpp::DataFrame::create(
             Rcpp::Named("start") = Rcpp::wrap(gff_start),
