@@ -22,7 +22,7 @@
 
     # Render UI for tree plot.
     output$treeUI <- shiny::renderUI({
-        shiny::plotOutput("tree_plot", width = paste0(input$width, "cm"), height = paste0(input$height, "cm"))
+        shiny::plotOutput("tree_plot", width = paste0(input$tree_plot_width, "cm"), height = paste0(input$tree_plot_height, "cm"))
     })
 
     # Handle uploaded data event.
@@ -81,5 +81,15 @@
     shiny::observeEvent(c(input$file_outliers, input$file_tree, input$file_fasta, input$file_loci, input$file_phenotype, input$file_gff), {
         output$data_loaded <- shiny::renderText({""})
     })
+
+    # Modify circular plot signals from Shiny UI.
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius", value = input$circular_plot_radius)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_offset", value = input$circular_plot_radius_offset)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate", value = input$circular_plot_rotate)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_region", value = input$circular_plot_text_size_region)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_gene", value = input$circular_plot_text_size_gene)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_tooltip", value = input$circular_plot_text_size_tooltip)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "show_region_links", value = input$circular_plot_show_region_links)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "show_gene_links", value = input$circular_plot_show_gene_links)
 
 }

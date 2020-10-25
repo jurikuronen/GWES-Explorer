@@ -7,18 +7,24 @@
 .main_parameter_signals <- function() {
     list(
         list(name = "tension", value = .get_cp_tension()),
-        list(name = "radius", value = .get_cp_radius()),
         list(name = "extent", value = .get_cp_extent()),
-        list(name = "radius_genes_1", value = .get_cp_radius() - .get_cp_radius_offset(1)),
-        list(name = "radius_genes_2", value = .get_cp_radius() - .get_cp_radius_offset(2)),
         list(name = "rotate", value = .get_cp_rotate()),
-        list(name = "textSize", value = .get_cp_text_size_default()),
-        list(name = "centerTextSize", value = .get_cp_text_size_center()),
-        list(name = "innerTextSize", value = .get_cp_text_size_small()),
-        list(name = "gene_arc_angle_1", value = .get_cp_gene_arc_angle(1)),
-        list(name = "gene_arc_angle_2", value = .get_cp_gene_arc_angle(2)),
+        list(name = "text_size_gene", value = .get_cp_text_size_gene()),
+        list(name = "text_size_region", value = .get_cp_text_size_region()),
+        list(name = "text_size_tooltip", value = .get_cp_text_size_tooltip()),
+        list(name = "radius", value = .get_cp_radius()),
+        list(name = "radius_offset", value = .get_cp_radius_offset()),
+        list(name = "radius_offset_1", update = "radius_offset + (text_size_gene - 7) * 10"),
+        list(name = "radius_offset_2", update = "radius_offset + text_size_gene * 10"),
+        list(name = "radius_genes_1", update = "radius - radius_offset_1"),
+        list(name = "radius_genes_2", update = "radius - radius_offset_2"),
+        list(name = "gene_arc_angle_1", value = .get_cp_gene_arc_angle()),
+        # Compute inner angle that has equal arc length.
+        list(name = "gene_arc_angle_2", update = "gene_arc_angle_1 * (radius - radius_offset_1) / (radius - radius_offset_2)"),
         list(name = "origoX", update = "width / 2"),
-        list(name = "origoY", update = "height / 2")
+        list(name = "origoY", update = "height / 2"),
+        list(name = "show_region_links", value = TRUE),
+        list(name = "show_gene_links", value = TRUE)
     )
 }
 

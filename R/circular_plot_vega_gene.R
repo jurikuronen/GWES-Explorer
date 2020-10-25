@@ -60,7 +60,7 @@
                 dx = list(signal = .circular_plot_vega_gene_marks_text_dx(selection)),
                 angle = list(signal = paste0('datum.leftside ? datum.angle_', selection, ' + 180 : datum.angle_', selection)),
                 align = list(signal = align_signal),
-                fontSize = list(signal = "innerTextSize"),
+                fontSize = list(signal = "text_size_gene"),
                 fontWeight = list(
                     list(test = .is_selected_gene("datum.id", selection), value = "bold"),
                     list(value = "normal")
@@ -114,9 +114,9 @@
             ),
             update = list(
                 x = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
-                y = list(signal = "origoY - datum.length * 5"),
+                y = list(signal = "origoY - datum.length * text_size_tooltip / 2"),
                 align = list(value = "center"),
-                fontSize = list(signal = "centerTextSize"),
+                fontSize = list(signal = "text_size_tooltip"),
                 fontWeight = list(list(value = "normal")),
                 fill = list(value = "black"),
                 opacity = list(
@@ -143,9 +143,9 @@
             ),
             update = list(
                 xc = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
-                y = list(signal = "origoY - datum.length * 5 - 10"),
-                width = list(value = 275),
-                height = list(signal = "datum.length * 12 + 10"),
+                y = list(signal = "origoY - datum.length * text_size_tooltip / 2 - text_size_tooltip"),
+                width = list(signal = "25 * text_size_tooltip"),
+                height = list(signal = "datum.length * (text_size_tooltip + 2) + text_size_tooltip"),
                 strokeOpacity = list(
                     list(test = "datum.length === 0", value = 0),
                     list(test = .is_active_gene("datum.id"), value = .get_cp_opacity_background()),
@@ -180,8 +180,8 @@
                 y = list(signal = "origoY"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle - gene_arc_angle_", selection, " / 2 - ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
                 endAngle = list(signal = paste0("PI / 2 + (datum.angle + gene_arc_angle_", selection, " / 2 + ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
-                innerRadius = list(signal = paste0("radius_genes_", selection, " - 20 - ", 60 * (selection == 2))),
-                outerRadius = list(signal = paste0("radius_genes_", selection, " + 80 - ", 60 * (selection == 2)))
+                outerRadius = list(signal = paste0("radius_genes_", selection, " + 1.5 * text_size_gene + text_size_gene * 10 * ", as.numeric(selection == 1))),
+                innerRadius = list(signal = paste0("radius_genes_", selection, " - 1.5 * text_size_gene - text_size_gene * 10 * ", as.numeric(selection == 2)))
             )
         )
     )

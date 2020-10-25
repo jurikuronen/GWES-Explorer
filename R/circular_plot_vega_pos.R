@@ -44,7 +44,7 @@
                 .vega_formula("y2", .vega_data_query("pos_data", "datum.pos_data_idx_2", "y_2"))
             )
         ),
-        .vega_simple_filter("pos_links_selected", "pos_links", .and(.is_selected_region("datum.region_1", 1), .is_selected_region("datum.region_2", 2)))
+        .vega_simple_filter("pos_links_selected", "pos_links", .and("show_gene_links", .and(.is_selected_region("datum.region_1", 1), .is_selected_region("datum.region_2", 2))))
     )
 }
 

@@ -66,7 +66,7 @@
                 dy = list(signal = "16 * (datum.bottomside ? 1 : -1)"),
                 angle = list(signal = "datum.bottomside ? datum.angle - 90 : datum.angle + 90"),
                 align = list(value = "center"),
-                fontSize = list(signal = "textSize"),
+                fontSize = list(signal = "text_size_region"),
                 fill = list(value = "black")
             )
         )
@@ -121,6 +121,7 @@
                         list(scale = "color_scale_default", signal = "parent.weight")
                     ),
                     strokeOpacity = list(
+                        list(test = "!show_region_links", value = 0),
                         list(test = .region_link_is_selected(), signal = "parent.weight"),
                         list(test = .region_link_is_active(), value = .get_cp_opacity_active()),
                         list(test = .both_regions_are_selected(), value = .get_cp_opacity_inactive()),

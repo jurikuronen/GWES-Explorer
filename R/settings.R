@@ -29,6 +29,6 @@
 .settings$circular_plot_radius_offset <- 120
 .settings$circular_plot_rotate <- 0
 .settings$circular_plot_tension <- 0.7
-.settings$circular_plot_text_size_center <- 10
-.settings$circular_plot_text_size_default <- 12
-.settings$circular_plot_text_size_small <- 7
+.settings$circular_plot_text_size_gene <- 8
+.settings$circular_plot_text_size_region <- 12
+.settings$circular_plot_text_size_tooltip <- 10

@@ -10,13 +10,7 @@
 .get_cp_color_scheme_inactive <- function() { .settings$circular_plot_color_scheme_inactive }
 .get_cp_color_scheme_selected <- function() { .settings$circular_plot_color_scheme_selected }
 .get_cp_extent <- function() { .settings$circular_plot_extent }
-.get_cp_gene_arc_angle <- function(selection = 1) {
-    if (selection == 1) return(.settings$circular_plot_gene_circle_arc_angle)
-    # Compute inner angle that has equal arc length.
-    r1 <- .get_cp_radius() - .get_cp_radius_offset(1)
-    r2 <- .get_cp_radius() - .get_cp_radius_offset(2)
-    return(.get_cp_gene_arc_angle(1) * r1 / r2)
-}
+.get_cp_gene_arc_angle <- function() { .settings$circular_plot_gene_circle_arc_angle }
 .get_cp_groups <- function() { .settings$circular_plot_n_groups }
 .get_cp_opacity_active <- function() { .settings$circular_plot_opacity_active }
 .get_cp_opacity_background <- function() { .settings$circular_plot_opacity_background }
@@ -30,11 +24,11 @@
 .get_cp_opacity_selected <- function() { .settings$circular_plot_opacity_selected }
 .get_cp_padding <- function() { .settings$circular_plot_padding }
 .get_cp_radius <- function() { .settings$circular_plot_radius }
-.get_cp_radius_offset <- function(selection = 1) { return(.settings$circular_plot_radius_offset + (selection == 2) * 70) }
+.get_cp_radius_offset <- function() { .settings$circular_plot_radius_offset }
 .get_cp_regions <- function() { .settings$circular_plot_n_regions }
 .get_cp_rotate <- function() { .settings$circular_plot_rotate }
-.get_cp_size <- function() { 2.05 * .get_cp_radius() } # Add extra for plot margins.
+.get_cp_size <- function() { 2.1 * .get_cp_radius() } # Add extra for plot margins.
 .get_cp_tension <- function() { .settings$circular_plot_tension }
-.get_cp_text_size_center <- function() { .settings$circular_plot_text_size_center }
-.get_cp_text_size_default <- function() { .settings$circular_plot_text_size_default }
-.get_cp_text_size_small <- function(){ .settings$circular_plot_text_size_small }
+.get_cp_text_size_gene <- function(){ .settings$circular_plot_text_size_gene }
+.get_cp_text_size_region <- function() { .settings$circular_plot_text_size_region }
+.get_cp_text_size_tooltip <- function() { .settings$circular_plot_text_size_tooltip }
