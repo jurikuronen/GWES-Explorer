@@ -1,30 +1,33 @@
-.circular_plot_vega_signals <- function(extent, rotate, colorScheme, colorSchemeSelected, colorSchemeSelected2) {
-    signals <- .main_parameter_signals(extent, rotate)
-    signals <- append(signals, .color_scheme_signals(colorScheme, colorSchemeSelected, colorSchemeSelected2))
+.circular_plot_vega_signals <- function() {
+    signals <- .main_parameter_signals()
+    signals <- append(signals, .color_scheme_signals())
     signals <- append(signals, .event_listener_signals())
 }
 
-.main_parameter_signals <- function(extent, rotate) {
+.main_parameter_signals <- function() {
     list(
         list(name = "tension", value = .get_cp_tension()),
         list(name = "radius", value = .get_cp_radius()),
-        list(name = "extent", value = extent),
+        list(name = "extent", value = .get_cp_extent()),
         list(name = "radius_genes_1", value = .get_cp_radius() - .get_cp_radius_offset(1)),
         list(name = "radius_genes_2", value = .get_cp_radius() - .get_cp_radius_offset(2)),
-        list(name = "rotate", value = rotate),
-        list(name = "textSize", value = .get_cp_text_size()),
-        list(name = "centerTextSize", value = .get_cp_center_text_size()),
-        list(name = "innerTextSize", value = .get_cp_small_text_size()),
+        list(name = "rotate", value = .get_cp_rotate()),
+        list(name = "textSize", value = .get_cp_text_size_default()),
+        list(name = "centerTextSize", value = .get_cp_text_size_center()),
+        list(name = "innerTextSize", value = .get_cp_text_size_small()),
+        list(name = "gene_arc_angle_1", value = .get_cp_gene_arc_angle(1)),
+        list(name = "gene_arc_angle_2", value = .get_cp_gene_arc_angle(2)),
         list(name = "origoX", update = "width / 2"),
         list(name = "origoY", update = "height / 2")
     )
 }
 
-.color_scheme_signals <- function(colorScheme, colorSchemeSelected, colorSchemeSelected2) {
+.color_scheme_signals <- function() {
     list(
-        list(name = "colorScheme", value = colorScheme),
-        list(name = "colorSchemeSelected", value = colorSchemeSelected),
-        list(name = "colorSchemeSelected2", value = colorSchemeSelected2)
+        list(name = "color_scheme_default", value = .get_cp_color_scheme_default()),
+        list(name = "color_scheme_active", value = .get_cp_color_scheme_active()),
+        list(name = "color_scheme_selected", value = .get_cp_color_scheme_selected()),
+        list(name = "color_scheme_inactive", value = .get_cp_color_scheme_inactive())
     )
 }
 
@@ -61,12 +64,6 @@
                 list(events = list(type = "click", markname = "region_arc", filter = "!event.shiftKey"), update = "datum.id"),
                 list(events = list(type = "click", markname = "gene_text_1", filter = "!event.shiftKey"), update = "datum.region"),
                 list(events = list(type = "click", markname = "gene_arc_1", filter = "!event.shiftKey"), update = "datum.region"),
-                # list(events = list(type = "click", markname = "selected_gene_text_1", filter = "!event.shiftKey"), update = "datum.region"),
-                # list(events = list(type = "click", markname = "selected_gene_text_2", filter = "!event.shiftKey"), update = "datum.region"),
-                # list(events = list(type = "click", markname = "selected_position_text_1", filter = "!event.shiftKey"), update = "datum.target_region"),
-                # list(events = list(type = "click", markname = "selected_position_text_2", filter = "!event.shiftKey"), update = "datum.target_region"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "!event.shiftKey"), update = "datum.target_region"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "!event.shiftKey"), update = "datum.target_region"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"), update = "null")
             )
         ),
@@ -77,12 +74,6 @@
                 list(events = list(type = "click", markname = "region_arc", filter = "event.shiftKey"), update = "datum.id"),
                 list(events = list(type = "click", markname = "gene_text_2", filter = "!event.shiftKey"), update = "datum.region"),
                 list(events = list(type = "click", markname = "gene_arc_2", filter = "!event.shiftKey"), update = "datum.region"),
-                # list(events = list(type = "click", markname = "selected_gene_text_1", filter = "event.shiftKey"), update = "datum.region"),
-                # list(events = list(type = "click", markname = "selected_gene_text_2", filter = "event.shiftKey"), update = "datum.region"),
-                # list(events = list(type = "click", markname = "selected_position_text_1", filter = "event.shiftKey"), update = "datum.target_region"),
-                # list(events = list(type = "click", markname = "selected_position_text_2", filter = "event.shiftKey"), update = "datum.target_region"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "event.shiftKey"), update = "datum.target_region"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "event.shiftKey"), update = "datum.target_region"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"), update = "null")
             )
         ),
@@ -96,12 +87,6 @@
                 list(events = list(type = "click", markname = "gene_text_1", filter = "!event.shiftKey"), update = "datum.id"),
                 list(events = list(type = "click", markname = "gene_arc_1", filter = "!event.shiftKey"), update = "datum.id"),
                 list(events = list(type = "click", markname = "gene_background_1", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_gene_text_1", filter = "!event.shiftKey"), update = "datum.parent"),
-                # list(events = list(type = "click", markname = "selected_gene_text_2", filter = "!event.shiftKey"), update = "datum.parent"),
-                # list(events = list(type = "click", markname = "selected_position_text_1", filter = "!event.shiftKey"), update = "datum.target_gene"),
-                # list(events = list(type = "click", markname = "selected_position_text_2", filter = "!event.shiftKey"), update = "datum.target_gene"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "!event.shiftKey"), update = "datum.target_gene"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "!event.shiftKey"), update = "datum.target_gene"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"), update = "null")
             )
         ),
@@ -113,12 +98,6 @@
                 list(events = list(type = "click", markname = "gene_text_2", filter = "!event.shiftKey"), update = "datum.id"),
                 list(events = list(type = "click", markname = "gene_arc_2", filter = "!event.shiftKey"), update = "datum.id"),
                 list(events = list(type = "click", markname = "gene_background_2", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_gene_text_1", filter = "event.shiftKey"), update = "datum.parent"),
-                # list(events = list(type = "click", markname = "selected_gene_text_2", filter = "event.shiftKey"), update = "datum.parent"),
-                # list(events = list(type = "click", markname = "selected_position_text_1", filter = "event.shiftKey"), update = "datum.target_gene"),
-                # list(events = list(type = "click", markname = "selected_position_text_2", filter = "event.shiftKey"), update = "datum.target_gene"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "event.shiftKey"), update = "datum.target_gene"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "event.shiftKey"), update = "datum.target_gene"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"), update = "null")
             )
         ),
@@ -132,14 +111,6 @@
                 list(events = list(type = "click", markname = "gene_text_1", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "gene_arc_1", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "gene_background_1", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_gene_text_1", filter = "!event.shiftKey"), update = "datum.name"),
-                # list(events = list(type = "click", markname = "selected_gene_text_2", filter = "!event.shiftKey"), update = "datum.name"),
-                # list(events = list(type = "click", markname = "selected_position_text_1", filter = "!event.shiftKey"), update = "datum.target"),
-                # list(events = list(type = "click", markname = "selected_position_text_2", filter = "!event.shiftKey"), update = "datum.target"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_position_main_gene_text_1", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_position_main_gene_text_2", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"), update = "null")
             )
         ),
@@ -151,14 +122,6 @@
                 list(events = list(type = "click", markname = "gene_text_2", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "gene_arc_2", filter = "!event.shiftKey"), update = "null"),
                 list(events = list(type = "click", markname = "gene_background_2", filter = "!event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_gene_text_1", filter = "event.shiftKey"), update = "datum.name"),
-                # list(events = list(type = "click", markname = "selected_gene_text_2", filter = "event.shiftKey"), update = "datum.name"),
-                # list(events = list(type = "click", markname = "selected_position_text_1", filter = "event.shiftKey"), update = "datum.target"),
-                # list(events = list(type = "click", markname = "selected_position_text_2", filter = "event.shiftKey"), update = "datum.target"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_1", filter = "event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_position_gene_text_2", filter = "event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_position_main_gene_text_1", filter = "event.shiftKey"), update = "null"),
-                # list(events = list(type = "click", markname = "selected_position_main_gene_text_2", filter = "event.shiftKey"), update = "null"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"), update = "null")
             )
         )

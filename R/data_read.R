@@ -32,9 +32,10 @@
 .read_phenotype <- function(phenotype_file) {
     if (!is.null(phenotype_file)) {
         .data$phenotype <- utils::read.csv(file = phenotype_file$datapath, row.names = 1)
-    } else { .data$phenotype <- NULL }
+    } else {
+        .data$phenotype <- NULL
+    }
 }
-
 
 # Read in outlier lists.
 .read_outliers <- function(outliers_file) {
@@ -62,6 +63,7 @@
         .data$gff <- gff
     } else { .data$gff <- NULL }
 }
+
 # Read files uploaded from the Shiny UI.
 .read_data <- function(file_outliers = NULL, file_tree = NULL, file_fasta = NULL, file_loci = NULL, file_phenotype = NULL, file_gff = NULL) {
     .read_outliers(file_outliers)

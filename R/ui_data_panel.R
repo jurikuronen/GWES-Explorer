@@ -42,7 +42,7 @@
 
             shiny::actionButton(inputId = "read_data_button", label = "Read in data"),
             .div_inline_br_block(3),
-            .div_inline_block(4.5, shinyjs::hidden(shiny::p(id = "reading_data_div", shiny::textOutput("data_loaded"))))
+            .div_inline_block(4.5, shiny::p(id = "reading_data_div", shiny::textOutput("data_loaded")))
         ),
 
         shiny::mainPanel(

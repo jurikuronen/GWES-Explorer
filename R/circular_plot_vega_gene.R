@@ -12,17 +12,15 @@
 }
 
 .circular_plot_vega_gene_data <- function(gene_data) {
-    arc_angle1 <- .get_cp_gene_arc_angle(1)
-    arc_angle2 <- .get_cp_gene_arc_angle(2)
     list(
         list(
             name = "gene_data",
             values = gene_data,
             transform = list(
-                .vega_formula("angle_step_size_1", paste0(arc_angle1, " * datum.step_size")),
-                .vega_formula("angle_step_size_2", paste0(arc_angle2, " * datum.step_size")),
-                .vega_formula("angle_1", paste0("(", .vega_get_region_angle(), " + ", arc_angle1, " * (datum.angle_step - 0.5)) % 360")),
-                .vega_formula("angle_2", paste0("(", .vega_get_region_angle(), " + ", arc_angle2, " * (datum.angle_step - 0.5)) % 360")),
+                .vega_formula("angle_step_size_1", "gene_arc_angle_1 * datum.step_size"),
+                .vega_formula("angle_step_size_2", "gene_arc_angle_2 * datum.step_size"),
+                .vega_formula("angle_1", paste0("(", .vega_get_region_angle(), " + gene_arc_angle_1 * (datum.angle_step - 0.5)) % 360")),
+                .vega_formula("angle_2", paste0("(", .vega_get_region_angle(), " + gene_arc_angle_2 * (datum.angle_step - 0.5)) % 360")),
                 .vega_formula("x_1", paste0("origoX + radius_genes_1 * cos(PI * datum.angle_1 / 180)")),
                 .vega_formula("y_1", paste0("origoY + radius_genes_1 * sin(PI * datum.angle_1 / 180)")),
                 .vega_formula("x_2", paste0("origoX + radius_genes_2 * cos(PI * datum.angle_2 / 180)")),
@@ -164,7 +162,6 @@
 }
 
 .circular_plot_vega_gene_marks_background <- function(selection) {
-    arc_angle <- .get_cp_gene_arc_angle(selection)
     list(
         type = "arc",
         from = list(data = paste0("gene_data_selected_region_", selection)),
@@ -181,8 +178,8 @@
             update = list(
                 x = list(signal = "origoX"),
                 y = list(signal = "origoY"),
-                startAngle = list(signal = paste0("PI / 2 + (datum.angle - ", arc_angle / 2, " - ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * ", arc_angle, ") * PI / 180")),
-                endAngle = list(signal = paste0("PI / 2 + (datum.angle + ", arc_angle / 2, " + ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * ", arc_angle, ") * PI / 180")),
+                startAngle = list(signal = paste0("PI / 2 + (datum.angle - gene_arc_angle_", selection, " / 2 - ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
+                endAngle = list(signal = paste0("PI / 2 + (datum.angle + gene_arc_angle_", selection, " / 2 + ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
                 innerRadius = list(signal = paste0("radius_genes_", selection, " - 20 - ", 60 * (selection == 2))),
                 outerRadius = list(signal = paste0("radius_genes_", selection, " + 80 - ", 60 * (selection == 2)))
             )

@@ -33,7 +33,6 @@
                    file_loci = input$file_loci,
                    file_phenotype = input$file_phenotype,
                    file_gff = input$file_gff)
-        shinyjs::show("reading_data_div")
         output$data_loaded <- shiny::renderText({"Data loaded!"})
 
         # Update Shiny SelectInput if phenotype data was read.
@@ -78,10 +77,9 @@
         }
     })
 
-    # Hide data read applied text when moving away from the tab.
-    # (This doesn't work.)
-    shiny::observeEvent(input$tabs, {
-        shinyjs::hide("reading_data_div")
+    # Hide data read applied text when reading in new data.
+    shiny::observeEvent(c(input$file_outliers, input$file_tree, input$file_fasta, input$file_loci, input$file_phenotype, input$file_gff), {
+        output$data_loaded <- shiny::renderText({""})
     })
 
 }

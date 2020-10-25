@@ -29,24 +29,6 @@
         ),
         .vega_simple_filter("pos_data_gene_1", "pos_data", .is_selected_region("datum.region", 1)),
         .vega_simple_filter("pos_data_gene_2", "pos_data", .is_selected_region("datum.region", 2))
-        # list(
-        #     name = "pos_data_selected_1",
-        #     source = "pos_data",
-        #     transform = list(
-        #         list(type = "filter", expr = "datum.parent === selected_gene_1"),
-        #         list(type = "identifier", as = "vertical_offset"),
-        #         .vega_formula("x", expr = "right_side_start")
-        #     )
-        # ),
-        # list(
-        #     name = "pos_data_selected_2",
-        #     source = "pos_data",
-        #     transform = list(
-        #         list(type = "filter", expr = "datum.parent === selected_gene_2"),
-        #         list(type = "identifier", as = "vertical_offset"),
-        #         .vega_formula("x", expr = "right_side_start + right_side_x_adj")
-        #     )
-        # )
     )
 }
 
@@ -113,7 +95,6 @@
                     list(test = .is_connected_to_selected_gene(), value = .get_cp_opacity_pos_link_connected()),
                     list(value = .get_cp_opacity_pos_link_default())
                 )
-                #opacity = list(field = "datum.weight")
             )
         )
     )

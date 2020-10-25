@@ -28,7 +28,7 @@
     .vega_data_query("region_data", "datum.region - 1", "angle")
 }
 
-.initialize_circular_spec <- function(width, height, padding) {
+.initialize_circular_spec <- function() {
     list(
         `$schema` = "https://vega.github.io/schema/vega/v5.json",
         width = .get_cp_size(),
@@ -39,10 +39,9 @@
 }
 
 # Initial Vega spec.
-.circular_plot_vega_spec <- function(data, dependencies, rotate = 0, extent = 360,
-    colorScheme = "purples", colorSchemeSelected = "reds", colorSchemeSelected2 = "teals") {
+.circular_plot_vega_spec <- function(data, dependencies) {
     vegawidget::as_vegaspec(append(.initialize_circular_spec(), list(
-        signals = .circular_plot_vega_signals(extent, rotate, colorScheme, colorSchemeSelected, colorSchemeSelected2),
+        signals = .circular_plot_vega_signals(),
         data = .circular_plot_vega_region_data(data, dependencies),
         marks = .circular_plot_vega_region_marks(),
         scales = .circular_plot_vega_region_scales()

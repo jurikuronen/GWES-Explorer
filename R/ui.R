@@ -1,8 +1,6 @@
 .create_ui <- function() {
     # Define UI for application
     shiny::fluidPage(
-        shinyjs::useShinyjs(),
-
         # Page with several tabs
         shiny::navbarPage(title = "GWESalyzer",
            id = "tabs",
