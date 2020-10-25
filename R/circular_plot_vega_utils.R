@@ -31,7 +31,7 @@
 .vega_get_gene_tooltip <- function() {
     list(signal = paste("{title: datum.name,",
                         "'Location': datum.start + '-' + datum.end,",
-                        "'Outliers': datum.count,",
+                        "'Outliers': datum.n_outliers,",
                         "'Genes linked to': datum.n_genes_linked_to}"))
 }
 

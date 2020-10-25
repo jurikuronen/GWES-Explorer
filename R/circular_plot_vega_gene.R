@@ -114,7 +114,7 @@
             ),
             update = list(
                 x = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
-                y = list(signal = "origoY - datum.n_genes_linked_to * 5"),
+                y = list(signal = "origoY - datum.length * 5"),
                 align = list(value = "center"),
                 fontSize = list(signal = "centerTextSize"),
                 fontWeight = list(list(value = "normal")),
@@ -143,16 +143,16 @@
             ),
             update = list(
                 xc = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
-                y = list(signal = "origoY - datum.n_genes_linked_to * 5 - 10"),
+                y = list(signal = "origoY - datum.length * 5 - 10"),
                 width = list(value = 275),
-                height = list(signal = "datum.n_genes_linked_to * 12 + 10"),
+                height = list(signal = "datum.length * 12 + 10"),
                 strokeOpacity = list(
-                    list(test = "datum.n_genes_linked_to === 0", value = 0),
+                    list(test = "datum.length === 0", value = 0),
                     list(test = .is_active_gene("datum.id"), value = .get_cp_opacity_background()),
                     list(value = 0)
                 ),
                 fillOpacity = list(
-                    list(test = "datum.n_genes_linked_to === 0", value = 0),
+                    list(test = "datum.length === 0", value = 0),
                     list(test = .is_active_gene("datum.id"), value = 0.4),
                     list(value = 0)
                 )

@@ -5,6 +5,10 @@
     .Call('_GWESalyzer_create_pos_links', PACKAGE = 'GWESalyzer', outliers_direct, pos_data)
 }
 
+.cpp_sorted_pos_links <- function(pos_links) {
+    .Call('_GWESalyzer_sorted_pos_links', PACKAGE = 'GWESalyzer', pos_links)
+}
+
 .cpp_extract_gff_name_from_attributes <- function(attributes) {
     .Call('_GWESalyzer_extract_gff_name_from_attributes', PACKAGE = 'GWESalyzer', attributes)
 }
