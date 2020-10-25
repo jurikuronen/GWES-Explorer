@@ -180,8 +180,8 @@
                 y = list(signal = "origoY"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle - gene_arc_angle_", selection, " / 2 - ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
                 endAngle = list(signal = paste0("PI / 2 + (datum.angle + gene_arc_angle_", selection, " / 2 + ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
-                outerRadius = list(signal = paste0("radius_genes_", selection, " + 1.5 * text_size_gene + text_size_gene * 10 * ", as.numeric(selection == 1))),
-                innerRadius = list(signal = paste0("radius_genes_", selection, " - 1.5 * text_size_gene - text_size_gene * 10 * ", as.numeric(selection == 2)))
+                outerRadius = list(signal = paste0("radius_genes_", selection, " + 10 + text_size_gene * 9 * ", as.numeric(selection == 1))),
+                innerRadius = list(signal = paste0("radius_genes_", selection, " - 10 - text_size_gene * 9 * ", as.numeric(selection == 2)))
             )
         )
     )

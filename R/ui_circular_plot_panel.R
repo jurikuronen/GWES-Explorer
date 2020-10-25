@@ -9,7 +9,7 @@
             condition = "input.show_circular_plot_settings",
             .div_inline_block(6, shiny::sliderInput("circular_plot_radius", "Radius:", min = 300, max = .get_cp_radius(), value = .get_cp_radius(), step = 1)),
             .div_inline_br_block(0.5),
-            .div_inline_block(6, shiny::sliderInput("circular_plot_radius_offset", "Radius offset (gene):", min = 60, max = .get_cp_radius() - 150, value = .get_cp_radius_offset(), step = 1)),
+            .div_inline_block(6, shiny::sliderInput("circular_plot_radius_offset", "Radius offset (gene):", min = 60, max = 200, value = .get_cp_radius_offset(), step = 1)),
             .div_inline_br_block(0.5),
             .div_inline_block(6, shiny::sliderInput("circular_plot_rotate", "Rotate plot:", min = 0, max = 360, value = .get_cp_rotate(), step = 1)),
         ),
@@ -19,7 +19,7 @@
             .div_inline_br_block(0.5),
             .div_inline_block(6, shiny::sliderInput("circular_plot_text_size_gene", "Text size (gene):", min = 6, max = 12, value = .get_cp_text_size_gene(), step = 1)),
             .div_inline_br_block(0.5),
-            .div_inline_block(6, shiny::sliderInput("circular_plot_text_size_tooltip", "Text size (tooltip):", min = 6, max = 14, value = .get_cp_text_size_tooltip(), step = 1)),
+            .div_inline_block(6, shiny::sliderInput("circular_plot_text_size_tooltip", "Text size (tooltip):", min = 6, max = 12, value = .get_cp_text_size_tooltip(), step = 1)),
         ),
         shiny::conditionalPanel(
             condition = "input.show_circular_plot_hide_elements",
