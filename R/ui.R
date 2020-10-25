@@ -6,7 +6,7 @@
            id = "tabs",
            .about_panel(),
            shiny::tabPanel(title = "Upload data", .data_sidebar_layout()),
-           shiny::tabPanel(title = "Analyse SpydrPick output", .plot_sidebar_layout())
+           shiny::tabPanel(title = "Analyse data", .plot_sidebar_layout())
         )
     )
 }
