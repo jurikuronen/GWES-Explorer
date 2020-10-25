@@ -90,10 +90,10 @@
                 ),
                 strokeWidth = list(field = "weight"),
                 strokeOpacity = list(
-                    list(test = .pos_link_is_selected(), value = .get_cp_opacity_pos_link_selected()),
-                    list(test = .both_genes_are_selected(), value = .get_cp_opacity_pos_link_inactive()),
-                    list(test = .is_connected_to_selected_gene(), value = .get_cp_opacity_pos_link_connected()),
-                    list(value = .get_cp_opacity_pos_link_default())
+                    list(test = .pos_link_is_selected(), signal = "opacity_pos_link_selected"),
+                    list(test = .both_genes_are_selected(), signal = "opacity_pos_link_inactive"),
+                    list(test = .is_connected_to_selected_gene(), signal = "opacity_pos_link_connected"),
+                    list(signal = "opacity_pos_link_default")
                 )
             )
         )

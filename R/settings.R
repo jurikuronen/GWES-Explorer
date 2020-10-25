@@ -19,6 +19,11 @@
 .settings$circular_plot_opacity_connected <- 0.5
 .settings$circular_plot_opacity_default <- 0.6
 .settings$circular_plot_opacity_inactive <- 0.2
+.settings$circular_plot_opacity_region_link_active <- 1
+.settings$circular_plot_opacity_region_link_connected <- 0.5
+.settings$circular_plot_opacity_region_link_default <- 0.6
+.settings$circular_plot_opacity_region_link_inactive <- 0.2
+.settings$circular_plot_opacity_region_link_selected <- 1
 .settings$circular_plot_opacity_pos_link_connected <- 0.9
 .settings$circular_plot_opacity_pos_link_default <- 1
 .settings$circular_plot_opacity_pos_link_inactive <- 0.8

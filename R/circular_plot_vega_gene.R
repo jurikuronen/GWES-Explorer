@@ -92,9 +92,9 @@
                 outerRadius = list(signal = paste0("radius_genes_", selection)),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_selected_gene("datum.id", selection), value = .get_cp_opacity_selected()),
-                    list(test = .gene_is_selected(selection), value = .get_cp_opacity_inactive()),
-                    list(value = .get_cp_opacity_default())
+                    list(test = .is_selected_gene("datum.id", selection), signal = "opacity_selected"),
+                    list(test = .gene_is_selected(selection), signal = "opacity_inactive"),
+                    list(signal = "opacity_default")
                 )
             )
         )
@@ -148,7 +148,7 @@
                 height = list(signal = "datum.length * (text_size_tooltip + 2) + text_size_tooltip"),
                 strokeOpacity = list(
                     list(test = "datum.length === 0", value = 0),
-                    list(test = .is_active_gene("datum.id"), value = .get_cp_opacity_background()),
+                    list(test = .is_active_gene("datum.id"), signal = "opacity_background"),
                     list(value = 0)
                 ),
                 fillOpacity = list(
@@ -172,7 +172,7 @@
                 fill = list(value = .get_cp_color_background()),
                 stroke = list(value = "#000000"),
                 strokeWidth = list(value = 0.5),
-                fillOpacity = list(value = .get_cp_opacity_background()),
+                fillOpacity = list(signal = "opacity_background"),
                 strokeOpacity = list(value = 0.4)
             ),
             update = list(
@@ -180,8 +180,8 @@
                 y = list(signal = "origoY"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle - gene_arc_angle_", selection, " / 2 - ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
                 endAngle = list(signal = paste0("PI / 2 + (datum.angle + gene_arc_angle_", selection, " / 2 + ", .vega_data_query(paste0("gene_data_selected_", selection), 0, "step_size"), " * gene_arc_angle_", selection, ") * PI / 180")),
-                outerRadius = list(signal = paste0("radius_genes_", selection, " + 10 + text_size_gene * 9 * ", as.numeric(selection == 1))),
-                innerRadius = list(signal = paste0("radius_genes_", selection, " - 10 - text_size_gene * 9 * ", as.numeric(selection == 2)))
+                outerRadius = list(signal = paste0("radius_genes_", selection, " + 20 + text_size_gene * 9 * ", as.numeric(selection == 1))),
+                innerRadius = list(signal = paste0("radius_genes_", selection, " - 20 - text_size_gene * 9 * ", as.numeric(selection == 2)))
             )
         )
     )

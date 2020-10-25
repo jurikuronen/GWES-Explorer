@@ -23,6 +23,8 @@
         ),
         shiny::conditionalPanel(
             condition = "input.show_circular_plot_hide_elements",
+            .div_inline_block(6, shiny::sliderInput("circular_plot_opacity_adjustment", "Link opacity adjustment:", min = 0, max = 1, value = 1, step = 0.01)),
+            .div_inline_br_block(0.5),
             .div_inline_block(6, shiny::checkboxInput("circular_plot_show_region_links", "Show region links:", value = TRUE)),
             .div_inline_br_block(0.5),
             .div_inline_block(6, shiny::checkboxInput("circular_plot_show_gene_links", "Show gene links:", value = TRUE)),

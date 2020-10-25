@@ -91,5 +91,6 @@
     vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_tooltip", value = input$circular_plot_text_size_tooltip)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "show_region_links", value = input$circular_plot_show_region_links)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "show_gene_links", value = input$circular_plot_show_gene_links)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "opacity_adjustment", value = input$circular_plot_opacity_adjustment)
 
 }

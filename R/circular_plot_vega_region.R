@@ -90,11 +90,11 @@
                 outerRadius = list(signal = "radius + 10"),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_one_of_selected_regions("datum.id"), value = .get_cp_opacity_selected()),
-                    list(test = .is_active_region("datum.id"), value = .get_cp_opacity_active()),
-                    list(test = connected_regions, value = .get_cp_opacity_connected()),
-                    list(test = .some_region_is_selected(), value = .get_cp_opacity_inactive()),
-                    list(value = .get_cp_opacity_default())
+                    list(test = .is_one_of_selected_regions("datum.id"), signal = "opacity_selected"),
+                    list(test = .is_active_region("datum.id"), signal = "opacity_active"),
+                    list(test = connected_regions, signal = "opacity_connected"),
+                    list(test = .some_region_is_selected(), signal = "opacity_inactive"),
+                    list(signal = "opacity_default")
                 )
             )
         )
@@ -114,7 +114,7 @@
                 update = list(
                     stroke = list(
                         list(test = .region_link_is_selected(), scale = "color_scale_selected", signal = "parent.weight"),
-                        list(test = .region_link_is_active(), scale = "color_scale_active", value = .get_cp_opacity_active()),
+                        list(test = .region_link_is_active(), scale = "color_scale_active", signal = "opacity_active"),
                         list(test = .both_regions_are_selected(), scale = "color_scale_inactive", signal = "parent.weight"),
                         list(test = .is_connected_to_selected_region(), scale = "color_scale_selected", signal = "parent.weight"),
                         list(test = .some_region_is_selected(), scale = "color_scale_inactive", signal = "parent.weight"),
@@ -122,10 +122,10 @@
                     ),
                     strokeOpacity = list(
                         list(test = "!show_region_links", value = 0),
-                        list(test = .region_link_is_selected(), signal = "parent.weight"),
-                        list(test = .region_link_is_active(), value = .get_cp_opacity_active()),
-                        list(test = .both_regions_are_selected(), value = .get_cp_opacity_inactive()),
-                        list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), value = .get_cp_opacity_inactive()),
+                        list(test = .region_link_is_selected(), signal = "opacity_adjustment * parent.weight"),
+                        list(test = .region_link_is_active(), signal = "opacity_region_link_active"),
+                        list(test = .both_regions_are_selected(), signal = "opacity_region_link_inactive"),
+                        list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), signal = "opacity_region_link_inactive"),
                         list(signal = "parent.weight")
                     ),
                     tension = list(signal = "tension"),
