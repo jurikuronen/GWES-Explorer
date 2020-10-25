@@ -144,6 +144,8 @@
         region = numeric(0),
         angle_step = numeric(0),
         step_size = numeric(0),
+        start = numeric(0),
+        end = numeric(0),
         stringsAsFactors = FALSE
     )
     n_regions <- n_groups * n_regions_per_group
@@ -155,6 +157,8 @@
             region = region,
             angle_step = seq(0, 1, length.out = length(region_genes)),
             step_size = 1 / length(region_genes),
+            start = .data$gff$start[region_genes],
+            end = .data$gff$end[region_genes],
             stringsAsFactors = FALSE
         ))
     }

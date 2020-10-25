@@ -52,7 +52,7 @@
             enter = list(
                 text = list(field = "name"),
                 baseline = list(value = "middle"),
-                tooltip = list(signal = "{title: datum.name, 'Outliers': datum.count, 'Genes linked to': datum.n_genes_linked_to}")
+                tooltip = .vega_get_gene_tooltip()
             ),
             update = list(
                 x = list(field = paste0("x_", selection)),
@@ -81,7 +81,7 @@
         encode = list(
             enter = list(
                 fill = list(value = "#3399ff"),
-                tooltip = list(signal = "{title: datum.name, 'Info about': 'outliers comes here'}")
+                tooltip = .vega_get_gene_tooltip()
             ),
             update = list(
                 x = list(signal = "origoX"),

@@ -28,6 +28,13 @@
     .vega_data_query("region_data", "datum.region - 1", "angle")
 }
 
+.vega_get_gene_tooltip <- function() {
+    list(signal = paste("{title: datum.name,",
+                        "'Location': datum.start + '-' + datum.end,",
+                        "'Outliers': datum.count,",
+                        "'Genes linked to': datum.n_genes_linked_to}"))
+}
+
 .initialize_circular_spec <- function() {
     list(
         `$schema` = "https://vega.github.io/schema/vega/v5.json",
