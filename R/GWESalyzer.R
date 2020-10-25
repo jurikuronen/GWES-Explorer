@@ -9,6 +9,7 @@
 #'
 #' @export launch_GWESalyzer
 launch_GWESalyzer <- function(launch_in_browser = TRUE) {
+    .initialize_data_keys()
     ui <- .create_ui()
     shiny::shinyApp(ui, .server, options = list(launch.browser = launch_in_browser))
 }

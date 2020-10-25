@@ -1,7 +1,3 @@
-# Global environments, where data and settings are stored.
-.data <- new.env()
-.settings <- new.env()
-
 # Default settings.
 .settings$circular_plot_tension <- 0.7
 .settings$circular_plot_radius <- 450
@@ -32,11 +28,3 @@
 .settings$circular_plot_color_background <- "#bfdfff"
 .settings$circular_plot_color_pos_symbol_fill <- "#d3d3d3"
 .settings$circular_plot_color_pos_symbol_stroke <- "#cc3300"
-
-# Initialize data keys.
-.data$outliers <- NULL
-.data$outliers_direct <- NULL
-.data$msa <- NULL
-.data$tree <- NULL
-.data$phenotype <- NULL
-.data$gff <- NULL
