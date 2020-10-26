@@ -124,7 +124,7 @@
                     ),
                     strokeOpacity = list(
                         list(test = "!show_region_links", value = 0),
-                        list(test = .region_link_is_selected(), signal = "opacity_adjustment * parent.weight"),
+                        list(test = .region_link_is_selected(), signal = "opacity_region_link_adjustment * parent.weight"),
                         list(test = .region_link_is_active(), signal = "opacity_region_link_active"),
                         list(test = .both_regions_are_selected(), signal = "opacity_region_link_inactive"),
                         list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), signal = "opacity_region_link_inactive"),
