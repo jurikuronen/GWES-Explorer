@@ -1,10 +1,12 @@
 .get_cp_color_background <- function() { .settings$circular_plot_color_background }
+.get_cp_color_gene_arc <- function() {.settings$circular_plot_color_gene_arc }
 .get_cp_color_pos_link_connected <- function() { .settings$circular_plot_color_pos_link_connected }
 .get_cp_color_pos_link_default <- function() { .settings$circular_plot_color_pos_link_default }
 .get_cp_color_pos_link_inactive <- function() { .settings$circular_plot_color_pos_link_inactive }
 .get_cp_color_pos_link_selected <- function() { .settings$circular_plot_color_pos_link_selected }
 .get_cp_color_pos_symbol_fill <- function() { .settings$circular_plot_color_pos_symbol_fill }
 .get_cp_color_pos_symbol_stroke <- function() { .settings$circular_plot_color_pos_symbol_stroke }
+.get_cp_color_region_arc <- function() {.settings$circular_plot_color_region_arc }
 .get_cp_color_scheme_active <- function() { .settings$circular_plot_color_scheme_active }
 .get_cp_color_scheme_default <- function() {.settings$circular_plot_color_scheme_default }
 .get_cp_color_scheme_inactive <- function() { .settings$circular_plot_color_scheme_inactive }

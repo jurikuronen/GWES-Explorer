@@ -80,7 +80,7 @@
         interactive = TRUE,
         encode = list(
             enter = list(
-                fill = list(value = "#3399ff"),
+                fill = list(signal = "color_gene_arc"),
                 tooltip = .vega_get_gene_tooltip()
             ),
             update = list(

@@ -1,11 +1,14 @@
 .circular_plot_vega_signals <- function() {
-    signals <- .main_parameter_signals()
-    signals <- append(signals, .color_scheme_signals())
-    signals <- append(signals, .event_listener_signals())
+    signals <- .circular_plot_signals_main()
+    signals <- append(signals, .circular_plot_signals_color())
+    signals <- append(signals, .circular_plot_signals_opacity())
+    signals <- append(signals, .circular_plot_signals_events())
 }
 
-.main_parameter_signals <- function() {
+.circular_plot_signals_main <- function() {
     list(
+        list(name = "origoX", update = "width / 2"),
+        list(name = "origoY", update = "height / 2"),
         list(name = "tension", value = .get_cp_tension()),
         list(name = "extent", value = .get_cp_extent()),
         list(name = "rotate", value = .get_cp_rotate()),
@@ -22,8 +25,24 @@
         list(name = "gene_arc_angle_1", value = .get_cp_gene_arc_angle()),
         # Compute inner angle that has equal arc length.
         list(name = "gene_arc_angle_2", update = "gene_arc_angle_1 * (radius - radius_offset_1) / (radius - radius_offset_2)"),
-        list(name = "origoX", update = "width / 2"),
-        list(name = "origoY", update = "height / 2"),
+        list(name = "show_region_links", value = TRUE),
+        list(name = "show_gene_links", value = TRUE)
+    )
+}
+
+.circular_plot_signals_color <- function() {
+    list(
+        list(name = "color_gene_arc", value = .get_cp_color_gene_arc()),
+        list(name = "color_region_arc", value = .get_cp_color_region_arc()),
+        list(name = "color_scheme_default", value = .get_cp_color_scheme_default()),
+        list(name = "color_scheme_active", value = .get_cp_color_scheme_active()),
+        list(name = "color_scheme_selected", value = .get_cp_color_scheme_selected()),
+        list(name = "color_scheme_inactive", value = .get_cp_color_scheme_inactive())
+    )
+}
+
+.circular_plot_signals_opacity <- function() {
+    list(
         list(name = "opacity_adjustment", value = 1),
         list(name = "opacity_background", value = .get_cp_opacity_background()),
         list(name = "opacity_active", value = .get_cp_opacity_active()),
@@ -38,22 +57,11 @@
         list(name = "opacity_pos_link_connected", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_connected())),
         list(name = "opacity_pos_link_default", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_default())),
         list(name = "opacity_pos_link_inactive", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_inactive())),
-        list(name = "opacity_pos_link_selected", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_selected())),
-        list(name = "show_region_links", value = TRUE),
-        list(name = "show_gene_links", value = TRUE)
+        list(name = "opacity_pos_link_selected", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_selected()))
     )
 }
 
-.color_scheme_signals <- function() {
-    list(
-        list(name = "color_scheme_default", value = .get_cp_color_scheme_default()),
-        list(name = "color_scheme_active", value = .get_cp_color_scheme_active()),
-        list(name = "color_scheme_selected", value = .get_cp_color_scheme_selected()),
-        list(name = "color_scheme_inactive", value = .get_cp_color_scheme_inactive())
-    )
-}
-
-.event_listener_signals <- function() {
+.circular_plot_signals_events <- function() {
     list(
         # Mouseovered region.
         list(

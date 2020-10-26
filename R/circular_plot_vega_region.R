@@ -80,7 +80,9 @@
         name = "region_arc",
         from = list(data = "region_data"),
         encode = list(
-            enter = list(fill = list(value = "#3399ff")),
+            enter = list(
+                fill = list(signal = "color_region_arc")
+            ),
             update = list(
                 x = list(signal = "origoX"),
                 y = list(signal = "origoY"),
