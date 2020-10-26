@@ -27,7 +27,7 @@
             .div_inline_br_block(0.5),
             .div_inline_block(4, shiny::sliderInput(
                 "circular_plot_radius_offset_adjustment",
-                "Radius offset (gene_2):",
+                "Radius offset2:",
                 min = -100,
                 max = 200,
                 value = .get_cp_radius_offset_adjustment(),
