@@ -43,21 +43,22 @@
 
 .circular_plot_signals_opacity <- function() {
     list(
-        list(name = "opacity_adjustment", value = 1),
+        list(name = "opacity_region_link_adjustment", value = 1),
+        list(name = "opacity_gene_link_adjustment", value = 1),
         list(name = "opacity_background", value = .get_cp_opacity_background()),
         list(name = "opacity_active", value = .get_cp_opacity_active()),
         list(name = "opacity_connected", value = .get_cp_opacity_connected()),
         list(name = "opacity_default", value = .get_cp_opacity_default()),
         list(name = "opacity_inactive", value = .get_cp_opacity_inactive()),
         list(name = "opacity_selected", value = .get_cp_opacity_selected()),
-        list(name = "opacity_region_link_active", update = paste0("opacity_adjustment * ", .get_cp_opacity_region_link_active())),
-        list(name = "opacity_region_link_connected", update = paste0("opacity_adjustment * ", .get_cp_opacity_region_link_connected())),
-        list(name = "opacity_region_link_default", update = paste0("opacity_adjustment * ", .get_cp_opacity_region_link_default())),
-        list(name = "opacity_region_link_inactive", update = paste0("opacity_adjustment * ", .get_cp_opacity_region_link_inactive())),
-        list(name = "opacity_pos_link_connected", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_connected())),
-        list(name = "opacity_pos_link_default", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_default())),
-        list(name = "opacity_pos_link_inactive", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_inactive())),
-        list(name = "opacity_pos_link_selected", update = paste0("opacity_adjustment * ", .get_cp_opacity_pos_link_selected()))
+        list(name = "opacity_region_link_active", update = paste0("opacity_region_link_adjustment * ", .get_cp_opacity_region_link_active())),
+        list(name = "opacity_region_link_connected", update = paste0("opacity_region_link_adjustment * ", .get_cp_opacity_region_link_connected())),
+        list(name = "opacity_region_link_default", update = paste0("opacity_region_link_adjustment * ", .get_cp_opacity_region_link_default())),
+        list(name = "opacity_region_link_inactive", update = paste0("opacity_region_link_adjustment * ", .get_cp_opacity_region_link_inactive())),
+        list(name = "opacity_pos_link_connected", update = paste0("opacity_gene_link_adjustment * ", .get_cp_opacity_pos_link_connected())),
+        list(name = "opacity_pos_link_default", update = paste0("opacity_gene_link_adjustment * ", .get_cp_opacity_pos_link_default())),
+        list(name = "opacity_pos_link_inactive", update = paste0("opacity_gene_link_adjustment * ", .get_cp_opacity_pos_link_inactive())),
+        list(name = "opacity_pos_link_selected", update = paste0("opacity_gene_link_adjustment * ", .get_cp_opacity_pos_link_selected()))
     )
 }
 

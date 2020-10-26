@@ -27,7 +27,7 @@
             .div_inline_br_block(0.5),
             .div_inline_block(4, shiny::sliderInput(
                 "circular_plot_radius_offset_adjustment",
-                "Radius offset adjustment:",
+                "Radius offset (gene_2):",
                 min = -100,
                 max = 200,
                 value = .get_cp_radius_offset_adjustment(),
@@ -84,8 +84,17 @@
         shiny::conditionalPanel(
             condition = "input.show_circular_plot_hide_elements",
             .div_inline_block(4, shiny::sliderInput(
-                "circular_plot_opacity_adjustment",
-                "Link opacity adjustment:",
+                "circular_plot_opacity_region_link_adjustment",
+                "Region link opacity:",
+                min = 0,
+                max = 1,
+                value = 1,
+                step = 0.01)
+            ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(4, shiny::sliderInput(
+                "circular_plot_opacity_gene_link_adjustment",
+                "Gene link opacity:",
                 min = 0,
                 max = 1,
                 value = 1,
