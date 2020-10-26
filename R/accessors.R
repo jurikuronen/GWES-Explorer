@@ -30,6 +30,7 @@
 .get_cp_padding <- function() { .settings$circular_plot_padding }
 .get_cp_radius <- function() { .settings$circular_plot_radius }
 .get_cp_radius_offset <- function() { .settings$circular_plot_radius_offset }
+.get_cp_radius_offset_adjustment <- function() { .settings$circular_plot_radius_offset_adjustment }
 .get_cp_regions <- function() { .settings$circular_plot_n_regions }
 .get_cp_rotate <- function() { .settings$circular_plot_rotate }
 .get_cp_size <- function() { 2.1 * .get_cp_radius() } # Add extra for plot margins.

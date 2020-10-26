@@ -32,6 +32,7 @@
 .settings$circular_plot_padding <- 5
 .settings$circular_plot_radius <- 400
 .settings$circular_plot_radius_offset <- 100
+.settings$circular_plot_radius_offset_adjustment <- 70
 .settings$circular_plot_rotate <- 0
 .settings$circular_plot_tension <- 0.7
 .settings$circular_plot_text_size_gene <- 8
