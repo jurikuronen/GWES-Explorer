@@ -13,3 +13,5 @@
     .data$phenotype <- NULL
     .data$gff <- NULL
 }
+
+.svg_lite_is_installed <- function() { requireNamespace("svg_lite", quietly = TRUE) }

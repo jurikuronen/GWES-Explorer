@@ -1,7 +1,9 @@
 .render_circular_plot <- function() {
     if (is.null(.data$edges)) return(NULL)
-    return(vegawidget::renderVegawidget(.data$edges))
+    return(vegawidget::renderVegawidget(.circular_plot()))
 }
+
+.circular_plot <- function() { .data$edges }
 
 .set_circular_plot_signals <- function(selected_row) {
     vegawidget::vw_shiny_set_signal("circular_plot", "selected_region_1", .data$outliers_direct$Pos_1_region[selected_row])

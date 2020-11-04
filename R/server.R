@@ -96,4 +96,9 @@
     vegawidget::vw_shiny_set_signal("circular_plot", name = "opacity_region_link_adjustment", value = input$circular_plot_opacity_region_link_adjustment)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "opacity_gene_link_adjustment", value = input$circular_plot_opacity_gene_link_adjustment)
 
+    # Download handlers for saving plots.
+    output$gwes_manhattan_plot_download <- .gwes_manhattan_plot_download_handler(input, mh_gwes_ranges)
+    output$phylogenetic_tree_plot_download <- .phylogenetic_tree_plot_download_handler(input)
+    output$circular_plot_download <- .circular_plot_download_handler(input, output)
+
 }

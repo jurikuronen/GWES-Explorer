@@ -1,3 +1,7 @@
+.render_tree_plot <- function(input) {
+    shiny::renderPlot({ .tree_plot(input) })
+}
+
 .read_phenotype_idx <- function(select_phenotype) {
     phenotype_idx <- as.numeric(select_phenotype)
     if (is.na(phenotype_idx)) phenotype_idx <- 0
@@ -29,18 +33,18 @@
     return(phylo_object)
 }
 
-.render_tree_plot <- function(input) {
+.tree_plot <- function(input) {
     if (.tree_is_not_null()) {
         phylo_object <- .generate_phylogenetic_object(input)
         selected_rows <- input$outliers_table_rows_selected
         if (is.null(selected_rows)) {
-            return(shiny::renderPlot(phylo_object))
+            return(phylo_object)
         } else {
             # Append a heatmap of a matrix to the right side of the phylogenetic tree.
             ind <- as.character(sort(unique(as.vector(unlist(.data$outliers_direct[selected_rows, c("Pos_1", "Pos_2")])))))
             select <- c("-", "A", "C", "G", "N", "T") %in% unique(as.vector(.data$msa[, ind]))
             col <- c("white", viridis::viridis(4)[1:3], "white", viridis::viridis(4)[4])[select]
-            return(shiny::renderPlot({ggtree::gheatmap(
+            return(ggtree::gheatmap(
                 p = phylo_object + ggnewscale::new_scale_fill(),
                 data = .data$msa[, ind],
                 offset = 0.25,
@@ -50,10 +54,10 @@
                 colnames_offset_y = -input$tree_label_offset_y,
                 colnames_offset_x = -input$tree_label_offset_x,
                 font.size = input$tree_label_fs
-            ) + scale_fill_manual(values = col) +
+                ) + scale_fill_manual(values = col) +
                     theme(legend.text = element_text(size = input$tree_legend_fs),
                           legend.key.size = unit(input$tree_legend_size, "cm"))
-            }))
+            )
         }
     } else {
         return(NULL)

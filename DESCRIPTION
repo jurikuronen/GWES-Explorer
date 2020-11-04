@@ -18,4 +18,6 @@ RoxygenNote: 7.1.1
 Imports:
     ape, BiocManager, colourpicker, dplyr, DT, ggnewscale, ggplot2, ggtree, jsonlite, operators, readr, Rcpp, rlang, 
     seqinr, shiny, shinyWidgets, stats, stringi, tibble, tidyverse, treeio, utils, vegawidget, viridis
+Suggests:
+    svglite
 LinkingTo: Rcpp

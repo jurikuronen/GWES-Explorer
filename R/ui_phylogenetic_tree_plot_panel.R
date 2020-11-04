@@ -28,6 +28,9 @@
             .div_inline_block(6, shiny::sliderInput("tree_legend_size", "Legend size:", min = 0.5, max = 2, value = 1.4))
         ),
         shiny::br(), shiny::br(),
-        shiny::uiOutput("treeUI")
+        shiny::uiOutput("treeUI"),
+        shiny::br(),
+        .div_inline_block(4, .prettySwitch("phylogenetic_tree_plot_download_button", "Save plot")),
+        .save_plot_button("phylogenetic_tree_plot", 5, 5),
     )
 }

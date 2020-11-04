@@ -115,6 +115,9 @@
         ),
         shiny::br(), shiny::br(),
         vegawidget::vegawidgetOutput("circular_plot"),
+        #shiny::br(),
+        #.div_inline_block(4, .prettySwitch("circular_plot_download_button", "Save plot")),
+        #.save_plot_button("circular_plot", 3),
         shiny::br(), shiny::br(),
         shiny::h4("Click a region to open gene view. Shift-clicking another region opens another gene view for comparison."),
         shiny::h4("To hide gene views, click outside the gene view areas.")

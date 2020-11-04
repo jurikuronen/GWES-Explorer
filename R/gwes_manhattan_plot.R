@@ -1,11 +1,14 @@
 .render_gwes_manhattan_plot <- function(input, mh_gwes_ranges) {
+    shiny::renderPlot({ .gwes_manhattan_plot(input, mh_gwes_ranges) })
+}
+
+.gwes_manhattan_plot <- function(input, mh_gwes_ranges) {
     if (.outliers_is_not_null()) {
         Distance = MI = Direct = fontsize = NULL  # R CMD check hack.
         min_mi <- min(.data$outliers$MI)
         max_mi <- max(.data$outliers$MI)
         max_distance <- max(.data$outliers$Distance)
-        return(shiny::renderPlot({
-            ggplot(
+        return(ggplot(
                 data = dplyr::arrange(.data$outliers, Direct), # Sort data such that direct outliers are plotted in the last layer.
                 mapping = aes(x = Distance, y = MI, group = Direct)
             ) + geom_point(aes(color = Direct, size = Direct)) +
@@ -35,7 +38,7 @@
                     ylim = mh_gwes_ranges$y,
                     expand = FALSE
                 )
-        }))
+        )
     } else return(NULL)
 }
 
