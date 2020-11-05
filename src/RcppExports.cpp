@@ -7,7 +7,7 @@ using namespace Rcpp;
 
 // create_pos_links
 Rcpp::DataFrame create_pos_links(Rcpp::List outliers_direct, Rcpp::List pos_data);
-RcppExport SEXP _GWESalyzer_create_pos_links(SEXP outliers_directSEXP, SEXP pos_dataSEXP) {
+RcppExport SEXP _GWESExplorer_create_pos_links(SEXP outliers_directSEXP, SEXP pos_dataSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -19,7 +19,7 @@ END_RCPP
 }
 // sorted_pos_links
 Rcpp::DataFrame sorted_pos_links(Rcpp::List pos_links);
-RcppExport SEXP _GWESalyzer_sorted_pos_links(SEXP pos_linksSEXP) {
+RcppExport SEXP _GWESExplorer_sorted_pos_links(SEXP pos_linksSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -30,7 +30,7 @@ END_RCPP
 }
 // extract_gff_name_from_attributes
 Rcpp::CharacterVector extract_gff_name_from_attributes(Rcpp::CharacterVector attributes);
-RcppExport SEXP _GWESalyzer_extract_gff_name_from_attributes(SEXP attributesSEXP) {
+RcppExport SEXP _GWESExplorer_extract_gff_name_from_attributes(SEXP attributesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -41,7 +41,7 @@ END_RCPP
 }
 // add_igrs_to_gff
 Rcpp::DataFrame add_igrs_to_gff(Rcpp::List gff, Rcpp::List outliers_direct, Rcpp::NumericVector ranges);
-RcppExport SEXP _GWESalyzer_add_igrs_to_gff(SEXP gffSEXP, SEXP outliers_directSEXP, SEXP rangesSEXP) {
+RcppExport SEXP _GWESExplorer_add_igrs_to_gff(SEXP gffSEXP, SEXP outliers_directSEXP, SEXP rangesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -54,7 +54,7 @@ END_RCPP
 }
 // compute_outlier_genes
 Rcpp::DataFrame compute_outlier_genes(Rcpp::List gff, Rcpp::List outliers_direct);
-RcppExport SEXP _GWESalyzer_compute_outlier_genes(SEXP gffSEXP, SEXP outliers_directSEXP) {
+RcppExport SEXP _GWESExplorer_compute_outlier_genes(SEXP gffSEXP, SEXP outliers_directSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
@@ -66,15 +66,15 @@ END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
-    {"_GWESalyzer_create_pos_links", (DL_FUNC) &_GWESalyzer_create_pos_links, 2},
-    {"_GWESalyzer_sorted_pos_links", (DL_FUNC) &_GWESalyzer_sorted_pos_links, 1},
-    {"_GWESalyzer_extract_gff_name_from_attributes", (DL_FUNC) &_GWESalyzer_extract_gff_name_from_attributes, 1},
-    {"_GWESalyzer_add_igrs_to_gff", (DL_FUNC) &_GWESalyzer_add_igrs_to_gff, 3},
-    {"_GWESalyzer_compute_outlier_genes", (DL_FUNC) &_GWESalyzer_compute_outlier_genes, 2},
+    {"_GWESExplorer_create_pos_links", (DL_FUNC) &_GWESExplorer_create_pos_links, 2},
+    {"_GWESExplorer_sorted_pos_links", (DL_FUNC) &_GWESExplorer_sorted_pos_links, 1},
+    {"_GWESExplorer_extract_gff_name_from_attributes", (DL_FUNC) &_GWESExplorer_extract_gff_name_from_attributes, 1},
+    {"_GWESExplorer_add_igrs_to_gff", (DL_FUNC) &_GWESExplorer_add_igrs_to_gff, 3},
+    {"_GWESExplorer_compute_outlier_genes", (DL_FUNC) &_GWESExplorer_compute_outlier_genes, 2},
     {NULL, NULL, 0}
 };
 
-RcppExport void R_init_GWESalyzer(DllInfo *dll) {
+RcppExport void R_init_GWESExplorer(DllInfo *dll) {
     R_registerRoutines(dll, NULL, CallEntries, NULL, NULL);
     R_useDynamicSymbols(dll, FALSE);
 }

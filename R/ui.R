@@ -2,7 +2,7 @@
     # Define UI for application
     shiny::fluidPage(
         # Page with several tabs
-        shiny::navbarPage(title = "GWESalyzer",
+        shiny::navbarPage(title = "GWES-Explorer",
            id = "tabs",
            .about_panel(),
            shiny::tabPanel(title = "Upload data", .data_sidebar_layout()),

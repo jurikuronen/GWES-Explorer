@@ -71,7 +71,7 @@
                      shiny::code("Direct"),
                      " column is a 1/0 Boolean value from the ARACNE filtering step, where 0 indicates being filtered out by ARACNE."),
             shiny::br(),
-            shiny::strong("All plots provided by GWESalyzer require the outliers file."),
+            shiny::strong("All plots provided by GWES-Explorer require the outliers file."),
             shiny::br(), shiny::br(),
             shiny::h4("Phylogenetic tree files"),
             shiny::p("The phylogenetic tree plot requires a Newick or Nexus tree file, a fasta and a loci file.",

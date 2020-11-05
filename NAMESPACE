@@ -1,3 +1,3 @@
 exportPattern("^[^\\.]")
 import(ggplot2)
-useDynLib(GWESalyzer)
+useDynLib(GWESExplorer)
