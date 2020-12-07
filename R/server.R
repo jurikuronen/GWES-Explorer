@@ -25,6 +25,18 @@
         shiny::plotOutput("tree_plot", width = paste0(input$tree_plot_width, "cm"), height = paste0(input$tree_plot_height, "cm"))
     })
 
+    # Handle load example data event.
+    shiny::observeEvent(input$read_example_data_button, {
+        .read_data(file_outliers = tibble::tibble(datapath = "example_data/maela_outliers.outliers"),
+                   file_tree = tibble::tibble(datapath = "example_data/maela_tree.nex"),
+                   file_fasta = tibble::tibble(datapath = "example_data/maela_fasta.fasta"),
+                   file_loci = tibble::tibble(datapath = "example_data/maela_loci.loci"),
+                   file_phenotype = tibble::tibble(datapath = "example_data/maela_phenotypes.csv"),
+                   file_gff = tibble::tibble(datapath = "example_data/maela_gff.gff3"))
+        output$data_loaded <- shiny::renderText({"Example data loaded!"})
+        .process_data()
+    })
+
     # Handle uploaded data event.
     shiny::observeEvent(input$read_data_button, {
         .read_data(file_outliers = input$file_outliers,
@@ -34,7 +46,11 @@
                    file_phenotype = input$file_phenotype,
                    file_gff = input$file_gff)
         output$data_loaded <- shiny::renderText({"Data loaded!"})
+        .process_data()
+    })
 
+    # Process uploaded data.
+    .process_data <- function() {
         # Update Shiny SelectInput if phenotype data was read.
         if (.phenotype_is_not_null()) .update_select_phenotype_input()
 
@@ -48,7 +64,7 @@
         output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(input, outlier_columns)
         output$tree_plot <- .render_tree_plot(input)
         output$circular_plot <- .render_circular_plot()
-    })
+    }
 
     # Update table selection type.
     shiny::observeEvent(input$select_row_type, { output$outliers_table <- .generate_outliers_table(input, outlier_columns) })
