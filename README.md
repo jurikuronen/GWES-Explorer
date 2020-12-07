@@ -1,6 +1,8 @@
 # GWES-Explorer
 Genome-wide epistasis analyzer.
 
+https://jurikuronen.shinyapps.io/gwes-explorer/
+
 ## Dependencies
 GWES-Explorer's circular plot depends on [Node.js](https://nodejs.org/en/) and a browser that support ES6 (this includes all modern browsers and the 1.2 version of the RStudio IDE).
 
