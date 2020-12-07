@@ -58,7 +58,7 @@
                 "circular_plot_text_size_region",
                 "Text size (region):",
                 min = 6,
-                max = 16,
+                max = 25,
                 value = .get_cp_text_size_region(),
                 step = 1)
             ),
@@ -67,7 +67,7 @@
                 "circular_plot_text_size_gene",
                 "Text size (gene):",
                 min = 6,
-                max = 12,
+                max = 20,
                 value = .get_cp_text_size_gene(),
                 step = 1)
             ),
@@ -76,7 +76,7 @@
                 "circular_plot_text_size_tooltip",
                 "Text size (tooltip):",
                 min = 6,
-                max = 12,
+                max = 20,
                 value = .get_cp_text_size_tooltip(),
                 step = 1)
             ),
