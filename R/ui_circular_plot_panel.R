@@ -7,50 +7,89 @@
         .div_inline_block(4, .prettySwitch("show_circular_plot_hide_elements", "Visibility")),
         shiny::conditionalPanel(
             condition = "input.show_circular_plot_settings",
-            .div_inline_block(4, shiny::sliderInput(
+            .div_inline_block(5, shiny::sliderInput(
                 "circular_plot_radius",
                 "Radius:",
-                min = 300,
+                min = 100,
                 max = .get_cp_radius(),
                 value = .get_cp_radius(),
                 step = 1)
             ),
             .div_inline_br_block(0.5),
-            .div_inline_block(4, shiny::sliderInput(
-                "circular_plot_radius_offset",
-                "Radius offset:",
-                min = 0,
-                max = 200,
-                value = .get_cp_radius_offset(),
-                step = 1)
-            ),
-            .div_inline_br_block(0.5),
-            .div_inline_block(4, shiny::sliderInput(
-                "circular_plot_radius_offset_adjustment",
-                "Radius offset2:",
-                min = -100,
-                max = 200,
-                value = .get_cp_radius_offset_adjustment(),
-                step = 1)
-            ),
-            .div_inline_br_block(0.5),
-            .div_inline_block(4, shiny::sliderInput(
+            .div_inline_block(5, shiny::sliderInput(
                 "circular_plot_rotate",
-                "Rotate plot:",
+                "Rotate:",
                 min = 0,
                 max = 360,
                 value = .get_cp_rotate(),
                 step = 1)
             ),
-            .div_inline_br_block(0.5),
-            .div_inline_block(4, shiny::sliderInput(
-                "circular_plot_gene_arc_angle",
-                "Arc angle (gene):",
-                min = 15,
-                max = 90,
-                value = .get_cp_gene_arc_angle(),
+            shiny::br(),
+            .div_inline_block(5, shiny::sliderInput(
+                "circular_plot_radius_gene_view_1",
+                "Radius (gene view 1):",
+                min = 0,
+                max = 400,
+                value = .get_cp_radius_gene_view_1(),
                 step = 1)
             ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(5, shiny::sliderInput(
+                "circular_plot_gene_arc_angle_1",
+                "Arc angle (gene view 1):",
+                min = 15,
+                max = 135,
+                value = .get_cp_gene_arc_angle_1(),
+                step = 1)
+            ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(5, shiny::sliderInput(
+                "circular_plot_rotate_gene_view_1",
+                "Rotate (gene view 1):",
+                min = 0,
+                max = 360,
+                value = .get_cp_rotate_gene_view_1(),
+                step = 1)
+            ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(4, shiny::checkboxInput(
+                "circular_plot_flip_gene_view_1",
+                "Flip gene view 1:",
+                value = .get_cp_flip_gene_view_1())
+            ),
+            shiny::br(),
+            .div_inline_block(5, shiny::sliderInput(
+                "circular_plot_radius_gene_view_2",
+                "Radius (gene view 2):",
+                min = 0,
+                max = 400,
+                value = .get_cp_radius_gene_view_2(),
+                step = 1)
+            ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(5, shiny::sliderInput(
+                "circular_plot_gene_arc_angle_2",
+                "Arc angle (gene view 2):",
+                min = 15,
+                max = 135,
+                value = .get_cp_gene_arc_angle_2(),
+                step = 1)
+            ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(5, shiny::sliderInput(
+                "circular_plot_rotate_gene_view_2",
+                "Rotate (gene view 2):",
+                min = 0,
+                max = 360,
+                value = .get_cp_rotate_gene_view_2(),
+                step = 1)
+            ),
+            .div_inline_br_block(0.5),
+            .div_inline_block(4, shiny::checkboxInput(
+                "circular_plot_flip_gene_view_2",
+                "Flip gene view 2:",
+                value = .get_cp_flip_gene_view_2())
+            )
         ),
         shiny::conditionalPanel(
             condition = "input.show_circular_plot_text_size",
@@ -79,7 +118,7 @@
                 max = 20,
                 value = .get_cp_text_size_tooltip(),
                 step = 1)
-            ),
+            )
         ),
         shiny::conditionalPanel(
             condition = "input.show_circular_plot_hide_elements",
@@ -111,7 +150,7 @@
                 "circular_plot_show_gene_links",
                 "Show gene links:",
                 value = TRUE)
-            ),
+            )
         ),
         shiny::br(), shiny::br(),
         vegawidget::vegawidgetOutput("circular_plot"),

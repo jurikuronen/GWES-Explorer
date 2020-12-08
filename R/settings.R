@@ -1,4 +1,4 @@
-# Default settings."#3399ff"
+# Default settings.
 .settings$circular_plot_color_background <- "#bfdfff"
 .settings$circular_plot_color_gene_arc <- "#3b71d9"
 .settings$circular_plot_color_pos_link_connected <- "#9b39cc"
@@ -13,7 +13,10 @@
 .settings$circular_plot_color_scheme_inactive <- "greys"
 .settings$circular_plot_color_scheme_selected <- "reds"
 .settings$circular_plot_extent <- 360
-.settings$circular_plot_gene_circle_arc_angle <- 45
+.settings$circular_plot_flip_gene_view_1 <- FALSE
+.settings$circular_plot_flip_gene_view_2 <- TRUE
+.settings$circular_plot_gene_arc_angle_1 <- 45
+.settings$circular_plot_gene_arc_angle_2 <- 45
 .settings$circular_plot_n_groups <- 12
 .settings$circular_plot_n_regions <- 10
 .settings$circular_plot_opacity_active <- 1
@@ -33,9 +36,11 @@
 .settings$circular_plot_opacity_selected <- 1
 .settings$circular_plot_padding <- 5
 .settings$circular_plot_radius <- 400
-.settings$circular_plot_radius_offset <- 100
-.settings$circular_plot_radius_offset_adjustment <- 70
+.settings$circular_plot_radius_gene_view_1 <- 300
+.settings$circular_plot_radius_gene_view_2 <- 250
 .settings$circular_plot_rotate <- 0
+.settings$circular_plot_rotate_gene_view_1 <- 0
+.settings$circular_plot_rotate_gene_view_2 <- 0
 .settings$circular_plot_tension <- 0.7
 .settings$circular_plot_text_size_gene <- 8
 .settings$circular_plot_text_size_region <- 12

@@ -20,10 +20,10 @@
             transform = list(
                 .vega_formula("angle_1", .pos_angle_expr("gene_data", "angle_1")),
                 .vega_formula("angle_2", .pos_angle_expr("gene_data", "angle_2")),
-                .vega_formula("x_1", "origoX + (radius_genes_1 - 5) * cos(PI * datum.angle_1 / 180)"),
-                .vega_formula("y_1", "origoY + (radius_genes_1 - 5) * sin(PI * datum.angle_1 / 180)"),
-                .vega_formula("x_2", "origoX + (radius_genes_2 - 5) * cos(PI * datum.angle_2 / 180)"),
-                .vega_formula("y_2", "origoY + (radius_genes_2 - 5) * sin(PI * datum.angle_2 / 180)"),
+                .vega_formula("x_1", "origoX + (radius_gene_view_1 - 5) * cos(PI * datum.angle_1 / 180)"),
+                .vega_formula("y_1", "origoY + (radius_gene_view_1 - 5) * sin(PI * datum.angle_1 / 180)"),
+                .vega_formula("x_2", "origoX + (radius_gene_view_2 - 5) * cos(PI * datum.angle_2 / 180)"),
+                .vega_formula("y_2", "origoY + (radius_gene_view_2 - 5) * sin(PI * datum.angle_2 / 180)"),
                 .vega_formula("parent_gene", .vega_data_query("gene_data", "datum.parent - 1", "name"))
             )
         ),

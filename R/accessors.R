@@ -12,7 +12,10 @@
 .get_cp_color_scheme_inactive <- function() { .settings$circular_plot_color_scheme_inactive }
 .get_cp_color_scheme_selected <- function() { .settings$circular_plot_color_scheme_selected }
 .get_cp_extent <- function() { .settings$circular_plot_extent }
-.get_cp_gene_arc_angle <- function() { .settings$circular_plot_gene_circle_arc_angle }
+.get_cp_flip_gene_view_1 <- function() { .settings$circular_plot_flip_gene_view_1 }
+.get_cp_flip_gene_view_2 <- function() { .settings$circular_plot_flip_gene_view_2 }
+.get_cp_gene_arc_angle_1 <- function() { .settings$circular_plot_gene_arc_angle_1 }
+.get_cp_gene_arc_angle_2 <- function() { .settings$circular_plot_gene_arc_angle_2 }
 .get_cp_groups <- function() { .settings$circular_plot_n_groups }
 .get_cp_opacity_active <- function() { .settings$circular_plot_opacity_active }
 .get_cp_opacity_background <- function() { .settings$circular_plot_opacity_background }
@@ -31,10 +34,12 @@
 .get_cp_opacity_selected <- function() { .settings$circular_plot_opacity_selected }
 .get_cp_padding <- function() { .settings$circular_plot_padding }
 .get_cp_radius <- function() { .settings$circular_plot_radius }
-.get_cp_radius_offset <- function() { .settings$circular_plot_radius_offset }
-.get_cp_radius_offset_adjustment <- function() { .settings$circular_plot_radius_offset_adjustment }
+.get_cp_radius_gene_view_1 <- function() { .settings$circular_plot_radius_gene_view_1 }
+.get_cp_radius_gene_view_2 <- function() { .settings$circular_plot_radius_gene_view_2 }
 .get_cp_regions <- function() { .settings$circular_plot_n_regions }
 .get_cp_rotate <- function() { .settings$circular_plot_rotate }
+.get_cp_rotate_gene_view_1 <- function() { .settings$circular_plot_rotate_gene_view_1 }
+.get_cp_rotate_gene_view_2 <- function() { .settings$circular_plot_rotate_gene_view_2 }
 .get_cp_size <- function() { 2.1 * .get_cp_radius() } # Add extra for plot margins.
 .get_cp_tension <- function() { .settings$circular_plot_tension }
 .get_cp_text_size_gene <- function(){ .settings$circular_plot_text_size_gene }

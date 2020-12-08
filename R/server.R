@@ -100,10 +100,15 @@
 
     # Modify circular plot signals from Shiny UI.
     vegawidget::vw_shiny_set_signal("circular_plot", name = "radius", value = input$circular_plot_radius)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_offset_1", value = input$circular_plot_radius_offset)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_offset_adjustment", value = input$circular_plot_radius_offset_adjustment)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_gene_view_1", value = input$circular_plot_radius_gene_view_1)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_gene_view_2", value = input$circular_plot_radius_gene_view_2)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate", value = input$circular_plot_rotate)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "gene_arc_angle_1", value = input$circular_plot_gene_arc_angle)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate_gene_view_1", value = input$circular_plot_rotate_gene_view_1)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate_gene_view_2", value = input$circular_plot_rotate_gene_view_2)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "gene_arc_angle_1", value = input$circular_plot_gene_arc_angle_1)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "gene_arc_angle_2", value = input$circular_plot_gene_arc_angle_2)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "flip_gene_view_1", value = input$circular_plot_flip_gene_view_1)
+    vegawidget::vw_shiny_set_signal("circular_plot", name = "flip_gene_view_2", value = input$circular_plot_flip_gene_view_2)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_region", value = input$circular_plot_text_size_region)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_gene", value = input$circular_plot_text_size_gene)
     vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_tooltip", value = input$circular_plot_text_size_tooltip)
