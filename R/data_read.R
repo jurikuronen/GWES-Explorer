@@ -55,7 +55,16 @@
     if (!is.null(gff_file)) {
         gff <- ape::read.gff(file = gff_file$datapath, GFF3 = TRUE)
         ranges <- as.numeric(dplyr::select(gff[gff$type == "region", ], "start", "end"))
-        gff <- dplyr::filter(dplyr::select(gff, "start", "end", "attributes"), gff$type == "gene")
+        # In case type "gene" doesn't exist, filter CDS or stop.
+        gff_types <- unique(as.character(gff$type))
+        if ("gene" %in% gff_types) {
+            gff_type_filter <- "gene"
+        } else if ("CDS" %in% gff_types) {
+            gff_type_filter <- "CDS"
+        } else {
+            stop("Type \"gene\" or \"CDS\" not found in GFF.")
+        }
+        gff <- dplyr::filter(dplyr::select(gff, "start", "end", "attributes"), gff$type == gff_type_filter)
         gff$Name <- .cpp_extract_gff_name_from_attributes(gff$attributes)
         gff$attributes <- NULL
         gff <- .cpp_add_igrs_to_gff(gff, .data$outliers_direct, ranges)
