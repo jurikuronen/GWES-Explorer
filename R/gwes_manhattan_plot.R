@@ -19,7 +19,7 @@
                     shape = 1
                 ) +
                 scale_size_manual(
-                    values = c(size = input$gwes_size_indirect, input$gwes_size_direct)
+                    values = c(input$gwes_size_indirect, input$gwes_size_direct)
                 ) +
                 scale_colour_manual(
                     values = c(input$gwes_color_indirect, input$gwes_color_direct)
