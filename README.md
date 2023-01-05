@@ -14,7 +14,7 @@ BiocManager::install("treeio")
 ```
 and finally install `GWESExplorer` with
 ```
-devtools::install_github("jurikuronen/GWESExplorer")
+devtools::install_github("jurikuronen/GWES-Explorer")
 ```
 
 ## How to use
