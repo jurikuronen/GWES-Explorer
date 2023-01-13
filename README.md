@@ -20,6 +20,10 @@ devtools::install_github("jurikuronen/GWES-Explorer")
 ## How to use
 ```
 library(GWESExplorer)
-
 launch_GWESExplorer()
+```
+
+By default, maximum input file size is limited to 32MB. If you are working with larger files, you can modify this limit with the `max_request_size` parameter:
+```
+launch_GWESExplorer(256 * 1024 * 1024) # Set maximum file size limit to 256MB.
 ```
