@@ -50,11 +50,33 @@
     } else { .data$outliers <- NULL; .data$outliers_direct <- NULL }
 }
 
+# Determine ranges from a gff3 file.
+.determine_ranges <- function(gff, gff_file) {
+    # Region type explicitly given.
+    if (sum(gff$type == "region") > 0) {
+        ranges <- as.numeric(dplyr::select(gff[gff$type == "region", ], "start", "end"))
+    } else {
+        # Check ##sequence-region pragma.
+        fileInput <- readLines(gff_file$datapath)
+        found <- grep("##sequence-region", fileInput)
+        if (length(found) > 0) {
+            found_str <- fileInput[found]
+            found_str <- gsub('(\t)', '', found_str) # Remove any tab characters.
+            found_str_values <- strsplit(found_str, "\\s+")[[1]]
+            ranges <- as.numeric(found_str_values[3:4])
+        } else {
+            # Get end from the maximum value.
+            ranges <- c(1, max(gff$end))
+        }
+    }
+    return(ranges);
+}
+
 # Read in gff data and assign to global variables
 .read_gff <- function(gff_file) {
     if (!is.null(gff_file)) {
         gff <- ape::read.gff(file = gff_file$datapath, GFF3 = TRUE)
-        ranges <- as.numeric(dplyr::select(gff[gff$type == "region", ], "start", "end"))
+        ranges <- .determine_ranges(gff, gff_file)
         # In case type "gene" doesn't exist, filter CDS or stop.
         gff_types <- unique(as.character(gff$type))
         if ("gene" %in% gff_types) {
