@@ -11,6 +11,7 @@ Description: GWES-Explorer is an interactive visualization tool designed to be u
     to produce a GWES Manhattan plot. Two additional plots can be generated, namely a phylogenetic
     tree plot by providing either a Newick or a Nexus file in addition to a FASTA and a loci file,
     and a highly interactive circular chromosome plot by providing a GFF3 file.
+Depends: R (>= 4.0.0)
 License: GPL-3
 Encoding: UTF-8
 LazyData: true
