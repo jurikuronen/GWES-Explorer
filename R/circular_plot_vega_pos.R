@@ -44,7 +44,11 @@
                 .vega_formula("y2", .vega_data_query("pos_data", "datum.pos_data_idx_2", "y_2"))
             )
         ),
-        .vega_simple_filter("pos_links_selected", "pos_links", .and("show_gene_links", .and(.is_selected_region("datum.region_1", 1), .is_selected_region("datum.region_2", 2))))
+        .vega_simple_filter("pos_links_selected",
+                            "pos_links",
+                            .and("show_gene_links",
+                                 .and(.is_selected_region("datum.region_1", 1),
+                                      .is_selected_region("datum.region_2", 2))))
     )
 }
 
@@ -56,8 +60,8 @@
         interactive = TRUE,
         encode = list(
             enter = list(
-                fill = list(value = .get_cp_color_pos_symbol_fill()),
-                stroke = list(value = .get_cp_color_pos_symbol_stroke()),
+                fill = list(value = .circular_plot_color_pos_symbol_fill()),
+                stroke = list(value = .circular_plot_color_pos_symbol_stroke()),
                 strokeWidth = list(value = 0.5),
                 tooltip = list(signal = "{title: datum.name, 'Gene': datum.parent_gene}")
             ),
@@ -83,10 +87,12 @@
                 x = list(field = "x"), y = list(field = "y"),
                 x2 = list(field = "x2"), y2 = list(field = "y2"),
                 stroke = list(
-                    list(test = .pos_link_is_selected(), value = .get_cp_color_pos_link_selected()),
-                    list(test = .and(.is_connected_to_selected_gene(), .negate(.both_genes_are_selected())), value = .get_cp_color_pos_link_connected()),
-                    list(test = .some_gene_is_selected(), value = .get_cp_color_pos_link_inactive()),
-                    list(value = .get_cp_color_pos_link_default())
+                    list(test = .pos_link_is_selected(), value = .circular_plot_color_pos_link_selected()),
+                    list(test = .and(.is_connected_to_selected_gene(),
+                                     .negate(.both_genes_are_selected())),
+                         value = .circular_plot_color_pos_link_connected()),
+                    list(test = .some_gene_is_selected(), value = .circular_plot_color_pos_link_inactive()),
+                    list(value = .circular_plot_color_pos_link_default())
                 ),
                 strokeWidth = list(field = "weight"),
                 strokeOpacity = list(

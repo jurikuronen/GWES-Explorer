@@ -9,12 +9,12 @@
     .Call('_GWESExplorer_sorted_pos_links', PACKAGE = 'GWESExplorer', pos_links)
 }
 
-.cpp_extract_gff_name_from_attributes <- function(attributes) {
-    .Call('_GWESExplorer_extract_gff_name_from_attributes', PACKAGE = 'GWESExplorer', attributes)
+.cpp_get_gff_name_from_attributes <- function(attributes) {
+    .Call('_GWESExplorer_get_gff_name_from_attributes', PACKAGE = 'GWESExplorer', attributes)
 }
 
-.cpp_add_igrs_to_gff <- function(gff, outliers_direct, ranges) {
-    .Call('_GWESExplorer_add_igrs_to_gff', PACKAGE = 'GWESExplorer', gff, outliers_direct, ranges)
+.cpp_add_igrs_to_gff <- function(gff, outliers_direct, region_ranges) {
+    .Call('_GWESExplorer_add_igrs_to_gff', PACKAGE = 'GWESExplorer', gff, outliers_direct, region_ranges)
 }
 
 .cpp_compute_outlier_genes <- function(gff, outliers_direct) {

@@ -1,21 +1,18 @@
 .render_tree_plot <- function(input) {
-    shiny::renderPlot({ .tree_plot(input) })
+    shiny::renderPlot({
+        if (is.null(.data$tree) || is.null(.data$msa)) {
+            return(NULL)
+        }
+        .tree_plot(input)
+    })
 }
-
-.read_phenotype_idx <- function(select_phenotype) {
-    phenotype_idx <- as.numeric(select_phenotype)
-    if (is.na(phenotype_idx)) phenotype_idx <- 0
-    return(phenotype_idx)
-}
-
-.valid_phenotype_idx <- function(phenotype_idx) { return(phenotype_idx != 0) }
 
 .generate_phylogenetic_object <- function(input) {
     phylo_object <- NULL
-    if (.tree_is_not_null()) {
-        phenotype_idx <- .read_phenotype_idx(input$select_phenotype)
+    if (!is.null(.data$tree)) {
+        phenotype_idx <- ifelse(is.na(as.numeric(input$select_phenotype)), 0, as.numeric(input$select_phenotype))
         phylo_object <- ggtree::ggtree(.data$tree)
-        if (.valid_phenotype_idx(phenotype_idx)) {
+        if (phenotype_idx != 0) {
             phylo_object <- ggtree::gheatmap(
                 p = phylo_object,
                 data = .data$phenotype[, phenotype_idx, drop = FALSE],
@@ -34,7 +31,7 @@
 }
 
 .tree_plot <- function(input) {
-    if (.tree_is_not_null()) {
+    if (!is.null(.data$tree) && !is.null(.data$msa)) {
         phylo_object <- .generate_phylogenetic_object(input)
         selected_rows <- input$outliers_table_rows_selected
         if (is.null(selected_rows)) {
@@ -59,7 +56,6 @@
                           legend.key.size = unit(input$tree_legend_size, "cm"))
             )
         }
-    } else {
-        return(NULL)
     }
+    return(NULL)
 }

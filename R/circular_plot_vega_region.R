@@ -6,10 +6,26 @@
 
 .circular_plot_vega_region_scales <- function() {
     list(
-        .vega_color_scale("color_scale_default", "linear", "region_links", "weight", list(signal = "color_scheme_default")),
-        .vega_color_scale("color_scale_active", "linear", "region_links", "weight", list(signal = "color_scheme_active")),
-        .vega_color_scale("color_scale_selected", "linear", "region_links", "weight", list(signal = "color_scheme_selected")),
-        .vega_color_scale("color_scale_inactive", "linear", "region_links", "weight", list(signal = "color_scheme_inactive"))
+        .vega_color_scale("color_scale_default",
+                          "linear",
+                          "region_links",
+                          "weight",
+                          list(signal = "color_scheme_default")),
+        .vega_color_scale("color_scale_active",
+                          "linear",
+                          "region_links",
+                          "weight",
+                          list(signal = "color_scheme_active")),
+        .vega_color_scale("color_scale_selected",
+                          "linear",
+                          "region_links",
+                          "weight",
+                          list(signal = "color_scheme_selected")),
+        .vega_color_scale("color_scale_inactive",
+                          "linear",
+                          "region_links",
+                          "weight",
+                          list(signal = "color_scheme_inactive"))
     )
 }
 
@@ -46,11 +62,15 @@
         list(
             name = "region_links",
             values = region_links,
-            transform = list(.vega_formula("treepath", "treePath('region_data_tree', datum.source, datum.target)", TRUE))
+            transform = list(.vega_formula("treepath",
+                                           "treePath('region_data_tree', datum.source, datum.target)",
+                                           TRUE))
         ),
         .vega_simple_filter("region_links_connected_to_selected_region", "region_links",
-            # Filter expression.
-            .and(.only_one_region_is_selected(), .or(.is_one_of_selected_regions("datum.source"), .is_one_of_selected_regions("datum.target"))))
+                            # Filter expression.
+                            .and(.only_one_region_is_selected(),
+                                 .or(.is_one_of_selected_regions("datum.source"),
+                                     .is_one_of_selected_regions("datum.target"))))
     )
 }
 
@@ -74,7 +94,9 @@
 }
 
 .circular_plot_vega_region_marks_arcs <- function() {
-    connected_regions <- "indata('region_links_connected_to_selected_region', 'source', datum.id) || indata('region_links_connected_to_selected_region', 'target', datum.id)"
+    connected_regions <- paste("indata('region_links_connected_to_selected_region', 'source', datum.id)",
+                               "||",
+                               "indata('region_links_connected_to_selected_region', 'target', datum.id)")
     list(
         type = "arc",
         name = "region_arc",
@@ -86,8 +108,12 @@
             update = list(
                 x = list(signal = "origoX"),
                 y = list(signal = "origoY"),
-                startAngle = list(signal = paste("PI / 2 + (datum.angle - 0.95 * ", .angular_distance("region_data", "angle"), " / 2) * PI / 180", sep = "")),
-                endAngle = list(signal = paste("PI / 2 + (datum.angle + 0.95 * ", .angular_distance("region_data", "angle"), " / 2) * PI / 180", sep = "")),
+                startAngle = list(signal = paste0("PI / 2 + (datum.angle - 0.95 * ",
+                                                 .angular_distance("region_data", "angle"),
+                                                 " / 2) * PI / 180")),
+                endAngle = list(signal = paste0("PI / 2 + (datum.angle + 0.95 * ",
+                                                .angular_distance("region_data", "angle"),
+                                                " / 2) * PI / 180")),
                 innerRadius = list(signal = "radius"),
                 outerRadius = list(signal = "radius + 10"),
                 strokeOpacity = list(value = 0),
@@ -115,19 +141,35 @@
                 enter = list(interpolate = list(value = "bundle"), strokeWidth = list(signal = "parent.count")),
                 update = list(
                     stroke = list(
-                        list(test = .region_link_is_selected(), scale = "color_scale_selected", signal = "parent.weight"),
-                        list(test = .region_link_is_active(), scale = "color_scale_active", signal = "opacity_active"),
-                        list(test = .both_regions_are_selected(), scale = "color_scale_inactive", signal = "parent.weight"),
-                        list(test = .is_connected_to_selected_region(), scale = "color_scale_selected", signal = "parent.weight"),
-                        list(test = .some_region_is_selected(), scale = "color_scale_inactive", signal = "parent.weight"),
-                        list(scale = "color_scale_default", signal = "parent.weight")
+                        list(test = .region_link_is_selected(),
+                             scale = "color_scale_selected",
+                             signal = "parent.weight"),
+                        list(test = .region_link_is_active(),
+                             scale = "color_scale_active",
+                             signal = "opacity_active"),
+                        list(test = .both_regions_are_selected(),
+                             scale = "color_scale_inactive",
+                             signal = "parent.weight"),
+                        list(test = .is_connected_to_selected_region(),
+                             scale = "color_scale_selected",
+                             signal = "parent.weight"),
+                        list(test = .some_region_is_selected(),
+                             scale = "color_scale_inactive",
+                             signal = "parent.weight"),
+                        list(scale = "color_scale_default",
+                             signal = "parent.weight")
                     ),
                     strokeOpacity = list(
                         list(test = "!show_region_links", value = 0),
-                        list(test = .region_link_is_selected(), signal = "opacity_region_link_adjustment * parent.weight"),
-                        list(test = .region_link_is_active(), signal = "opacity_region_link_active"),
-                        list(test = .both_regions_are_selected(), signal = "opacity_region_link_inactive"),
-                        list(test = .and(.some_region_is_selected(), .negate(.is_connected_to_selected_region())), signal = "opacity_region_link_inactive"),
+                        list(test = .region_link_is_selected(),
+                             signal = "opacity_region_link_adjustment * parent.weight"),
+                        list(test = .region_link_is_active(),
+                             signal = "opacity_region_link_active"),
+                        list(test = .both_regions_are_selected(),
+                             signal = "opacity_region_link_inactive"),
+                        list(test = .and(.some_region_is_selected(),
+                                         .negate(.is_connected_to_selected_region())),
+                             signal = "opacity_region_link_inactive"),
                         list(signal = "parent.weight")
                     ),
                     tension = list(signal = "tension"),
@@ -138,4 +180,3 @@
         ))
     )
 }
-

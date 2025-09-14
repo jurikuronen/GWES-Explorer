@@ -1,125 +1,271 @@
-# Define server logic for application.
+# Define server logic for the Shiny application.
 .server <- function(input, output, session) {
 
+    # Example data files for "Load example data" action.
+    .example_outliers_file <- tibble::tibble(datapath = "example_data/maela_outliers.outliers",
+                                             name = "maela_outliers.outliers")
+    .example_tree_file <- tibble::tibble(datapath = "example_data/maela_tree.nex",
+                                         name = "maela_tree.nex")
+    .example_fasta_file <- tibble::tibble(datapath = "example_data/maela_fasta.fasta",
+                                          name = "maela_fasta.fasta")
+    .example_loci_file <- tibble::tibble(datapath = "example_data/maela_loci.loci",
+                                         name = "maela_loci.loci")
+    .example_phenotype_file <- tibble::tibble(datapath = "example_data/maela_phenotypes.csv",
+                                              name = "maela_phenotypes.csv")
+    .example_gff_file <- tibble::tibble(datapath = "example_data/maela_gff.gff3",
+                                        name = "maela_gff.gff3")
+
     # Column names in outliers table.
-    outlier_columns <- .default_outlier_columns()
+    .default_outlier_columns <- c("Pos_1", "Pos_2", "MI", "MI_wogaps", "Distance")
+    .extended_outlier_columns <- c(.default_outlier_columns, "Pos_1_gene", "Pos_2_gene")
+
+    # Currently used column names.
+    .outlier_columns <- .default_outlier_columns
 
     # Reactive values used for zooming in the Manhattan GWES plot.
-    mh_gwes_ranges <- shiny::reactiveValues(x = NULL, y = NULL)
+    .mh_gwes_ranges <- shiny::reactiveValues(x = NULL, y = NULL)
 
-    # Prevent events from occurring when creating/updating tables.
-    phenotype_selections_updated <- 0
+    # Flag to prevent events from occurring when creating/updating tables.
+    .phenotype_selections_updated <- 0
 
     # Update phenotype selections for this session.
     .update_select_phenotype_input <- function() {
-        phenotype_selections_updated <<- 1
-        if (.phenotype_is_not_null()) {
+        .phenotype_selections_updated <<- 1
+        if (!is.null(.data$phenotype)) {
             n <- as.list(0:ncol(.data$phenotype))
-            names(n) <- c("No phenotype selected", colnames(.data$phenotype))
-            shiny::updateSelectInput(session, inputId = "select_phenotype", choices = n)
-        } else { shiny::updateSelectInput(session, inputId = "select_phenotype", choices = c("No phenotype selected")) }
+            names(n) <- c("No phenotype selected",
+                          colnames(.data$phenotype))
+            shiny::updateSelectInput(session,
+                                     inputId = "select_phenotype",
+                                     choices = n)
+        } else {
+            shiny::updateSelectInput(session,
+                                     inputId = "select_phenotype",
+                                     choices = c("No phenotype selected"))
+        }
     }
 
-    # Render UI for tree plot.
-    output$treeUI <- shiny::renderUI({
-        shiny::plotOutput("tree_plot", width = paste0(input$tree_plot_width, "cm"), height = paste0(input$tree_plot_height, "cm"))
-    })
+    # Helper function to render file input buttons.
+    .render_ui_file_input <- function(input_id, label, accept) {
+        shiny::renderUI({
+            shiny::fileInput(inputId = input_id,
+                             label = label,
+                             accept = accept)
+        })
+    }
 
-    # Handle load example data event.
-    shiny::observeEvent(input$read_example_data_button, {
-        .read_data(file_outliers = tibble::tibble(datapath = "example_data/maela_outliers.outliers"),
-                   file_tree = tibble::tibble(datapath = "example_data/maela_tree.nex"),
-                   file_fasta = tibble::tibble(datapath = "example_data/maela_fasta.fasta"),
-                   file_loci = tibble::tibble(datapath = "example_data/maela_loci.loci"),
-                   file_phenotype = tibble::tibble(datapath = "example_data/maela_phenotypes.csv"),
-                   file_gff = tibble::tibble(datapath = "example_data/maela_gff.gff3"))
-        output$data_loaded <- shiny::renderText({"Example data loaded!"})
-        .process_data()
-    })
+    # Download handlers for saving plots.
+    .download_handler <- function(input, key, plot) {
+        dpi <- 96
+        download_name <- paste0("GWES-Explorer_", format(Sys.time(), "%Y%m%d_%H%M%S"), "_", key, "_plot")
+        shiny::downloadHandler(
+            filename = function() {
+                paste0(download_name, ".", input[[paste0(key, "_plot_type")]])
+            },
+            content = function(file) {
+                ggsave(
+                    filename = file,
+                    plot = plot,
+                    device = input[[paste0(key, "_plot_type")]],
+                    width = input[[paste0(key, "_plot_width")]] * input[[paste0(key, "_plot_dpi")]] / dpi,
+                    height = input[[paste0(key, "_plot_height")]] * input[[paste0(key, "_plot_dpi")]] / dpi,
+                    dpi = dpi,
+                    units = input[[paste0(key, "_plot_unit")]]
+                )
+            }
+        )
+    }
 
-    # Handle uploaded data event.
-    shiny::observeEvent(input$read_data_button, {
-        .read_data(file_outliers = input$file_outliers,
-                   file_tree = input$file_tree,
-                   file_fasta = input$file_fasta,
-                   file_loci = input$file_loci,
-                   file_phenotype = input$file_phenotype,
-                   file_gff = input$file_gff)
+    # Helper function to read in and load data from the provided files.
+    .read_and_load_data <- function(outliers_file,
+                                    tree_file,
+                                    fasta_file,
+                                    loci_file,
+                                    phenotype_file,
+                                    gff_file)
+    {
+        .read_data(outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file)
         output$data_loaded <- shiny::renderText({"Data loaded!"})
         .process_data()
-    })
+    }
 
-    # Process uploaded data.
+    # Helper function to generate the outliers table.
+    .generate_outliers_table <- function(input, outlier_columns) {
+        if (!is.null(.data$outliers)) {
+            return(DT::renderDT(.data$outliers_direct[, outlier_columns],
+                                server = FALSE,
+                                options = list(pageLength = 25, scrollX = TRUE),
+                                selection = input$select_row_type))
+        }
+        # Default table when there is no data.
+        return(DT::renderDT(tibble::tibble(Pos_1 = integer(),
+                                           Pos_2 = integer(),
+                                           Distance = integer(),
+                                           MI = numeric(),
+                                           MI_wogaps = numeric()),
+                            server = FALSE,
+                            options = list(pageLength = 25, scrollX = TRUE)))
+    }
+
+    # Helper function to process uploaded data.
     .process_data <- function() {
         # Update Shiny SelectInput if phenotype data was read.
-        if (.phenotype_is_not_null()) .update_select_phenotype_input()
+        .update_select_phenotype_input()
 
         # Update outlier columns based on what was read.
-        outlier_columns <<- .default_outlier_columns()
-        if (.gff_is_not_null()) outlier_columns <<- .extended_outlier_columns()
+        if (is.null(.data$gff)) {
+            .outlier_columns <<- .default_outlier_columns
+        } else {
+            .outlier_columns <<- .extended_outlier_columns
+        }
 
         # Render plots after reading data was completed.
-        output$outliers_table <- .generate_outliers_table(input, outlier_columns)
-        output$manhattan_plot <- .render_gwes_manhattan_plot(input, mh_gwes_ranges)
-        output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(input, outlier_columns)
+        output$outliers_table <- .generate_outliers_table(input, .outlier_columns)
+        output$manhattan_plot <- .render_gwes_manhattan_plot(input, .mh_gwes_ranges)
+        output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(input, .outlier_columns)
         output$tree_plot <- .render_tree_plot(input)
         output$circular_plot <- .render_circular_plot()
     }
 
+    # Handle load example data event.
+    shiny::observeEvent(input$read_example_data_button, {
+        .read_and_load_data(outliers_file = .example_outliers_file,
+                            tree_file = .example_tree_file,
+                            fasta_file = .example_fasta_file,
+                            loci_file = .example_loci_file,
+                            phenotype_file = .example_phenotype_file,
+                            gff_file = .example_gff_file)
+    })
+
+    # Handle load data event.
+    shiny::observeEvent(input$read_data_button, {
+        .read_and_load_data(outliers_file = input$outliers_file,
+                            tree_file = input$tree_file,
+                            fasta_file = input$fasta_file,
+                            loci_file = input$loci_file,
+                            phenotype_file = input$phenotype_file,
+                            gff_file = input$gff_file)
+    })
+
     # Update table selection type.
-    shiny::observeEvent(input$select_row_type, { output$outliers_table <- .generate_outliers_table(input, outlier_columns) })
+    shiny::observeEvent(input$select_row_type,
+                        { output$outliers_table <- .generate_outliers_table(input, .outlier_columns) })
 
     # When double-clicking the GWES Manhattan plot, zoom onto the brush bounds, otherwise reset the zoom.
     shiny::observeEvent(input$manhattan_plot_double_click, {
         brush <- input$manhattan_plot_brush
         if (!is.null(brush)) {
-            mh_gwes_ranges$x <- c(brush$xmin, brush$xmax)
-            mh_gwes_ranges$y <- c(brush$ymin, brush$ymax)
-        } else { mh_gwes_ranges$x <- mh_gwes_ranges$y <- NULL }
+            .mh_gwes_ranges$x <- c(brush$xmin, brush$xmax)
+            .mh_gwes_ranges$y <- c(brush$ymin, brush$ymax)
+        } else {
+            .mh_gwes_ranges$x <- NULL
+            .mh_gwes_ranges$y <- NULL
+        }
     })
 
     # Handle row selection event.
     shiny::observeEvent(input$outliers_table_rows_selected, {
         output$tree_plot <- .render_tree_plot(input)
         selected_rows <- input$outliers_table_rows_selected
-        if (.gff_is_not_null() && length(selected_rows) > 0) .set_circular_plot_signals(selected_rows[1])
-    })
-
-    shiny::observeEvent(input$select_phenotype, {
-        if (phenotype_selections_updated != 0) { # Don't trigger event if the selections were just updated.
-            phenotype_selections_updated <<- 0
-        } else {
-            output$tree_plot <- .render_tree_plot(input)
+        if (!is.null(.data$gff) && length(selected_rows) > 0) {
+            .set_circular_plot_signals(selected_rows[1])
         }
     })
 
-    # Hide data read applied text when reading in new data.
-    shiny::observeEvent(c(input$file_outliers, input$file_tree, input$file_fasta, input$file_loci, input$file_phenotype, input$file_gff), {
-        output$data_loaded <- shiny::renderText({""})
+    # Handle phenotype selection event.
+    shiny::observeEvent(input$select_phenotype, {
+        # Trigger event only if the selections weren't just updated.
+        if (.phenotype_selections_updated == 0) {
+            output$tree_plot <- .render_tree_plot(input)
+        }
+        .phenotype_selections_updated <<- 0
     })
 
-    # Modify circular plot signals from Shiny UI.
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius", value = input$circular_plot_radius)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_gene_view_1", value = input$circular_plot_radius_gene_view_1)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "radius_gene_view_2", value = input$circular_plot_radius_gene_view_2)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate", value = input$circular_plot_rotate)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate_gene_view_1", value = input$circular_plot_rotate_gene_view_1)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "rotate_gene_view_2", value = input$circular_plot_rotate_gene_view_2)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "gene_arc_angle_1", value = input$circular_plot_gene_arc_angle_1)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "gene_arc_angle_2", value = input$circular_plot_gene_arc_angle_2)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "flip_gene_view_1", value = input$circular_plot_flip_gene_view_1)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "flip_gene_view_2", value = input$circular_plot_flip_gene_view_2)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_region", value = input$circular_plot_text_size_region)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_gene", value = input$circular_plot_text_size_gene)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "text_size_tooltip", value = input$circular_plot_text_size_tooltip)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "show_region_links", value = input$circular_plot_show_region_links)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "show_gene_links", value = input$circular_plot_show_gene_links)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "opacity_region_link_adjustment", value = input$circular_plot_opacity_region_link_adjustment)
-    vegawidget::vw_shiny_set_signal("circular_plot", name = "opacity_gene_link_adjustment", value = input$circular_plot_opacity_gene_link_adjustment)
+    # Render file input buttons.
+    output$outliers_file_input <- .render_ui_file_input("outliers_file",
+                                                        "SpydrPick outliers file (.outliers, .txt):",
+                                                        c(".outliers",".txt"))
+    output$tree_file_input <- .render_ui_file_input("tree_file",
+                                                    "Tree file (Newick [.nwk] or Nexus [.nex]):",
+                                                    c(".nwk",".nex"))
+    output$fasta_file_input <- .render_ui_file_input("fasta_file",
+                                                     "Fasta file (.fasta,
+                                                     .fa or .aln):", c(".fasta", ".fa", ".aln"))
+    output$loci_file_input <- .render_ui_file_input("loci_file",
+                                                    "Loci file (.loci):",
+                                                    ".loci")
+    output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
+                                                         "Phenotypic data file (.csv,
+                                                         .txt):", c(".csv", ".txt"))
+    output$gff_file_input <- .render_ui_file_input("gff_file",
+                                                   "Gff file (.gff3):",
+                                                   ".gff3")
 
-    # Download handlers for saving plots.
-    output$gwes_manhattan_plot_download <- .gwes_manhattan_plot_download_handler(input, mh_gwes_ranges)
-    output$phylogenetic_tree_plot_download <- .phylogenetic_tree_plot_download_handler(input)
-    output$circular_plot_download <- .circular_plot_download_handler(input, output)
+    # Render UI output for tree plot.
+    output$tree_plot_ui_output <- shiny::renderUI({
+        shiny::plotOutput("tree_plot",
+                          width = paste0(input$tree_plot_width, "cm"),
+                          height = paste0(input$tree_plot_height, "cm"))
+    })
 
+    # Set download handlers for Manhattan and phylogenetic tree plots.
+    output$gwes_manhattan_plot_download <- .download_handler(input,
+                                                             key = "gwes_manhattan",
+                                                             plot = .gwes_manhattan_plot(input, .mh_gwes_ranges))
+    output$phylogenetic_tree_plot_download <- .download_handler(input,
+                                                                key = "phylogenetic_tree",
+                                                                plot = .tree_plot(input))
+
+    # Setup modifying circular plot signals from Shiny UI.
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "radius",
+                                    value = input$circular_plot_radius)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "radius_gene_view_1",
+                                    value = input$circular_plot_radius_gene_view_1)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "radius_gene_view_2",
+                                    value = input$circular_plot_radius_gene_view_2)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "rotate",
+                                    value = input$circular_plot_rotate)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "rotate_gene_view_1",
+                                    value = input$circular_plot_rotate_gene_view_1)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "rotate_gene_view_2",
+                                    value = input$circular_plot_rotate_gene_view_2)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "gene_arc_angle_1",
+                                    value = input$circular_plot_gene_arc_angle_1)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "gene_arc_angle_2",
+                                    value = input$circular_plot_gene_arc_angle_2)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "flip_gene_view_1",
+                                    value = input$circular_plot_flip_gene_view_1)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "flip_gene_view_2",
+                                    value = input$circular_plot_flip_gene_view_2)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "text_size_region",
+                                    value = input$circular_plot_text_size_region)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "text_size_gene",
+                                    value = input$circular_plot_text_size_gene)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "text_size_tooltip",
+                                    value = input$circular_plot_text_size_tooltip)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "show_region_links",
+                                    value = input$circular_plot_show_region_links)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "show_gene_links",
+                                    value = input$circular_plot_show_gene_links)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "opacity_region_link_adjustment",
+                                    value = input$circular_plot_opacity_region_link_adjustment)
+    vegawidget::vw_shiny_set_signal("circular_plot",
+                                    name = "opacity_gene_link_adjustment",
+                                    value = input$circular_plot_opacity_gene_link_adjustment)
 }

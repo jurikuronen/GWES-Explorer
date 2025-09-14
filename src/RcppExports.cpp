@@ -33,27 +33,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// extract_gff_name_from_attributes
-Rcpp::CharacterVector extract_gff_name_from_attributes(Rcpp::CharacterVector attributes);
-RcppExport SEXP _GWESExplorer_extract_gff_name_from_attributes(SEXP attributesSEXP) {
+// get_gff_name_from_attributes
+Rcpp::CharacterVector get_gff_name_from_attributes(Rcpp::CharacterVector attributes);
+RcppExport SEXP _GWESExplorer_get_gff_name_from_attributes(SEXP attributesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type attributes(attributesSEXP);
-    rcpp_result_gen = Rcpp::wrap(extract_gff_name_from_attributes(attributes));
+    rcpp_result_gen = Rcpp::wrap(get_gff_name_from_attributes(attributes));
     return rcpp_result_gen;
 END_RCPP
 }
 // add_igrs_to_gff
-Rcpp::DataFrame add_igrs_to_gff(Rcpp::List gff, Rcpp::List outliers_direct, Rcpp::NumericVector ranges);
-RcppExport SEXP _GWESExplorer_add_igrs_to_gff(SEXP gffSEXP, SEXP outliers_directSEXP, SEXP rangesSEXP) {
+Rcpp::DataFrame add_igrs_to_gff(Rcpp::List gff, Rcpp::List outliers_direct, Rcpp::NumericVector region_ranges);
+RcppExport SEXP _GWESExplorer_add_igrs_to_gff(SEXP gffSEXP, SEXP outliers_directSEXP, SEXP region_rangesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< Rcpp::List >::type gff(gffSEXP);
     Rcpp::traits::input_parameter< Rcpp::List >::type outliers_direct(outliers_directSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type ranges(rangesSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_igrs_to_gff(gff, outliers_direct, ranges));
+    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type region_ranges(region_rangesSEXP);
+    rcpp_result_gen = Rcpp::wrap(add_igrs_to_gff(gff, outliers_direct, region_ranges));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -73,7 +73,7 @@ END_RCPP
 static const R_CallMethodDef CallEntries[] = {
     {"_GWESExplorer_create_pos_links", (DL_FUNC) &_GWESExplorer_create_pos_links, 2},
     {"_GWESExplorer_sorted_pos_links", (DL_FUNC) &_GWESExplorer_sorted_pos_links, 1},
-    {"_GWESExplorer_extract_gff_name_from_attributes", (DL_FUNC) &_GWESExplorer_extract_gff_name_from_attributes, 1},
+    {"_GWESExplorer_get_gff_name_from_attributes", (DL_FUNC) &_GWESExplorer_get_gff_name_from_attributes, 1},
     {"_GWESExplorer_add_igrs_to_gff", (DL_FUNC) &_GWESExplorer_add_igrs_to_gff, 3},
     {"_GWESExplorer_compute_outlier_genes", (DL_FUNC) &_GWESExplorer_compute_outlier_genes, 2},
     {NULL, NULL, 0}

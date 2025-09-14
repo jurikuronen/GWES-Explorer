@@ -1,12 +1,12 @@
-.create_ui <- function() {
-    # Define UI for application
+# Create the UI definition of the Shiny app.
+.create_ui_layout <- function() {
     shiny::fluidPage(
-        # Page with several tabs
-        shiny::navbarPage(title = "GWES-Explorer",
-           id = "tabs",
-           .about_panel(),
-           shiny::tabPanel(title = "Upload data", .data_sidebar_layout()),
-           shiny::tabPanel(title = "Analyse data", .plot_sidebar_layout())
+        shiny::navbarPage(
+            title = "GWES-Explorer",
+            id = "tabs",
+            .ui_about_tab_panel(),
+            .ui_upload_data_tab_panel(),
+            .ui_analyse_data_tab_panel()
         )
     )
 }

@@ -9,20 +9,29 @@
 
 // [[Rcpp::export(.cpp_create_pos_links)]]
 Rcpp::DataFrame create_pos_links(Rcpp::List outliers_direct, Rcpp::List pos_data) {
+    const auto pos_data_name = Rcpp::as<std::vector<int64_t>>(pos_data["name"]);
+    const auto Pos_1 = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_1"]);
+    const auto Pos_2 = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_2"]);
+    const auto Pos_1_region = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_1_region"]);
+    const auto Pos_2_region = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_2_region"]);
+    const auto Pos_1_gene = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_1_gene"]);
+    const auto Pos_2_gene = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_2_gene"]);
+    const auto MI = Rcpp::as<std::vector<double>>(outliers_direct["MI"]);
+    const auto n2 = Pos_1.size() * 2;
     std::map<int64_t, int64_t> pos_data_idx_mapper;
-    auto pos_data_name = Rcpp::as<std::vector<int64_t>>(pos_data["name"]);
-    for (auto idx = 0; idx < pos_data_name.size(); ++idx) pos_data_idx_mapper[pos_data_name[idx]] = idx;
-    auto Pos_1 = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_1"]);
-    auto Pos_2 = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_2"]);
-    auto Pos_1_region = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_1_region"]);
-    auto Pos_2_region = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_2_region"]);
-    auto Pos_1_gene = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_1_gene"]);
-    auto Pos_2_gene = Rcpp::as<std::vector<int64_t>>(outliers_direct["Pos_2_gene"]);
-    auto MI = Rcpp::as<std::vector<double>>(outliers_direct["MI"]);
-    std::size_t n = Pos_1.size(), n2 = 2 * n;
-    std::vector<int64_t> pos_data_idx_1(n2), pos_data_idx_2(n2), region_1(n2), region_2(n2), gene_1(n2), gene_2(n2);
+    std::vector<int64_t> pos_data_idx_1(n2);
+    std::vector<int64_t> pos_data_idx_2(n2);
+    std::vector<int64_t> region_1(n2);
+    std::vector<int64_t> region_2(n2);
+    std::vector<int64_t> gene_1(n2);
+    std::vector<int64_t> gene_2(n2);
     std::vector<double> weight(n2);
-    for (std::size_t i = 0; i < n; ++i) {
+
+    for (std::size_t idx = 0; idx < pos_data_name.size(); ++idx) {
+        pos_data_idx_mapper[pos_data_name[idx]] = idx;
+    }
+
+    for (std::size_t i = 0; i < Pos_1.size(); ++i) {
         region_1[i * 2] = region_2[i * 2 + 1] = Pos_1_region[i];
         region_2[i * 2] = region_1[i * 2 + 1] = Pos_2_region[i];
         gene_1[i * 2] = gene_2[i * 2 + 1] = Pos_1_gene[i];
@@ -43,40 +52,52 @@ Rcpp::DataFrame create_pos_links(Rcpp::List outliers_direct, Rcpp::List pos_data
 
 // [[Rcpp::export(.cpp_sorted_pos_links)]]
 Rcpp::DataFrame sorted_pos_links(Rcpp::List pos_links) {
-    auto gene_1 = Rcpp::as<std::vector<int64_t>>(pos_links["gene_1"]);
-    auto gene_2 = Rcpp::as<std::vector<int64_t>>(pos_links["gene_2"]);
-    auto MI = Rcpp::as<std::vector<double>>(pos_links["MI"]);
-    std::size_t n = gene_1.size();
+    const auto gene_1 = Rcpp::as<std::vector<int64_t>>(pos_links["gene_1"]);
+    const auto gene_2 = Rcpp::as<std::vector<int64_t>>(pos_links["gene_2"]);
+    const auto MI = Rcpp::as<std::vector<double>>(pos_links["MI"]);
+    const auto n = gene_1.size();
     std::map<int64_t, std::vector<std::pair<double, int64_t>>> gene_data;
+
     // Gather all links related to gene_1.
-    for (std::size_t i = 0; i < n; ++i) gene_data[gene_1[i]].emplace_back(MI[i], gene_2[i]);
+    for (std::size_t i = 0; i < n; ++i) {
+        gene_data[gene_1[i]].emplace_back(MI[i], gene_2[i]);
+    }
+
     for (auto& gene_data_point : gene_data) {
         auto& gene_links = gene_data_point.second;
+
         // Sort links by MI first
         std::sort(gene_links.rbegin(), gene_links.rend());
         std::map<int64_t, bool> used;
-        for (auto& gene_link : gene_links) used[gene_link.second] = false;
+        for (auto& gene_link : gene_links) {
+            used[gene_link.second] = false;
+        }
         std::vector<std::pair<double, int64_t>> sorted_gene_links;
         // Put gene_2 duplicates below the max MI gene_2.
         for (std::size_t i = 0; i < gene_links.size(); ++i) {
-            auto gene2 = gene_links[i].second;
-            if (used[gene2]) continue;
+            const auto gene2 = gene_links[i].second;
+            if (used[gene2]) {
+                continue;
+            }
             for (std::size_t j = i; j < gene_links.size(); ++j) {
-                if (gene_links[j].second == gene2) sorted_gene_links.emplace_back(gene_links[j].first, gene2);
+                if (gene_links[j].second == gene2) {
+                    sorted_gene_links.emplace_back(gene_links[j].first, gene2);
+                }
             }
             used[gene2] = true;
         }
         gene_links = sorted_gene_links;
     }
+
     std::vector<int64_t> gene_1_out(n);
     std::vector<int64_t> gene_2_out(n);
     std::vector<double> MI_out(n);
     auto counter = 0;
     for (auto& gene_data_point : gene_data) {
-        auto gene = gene_data_point.first;
+        const auto gene = gene_data_point.first;
         for (auto& gene_links : gene_data_point.second) {
-            auto mi = gene_links.first;
-            auto gene2 = gene_links.second;
+            const auto mi = gene_links.first;
+            const auto gene2 = gene_links.second;
             gene_1_out[counter] = gene;
             gene_2_out[counter] = gene2;
             MI_out[counter] = mi;
