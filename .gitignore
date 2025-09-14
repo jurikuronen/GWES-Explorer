@@ -11,3 +11,6 @@
 # C++ object and shared library files
 *.o
 *.so
+
+# Ignore development files and notes.
+dev/
