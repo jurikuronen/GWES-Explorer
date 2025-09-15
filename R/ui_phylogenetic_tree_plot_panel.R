@@ -15,7 +15,12 @@
             .div_inline_block(6, shiny::sliderInput("tree_plot_height", "Figure height (cm):",
                                                     min = 10,
                                                     max = 50,
-                                                    value = 20))
+                                                    value = 20)),
+            .div_inline_br_block(0.5),
+            .div_inline_block(6, shiny::sliderInput("tree_plot_margin_multiplier", "Figure bottom margin multiplier:",
+                                                    min = 1,
+                                                    max = 20,
+                                                    value = 5))
         ),
         shiny::conditionalPanel(
             condition = "input.show_tree_plot_label_prop",
@@ -32,7 +37,7 @@
             .div_inline_block(6, shiny::sliderInput("tree_label_offset_x", "Column label offset X:",
                                                     min = 0,
                                                     max = 0.2,
-                                                    value = 0.1)),
+                                                    value = 0.05)),
             .div_inline_br_block(0.5),
             .div_inline_block(6, shiny::sliderInput("tree_label_offset_y", "Column label offset Y:",
                                                     min = 0,

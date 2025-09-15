@@ -20,8 +20,8 @@
                 width = 0.1,
                 color = NA,
                 colnames_angle = input$tree_label_angle,
-                colnames_offset_y = -input$tree_label_offset_y,
                 colnames_offset_x = -input$tree_label_offset_x,
+                colnames_offset_y = -input$tree_label_offset_y,
                 font.size = input$tree_label_fs) +
                 theme(legend.text = element_text(size = input$tree_legend_fs),
                       legend.key.size = unit(input$tree_legend_size, "cm"))
@@ -48,12 +48,14 @@
                 width = 0.2,
                 color = NA,
                 colnames_angle = input$tree_label_angle,
-                colnames_offset_y = -input$tree_label_offset_y,
                 colnames_offset_x = -input$tree_label_offset_x,
+                colnames_offset_y = -input$tree_label_offset_y,
                 font.size = input$tree_label_fs
                 ) + scale_fill_manual(values = col) +
                     theme(legend.text = element_text(size = input$tree_legend_fs),
-                          legend.key.size = unit(input$tree_legend_size, "cm"))
+                          legend.key.size = unit(input$tree_legend_size, "cm"),
+                          plot.margin = theme_get()$plot.margin * c(1, 1, input$tree_plot_margin_multiplier, 1)) +
+                    coord_cartesian(clip = "off")
             )
         }
     }
