@@ -44,7 +44,9 @@
         shiny::actionButton(inputId = "read_example_data_button",
                             label = "Load example data (Maela)"),
         .div_inline_br_block(3),
-        .div_inline_block(4.5, shiny::p(id = "reading_data_div", shiny::textOutput("data_loaded")))
+        .div_inline_block(5, shiny::p(id = "reading_data_div", shiny::textOutput("data_load_result"))),
+        shiny::br(),
+        .div_inline_block(15, shiny::p(id = "reading_data_status_div", shiny::htmlOutput("data_load_status")))
     )
 }
 

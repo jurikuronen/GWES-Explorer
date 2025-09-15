@@ -84,9 +84,15 @@
                                     phenotype_file,
                                     gff_file)
     {
-        .read_data(outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file)
-        output$data_loaded <- shiny::renderText({"Data loaded!"})
-        .process_data()
+        result <- .read_data(outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file)
+        if (result$success == .STATUS_SUCCESS) {
+            output$data_load_result <- shiny::renderText({"Data loaded!"})
+            .process_data()
+        } else {
+            output$data_load_result <- shiny::renderText({"Failed to load example data."})
+        }
+        output$data_load_status <- shiny::renderUI({ result$status })
+
     }
 
     # Helper function to generate the outliers table.
