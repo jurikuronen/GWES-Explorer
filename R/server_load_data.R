@@ -251,3 +251,55 @@
     }
     return(.status(.STATUS_SUCCESS, status_msg))
 }
+
+.clear_data <- function() {
+    cleared_data <- ""
+    # Clear outliers.
+    if (!is.null(.data$outliers)) {
+        cleared_data <- paste0(cleared_data, "<br>- Outliers")
+    }
+    # Clear tree and MSA.
+    if (!is.null(.data$tree) && !is.null(.data$msa)) {
+        cleared_data <- paste0(cleared_data, "<br>- Tree file",
+                               "<br>- Fasta file",
+                               "<br>- Loci file")
+    }
+    # Clear phenotype file.
+    if (!is.null(.data$phenotype)) {
+        cleared_data <- paste0(cleared_data, "<br>- Phenotypic data file")
+    }
+    # Clear GFF3 file.
+    if (!is.null(.data$gff)) {
+        cleared_data <- paste0(cleared_data, "<br>- GFF3 file")
+    }
+
+    .data$outliers <- NULL
+    .data$outliers_direct <- NULL
+    .data$tree <- NULL
+    .data$msa <- NULL
+    .data$phenotype <- NULL
+    .data$gff <- NULL
+    .data$edges <- NULL
+
+    if (length(cleared_data) == 0) {
+        cleared_data <- "There was no data to clear."
+    } else {
+        cleared_data <- paste0("Cleared the following data:<br>", cleared_data)
+    }
+    return(.status(.STATUS_SUCCESS, cleared_data))
+}
+
+.reset_uploaded_files <- function() {
+    reset_result <- try({ shinyjs::reset("outliers_file")
+                          shinyjs::reset("tree_file")
+                          shinyjs::reset("fasta_file")
+                          shinyjs::reset("loci_file")
+                          shinyjs::reset("phenotype_file")
+                          shinyjs::reset("gff_file") }, silent = TRUE)
+    if (inherits(reset_result, "try-error")) {
+        return(.status(.STATUS_FAILURE, paste0("Failed to reset uploaded files.",
+                                               "<br><br>",
+                                               reset_result)))
+    }
+    return(.status(.STATUS_SUCCESS, ""))
+}

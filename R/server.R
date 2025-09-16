@@ -25,6 +25,14 @@
     # Reactive values used for zooming in the Manhattan GWES plot.
     .mh_gwes_ranges <- shiny::reactiveValues(x = NULL, y = NULL)
 
+    # Reactive values used to check whether some file has been uploaded.
+    .file_uploaded <- shiny::reactiveValues(outliers = 0,
+                                           tree = 0,
+                                           fasta = 0,
+                                           loci = 0,
+                                           phenotype = 0,
+                                           gff = 0)
+
     # Flag to prevent events from occurring when creating/updating tables.
     .phenotype_selections_updated <- 0
 
@@ -92,7 +100,14 @@
             output$data_load_result <- shiny::renderText({"Failed to load example data."})
         }
         output$data_load_status <- shiny::renderUI({ result$status })
+    }
 
+    # Helper function to return uploaded file data based on reactive file upload states.
+    .get_file_data <- function(key) {
+        if (.file_uploaded[[key]] == 1) {
+            return(input[[paste0(key, "_file")]])
+        }
+        return(NULL)
     }
 
     # Helper function to generate the outliers table.
@@ -133,6 +148,14 @@
         output$circular_plot <- .render_circular_plot()
     }
 
+    # Set reactive file upload states.
+    shiny::observeEvent(input$outliers_file, { .file_uploaded$outliers = 1 })
+    shiny::observeEvent(input$tree_file, { .file_uploaded$tree = 1 })
+    shiny::observeEvent(input$fasta_file, { .file_uploaded$fasta = 1 })
+    shiny::observeEvent(input$loci_file, { .file_uploaded$loci = 1 })
+    shiny::observeEvent(input$phenotype_file, { .file_uploaded$phenotype = 1 })
+    shiny::observeEvent(input$gff_file, { .file_uploaded$gff = 1 })
+
     # Handle load example data event.
     shiny::observeEvent(input$read_example_data_button, {
         .read_and_load_data(outliers_file = .example_outliers_file,
@@ -145,12 +168,65 @@
 
     # Handle load data event.
     shiny::observeEvent(input$read_data_button, {
-        .read_and_load_data(outliers_file = input$outliers_file,
-                            tree_file = input$tree_file,
-                            fasta_file = input$fasta_file,
-                            loci_file = input$loci_file,
-                            phenotype_file = input$phenotype_file,
-                            gff_file = input$gff_file)
+        .read_and_load_data(outliers_file = .get_file_data("outliers"),
+                            tree_file = .get_file_data("tree"),
+                            fasta_file = .get_file_data("fasta"),
+                            loci_file = .get_file_data("loci"),
+                            phenotype_file = .get_file_data("phenotype"),
+                            gff_file = .get_file_data("gff"))
+    })
+
+    # Handle clear data event.
+    shiny::observeEvent(input$clear_data_button, {
+        # Clear result and status.
+        output$data_load_result <- shiny::renderText({"Clearing data..."})
+        output$data_load_status <- shiny::renderUI({""})
+
+        result <- .clear_data()
+        .outlier_columns <<- .default_outlier_columns
+        .update_select_phenotype_input()
+        .process_data()
+
+        output$data_load_result <- shiny::renderText({"Cleared data."})
+        output$data_load_status <- shiny::renderUI({ result$status })
+    })
+
+    # Handle reset uploaded files event.
+    shiny::observeEvent(input$reset_uploaded_files_button, {
+        # Clear result and status.
+        output$data_load_result <- shiny::renderText({""})
+        output$data_load_status <- shiny::renderUI({""})
+
+        .file_uploaded$outliers = 0
+        .file_uploaded$tree = 0
+        .file_uploaded$fasta = 0
+        .file_uploaded$loci = 0
+        .file_uploaded$phenotype = 0
+        .file_uploaded$gff = 0
+
+        # Re-render file input buttons with blank state.
+        output$outliers_file_input <- .render_ui_file_input("outliers_file",
+                                                            "SpydrPick outliers file (.outliers, .txt):",
+                                                            c(".outliers",".txt"))
+        output$tree_file_input <- .render_ui_file_input("tree_file",
+                                                        "Tree file (Newick [.nwk] or Nexus [.nex]):",
+                                                        c(".nwk",".nex"))
+        output$fasta_file_input <- .render_ui_file_input("fasta_file",
+                                                         "Fasta file (.fasta,
+                                                     .fa or .aln):", c(".fasta", ".fa", ".aln"))
+        output$loci_file_input <- .render_ui_file_input("loci_file",
+                                                        "Loci file (.loci):",
+                                                        ".loci")
+        output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
+                                                             "Phenotypic data file (.csv,
+                                                         .txt):", c(".csv", ".txt"))
+        output$gff_file_input <- .render_ui_file_input("gff_file",
+                                                       "Gff file (.gff3):",
+                                                       ".gff3")
+
+        result <- .reset_uploaded_files()
+        output$data_load_result <- shiny::renderText({"Reset uploaded files."})
+        output$data_load_status <- shiny::renderUI({ result$status })
     })
 
     # Update table selection type.
