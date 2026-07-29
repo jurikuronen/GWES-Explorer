@@ -4,10 +4,18 @@
 \alias{launch_GWESExplorer}
 \title{Launch GWES-Explorer}
 \usage{
-launch_GWESExplorer(launch_in_browser = TRUE)
+launch_GWESExplorer(
+  launch_in_browser = TRUE,
+  max_request_size = 32 * 1024 * 1024
+)
 }
 \arguments{
-\item{launch_in_browser}{Boolean value, true by default. If set to true, launches GWES-Explorer in the user's default browser.}
+\item{launch_in_browser}{Whether to launch GWES-Explorer in the user's default browser. Defaults to TRUE.}
+
+\item{max_request_size}{Maximum input file size in bytes. Defaults to 32 MiB.}
+}
+\value{
+A Shiny application object.
 }
 \description{
 Launch the Shiny app for GWES-Explorer.

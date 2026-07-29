@@ -2,10 +2,10 @@
 #'
 #' @description Launch the Shiny app for GWES-Explorer.
 #'
-#' @param launch_in_browser Launch GWES-Explorer in the user's defualt browser. True by default.
-#' @param max_request_size Maximum input file size limit in bits. 32MB by default.
+#' @param launch_in_browser Whether to launch GWES-Explorer in the user's default browser. Defaults to TRUE.
+#' @param max_request_size Maximum input file size in bytes. Defaults to 32 MiB.
 #'
-#' @return NULL
+#' @return A Shiny application object.
 #'
 #' @export launch_GWESExplorer
 launch_GWESExplorer <- function(launch_in_browser = TRUE,
