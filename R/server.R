@@ -149,8 +149,8 @@
 
         # Render plots after reading data was completed.
         output$outliers_table <- .generate_outliers_table(input, .outlier_columns)
-        output$manhattan_plot <- .render_gwes_manhattan_plot(input, .mh_gwes_ranges)
-        output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(input, .outlier_columns)
+        output$manhattan_plot <- .render_gwes_manhattan_plot(.data, input, .mh_gwes_ranges)
+        output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(.data, input, .outlier_columns)
         output$tree_plot <- .render_tree_plot(input)
         output$circular_plot <- .render_circular_plot(.data)
     }
@@ -300,7 +300,9 @@
     # Set download handlers for Manhattan and phylogenetic tree plots.
     output$gwes_manhattan_plot_download <- .download_handler(input,
                                                              key = "gwes_manhattan",
-                                                             plot = .gwes_manhattan_plot(input, .mh_gwes_ranges))
+                                                             plot = .gwes_manhattan_plot(.data,
+                                                                                         input,
+                                                                                         .mh_gwes_ranges))
     output$phylogenetic_tree_plot_download <- .download_handler(input,
                                                                 key = "phylogenetic_tree",
                                                                 plot = .tree_plot(input))

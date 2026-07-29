@@ -1,21 +1,21 @@
-.render_gwes_manhattan_plot <- function(input, mh_gwes_ranges) {
+.render_gwes_manhattan_plot <- function(data, input, mh_gwes_ranges) {
     shiny::renderPlot({
-        if (is.null(.data$outliers) || is.null(.data$outliers_direct)) {
+        if (is.null(data$outliers) || is.null(data$outliers_direct)) {
             return(NULL)
         }
-        .gwes_manhattan_plot(input, mh_gwes_ranges)
+        .gwes_manhattan_plot(data, input, mh_gwes_ranges)
     })
 }
 
-.gwes_manhattan_plot <- function(input, mh_gwes_ranges) {
-    if (!is.null(.data$outliers)) {
+.gwes_manhattan_plot <- function(data, input, mh_gwes_ranges) {
+    if (!is.null(data$outliers)) {
         Distance = MI = Direct = fontsize = NULL  # R CMD check hack.
-        min_mi <- min(.data$outliers$MI)
-        max_mi <- max(.data$outliers$MI)
-        max_distance <- max(.data$outliers$Distance)
+        min_mi <- min(data$outliers$MI)
+        max_mi <- max(data$outliers$MI)
+        max_distance <- max(data$outliers$Distance)
         return(ggplot(
                 # Sort data such that direct outliers are plotted in the last layer.
-                data = dplyr::arrange(.data$outliers,
+                data = dplyr::arrange(data$outliers,
                                       Direct),
                 mapping = aes(x = Distance,
                               y = MI,
@@ -23,7 +23,7 @@
             ) + geom_point(aes(color = Direct,
                                size = Direct)) +
                 geom_point(
-                    data = .data$outliers_direct[input$outliers_table_rows_selected, ],
+                    data = data$outliers_direct[input$outliers_table_rows_selected, ],
                     size = input$gwes_selection_size,
                     color = input$gwes_selection_color,
                     shape = 1
@@ -49,11 +49,11 @@
     return(NULL)
 }
 
-.render_gwes_manhattan_plot_table <- function(input, outlier_columns) {
+.render_gwes_manhattan_plot_table <- function(data, input, outlier_columns) {
     shiny::renderTable({
-        if (is.null(.data$outliers) || is.null(.data$outliers_direct)) {
+        if (is.null(data$outliers) || is.null(data$outliers_direct)) {
             return(NULL)
         }
-        shiny::nearPoints(.data$outliers_direct, input$manhattan_plot_click, addDist = TRUE)[, outlier_columns]
+        shiny::nearPoints(data$outliers_direct, input$manhattan_plot_click, addDist = TRUE)[, outlier_columns]
     })
 }
