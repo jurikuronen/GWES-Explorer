@@ -93,7 +93,13 @@
                                     phenotype_file,
                                     gff_file)
     {
-        result <- .read_data(outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file)
+        result <- .read_data(.data,
+                             outliers_file,
+                             tree_file,
+                             fasta_file,
+                             loci_file,
+                             phenotype_file,
+                             gff_file)
         if (result$success == .STATUS_SUCCESS) {
             output$data_load_result <- shiny::renderText({"Data loaded!"})
             .process_data()
@@ -183,7 +189,7 @@
         output$data_load_result <- shiny::renderText({"Clearing data..."})
         output$data_load_status <- shiny::renderUI({""})
 
-        result <- .clear_data()
+        result <- .clear_data(.data)
         .outlier_columns <<- .default_outlier_columns
         .update_select_phenotype_input()
         .process_data()

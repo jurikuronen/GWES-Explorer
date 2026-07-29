@@ -1,25 +1,25 @@
 # Read in outlier lists.
-.read_outliers <- function(outliers_file) {
+.read_outliers <- function(data, outliers_file) {
     outliers_col_names <- c("Pos_1", "Pos_2", "Distance", "Direct", "MI", "MI_wogaps", "Gap_effect", "Extreme")
     outliers_col_types <- c("integer", "integer", "integer", "logical", "numeric", "numeric", "numeric", "logical")
     if ("datapath" %in% colnames(outliers_file)) {
-        .data$outliers <- try({
+        data$outliers <- try({
             readr::read_delim(file = outliers_file$datapath,
                               delim = " ",
                               col_types = "iiildddl",
                               col_names = outliers_col_names)
         }, silent = TRUE)
 
-        if (inherits(.data$outliers, "try-error")) {
-            error_msg <-.data$outliers
-            .data$outliers <- NULL
+        if (inherits(data$outliers, "try-error")) {
+            error_msg <- data$outliers
+            data$outliers <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read outliers file.",
                                                    "<br><br>",
                                                    error_msg)))
         }
 
-        .data$outliers <- .data$outliers[order(.data$outliers$Direct == FALSE), ]
-        .data$outliers_direct <- .data$outliers[.data$outliers$Direct == TRUE, ]
+        data$outliers <- data$outliers[order(data$outliers$Direct == FALSE), ]
+        data$outliers_direct <- data$outliers[data$outliers$Direct == TRUE, ]
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid outliers file data."))
     }
@@ -28,21 +28,21 @@
 }
 
 # Read in tree.
-.read_tree <- function(tree_file) {
+.read_tree <- function(data, tree_file) {
     if ("datapath" %in% colnames(tree_file)) {
         filepath <- tree_file$datapath
 
         if (endsWith(filepath, ".nex")) {
-            .data$tree <- try({ treeio::read.nexus(file = filepath) }, silent = TRUE)
+            data$tree <- try({ treeio::read.nexus(file = filepath) }, silent = TRUE)
         } else if (endsWith(filepath, ".nwk")) {
-            .data$tree <- try({ treeio::read.newick(file = filepath) }, silent = TRUE)
+            data$tree <- try({ treeio::read.newick(file = filepath) }, silent = TRUE)
         } else {
             return(.status(.STATUS_FAILURE, "Unknown format for tree file: file must end in .nex or .nwk."))
         }
 
-        if (inherits(.data$tree, "try-error")) {
-            error_msg <- .data$tree
-            .data$tree <- NULL
+        if (inherits(data$tree, "try-error")) {
+            error_msg <- data$tree
+            data$tree <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read tree file.",
                                                    "<br><br>",
                                                    error_msg)))
@@ -55,7 +55,7 @@
 }
 
 # Read in MSA from fasta and loci files.
-.read_msa <- function(fasta_file, loci_file) {
+.read_msa <- function(data, fasta_file, loci_file) {
     if ("datapath" %in% colnames(fasta_file) && "datapath" %in% colnames(loci_file)) {
         # Read sequences.
         fa <- try({
@@ -91,14 +91,14 @@
         }
 
         # Convert list of sequences to a matrix and upper case.
-        .data$msa <- toupper(do.call(rbind, fa))
+        data$msa <- toupper(do.call(rbind, fa))
 
-        if (ncol(.data$msa) != nrow(snp_loci)) {
-            .data$msa <- NULL
+        if (ncol(data$msa) != nrow(snp_loci)) {
+            data$msa <- NULL
             return(.status(.STATUS_FAILURE, paste0("Number of SNP loci does not match fasta sequence length.")))
         }
-        rownames(.data$msa) <- names(fa)
-        colnames(.data$msa) <- snp_loci$pos
+        rownames(data$msa) <- names(fa)
+        colnames(data$msa) <- snp_loci$pos
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid fasta/loci file data."))
     }
@@ -107,12 +107,12 @@
 }
 
 # Read in phenotype data file.
-.read_phenotype <- function(phenotype_file) {
+.read_phenotype <- function(data, phenotype_file) {
     if ("datapath" %in% colnames(phenotype_file)) {
-        .data$phenotype <- try({ utils::read.csv(file = phenotype_file$datapath, row.names = 1) }, silent = TRUE)
-        if (inherits(.data$phenotype, "try-error")) {
-            error_msg <- .data$phenotype
-            .data$phenotype <- NULL
+        data$phenotype <- try({ utils::read.csv(file = phenotype_file$datapath, row.names = 1) }, silent = TRUE)
+        if (inherits(data$phenotype, "try-error")) {
+            error_msg <- data$phenotype
+            data$phenotype <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read phenotypic data file.",
                                                    "<br><br>",
                                                    error_msg)))
@@ -125,12 +125,12 @@
 }
 
 # Determine ranges from a GFF3 file.
-.determine_ranges <- function(gff_filepath) {
+.determine_ranges <- function(data, gff_filepath) {
     ranges <- NULL
 
     # Region type explicitly given.
-    if (any(.data$gff$type == "region")) {
-        ranges <- as.numeric(dplyr::select(.data$gff[.data$gff$type == "region", ],
+    if (any(data$gff$type == "region")) {
+        ranges <- as.numeric(dplyr::select(data$gff[data$gff$type == "region", ],
                                            "start",
                                            "end"))
     } else {
@@ -146,42 +146,42 @@
             ranges <- as.numeric(found_str_values[3:4])
         } else {
             # Get end from the maximum value.
-            ranges <- c(1, max(.data$gff$end))
+            ranges <- c(1, max(data$gff$end))
         }
     }
     return(ranges)
 }
 
-# Read in gff data and assign to global variables
-.read_gff <- function(gff_file) {
+# Read in GFF data.
+.read_gff <- function(data, gff_file) {
     if ("datapath" %in% colnames(gff_file)) {
-        .data$gff <- try({ ape::read.gff(file = gff_file$datapath, GFF3 = TRUE) }, silent = TRUE)
-        if (inherits(.data$gff, "try-error")) {
-            error_msg <- .data$gff
-            .data$gff <- NULL
+        data$gff <- try({ ape::read.gff(file = gff_file$datapath, GFF3 = TRUE) }, silent = TRUE)
+        if (inherits(data$gff, "try-error")) {
+            error_msg <- data$gff
+            data$gff <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read GFF3 file.",
                                                    "<br><br>",
                                                    error_msg)))
         }
-        ranges <- .determine_ranges(gff_file$datapath)
+        ranges <- .determine_ranges(data, gff_file$datapath)
 
         # Determine which type to filter.
-        gff_types <- unique(as.character(.data$gff$type))
+        gff_types <- unique(as.character(data$gff$type))
         if ("gene" %in% gff_types) {
             gff_type_filter <- "gene"
         } else if ("CDS" %in% gff_types) {
             gff_type_filter <- "CDS"
         } else {
-            .data$gff <- NULL
+            data$gff <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to determine filter type for GFF3 file.",
                                                    "<br><br>",
                                                    "Expected types 'gene' or 'CDS' or not found.")))
         }
-        .data$gff <- dplyr::select(.data$gff[.data$gff$type == gff_type_filter, ], "start", "end", "attributes")
-        .data$gff$Name <- .cpp_get_gff_name_from_attributes(.data$gff$attributes)
-        .data$gff$attributes <- NULL
-        .data$gff <- .cpp_add_igrs_to_gff(.data$gff, .data$outliers_direct, ranges)
-        .data$gff <- .data$gff[order(.data$gff$start), ]
+        data$gff <- dplyr::select(data$gff[data$gff$type == gff_type_filter, ], "start", "end", "attributes")
+        data$gff$Name <- .cpp_get_gff_name_from_attributes(data$gff$attributes)
+        data$gff$attributes <- NULL
+        data$gff <- .cpp_add_igrs_to_gff(data$gff, data$outliers_direct, ranges)
+        data$gff <- data$gff[order(data$gff$start), ]
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid GFF3 file data."))
     }
@@ -190,31 +190,31 @@
 }
 
 # Read files uploaded from the Shiny UI.
-.read_data <- function(outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file) {
+.read_data <- function(data, outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file) {
     # Clear any previous data.
-    .data$outliers <- NULL
-    .data$outliers_direct <- NULL
-    .data$tree <- NULL
-    .data$msa <- NULL
-    .data$phenotype <- NULL
-    .data$gff <- NULL
+    data$outliers <- NULL
+    data$outliers_direct <- NULL
+    data$tree <- NULL
+    data$msa <- NULL
+    data$phenotype <- NULL
+    data$gff <- NULL
 
     # Read outliers file.
     if (is.null(outliers_file)) {
         return(.status(.STATUS_FAILURE, "Outliers file must be provided."))
     }
-    read_outliers_status <- .read_outliers(outliers_file)
+    read_outliers_status <- .read_outliers(data, outliers_file)
     if (read_outliers_status$success == .STATUS_FAILURE) {
         return(read_outliers_status)
     }
 
     # Read tree, fasta and loci files if provided.
     if (!is.null(tree_file) && !is.null(fasta_file) && !is.null(loci_file)) {
-        read_tree_status <- .read_tree(tree_file)
+        read_tree_status <- .read_tree(data, tree_file)
         if (read_tree_status$success == .STATUS_FAILURE) {
             return(read_tree_status)
         }
-        read_msa_status <- .read_msa(fasta_file, loci_file)
+        read_msa_status <- .read_msa(data, fasta_file, loci_file)
         if (read_msa_status$success == .STATUS_FAILURE) {
             return(read_msa_status)
         }
@@ -222,7 +222,7 @@
 
     # Read phenotype file if provided.
     if (!is.null(phenotype_file)) {
-        read_phenotype_status <- .read_phenotype(phenotype_file)
+        read_phenotype_status <- .read_phenotype(data, phenotype_file)
         if (read_phenotype_status$success == .STATUS_FAILURE) {
             return(read_phenotype_status)
         }
@@ -230,7 +230,7 @@
 
     # Read GFF3 file if provided.
     if (!is.null(gff_file)) {
-        read_gff_status <- .read_gff(gff_file)
+        read_gff_status <- .read_gff(data, gff_file)
         if (read_gff_status$success == .STATUS_FAILURE) {
             return(read_gff_status)
         }
@@ -252,34 +252,34 @@
     return(.status(.STATUS_SUCCESS, status_msg))
 }
 
-.clear_data <- function() {
+.clear_data <- function(data) {
     cleared_data <- ""
     # Clear outliers.
-    if (!is.null(.data$outliers)) {
+    if (!is.null(data$outliers)) {
         cleared_data <- paste0(cleared_data, "<br>- Outliers")
     }
     # Clear tree and MSA.
-    if (!is.null(.data$tree) && !is.null(.data$msa)) {
+    if (!is.null(data$tree) && !is.null(data$msa)) {
         cleared_data <- paste0(cleared_data, "<br>- Tree file",
                                "<br>- Fasta file",
                                "<br>- Loci file")
     }
     # Clear phenotype file.
-    if (!is.null(.data$phenotype)) {
+    if (!is.null(data$phenotype)) {
         cleared_data <- paste0(cleared_data, "<br>- Phenotypic data file")
     }
     # Clear GFF3 file.
-    if (!is.null(.data$gff)) {
+    if (!is.null(data$gff)) {
         cleared_data <- paste0(cleared_data, "<br>- GFF3 file")
     }
 
-    .data$outliers <- NULL
-    .data$outliers_direct <- NULL
-    .data$tree <- NULL
-    .data$msa <- NULL
-    .data$phenotype <- NULL
-    .data$gff <- NULL
-    .data$edges <- NULL
+    data$outliers <- NULL
+    data$outliers_direct <- NULL
+    data$tree <- NULL
+    data$msa <- NULL
+    data$phenotype <- NULL
+    data$gff <- NULL
+    data$edges <- NULL
 
     if (length(cleared_data) == 0) {
         cleared_data <- "There was no data to clear."
