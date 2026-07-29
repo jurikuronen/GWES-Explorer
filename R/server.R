@@ -200,8 +200,6 @@
         output$data_load_status <- shiny::renderUI({""})
 
         result <- .clear_data(data)
-        .outlier_columns <<- .default_outlier_columns
-        .update_select_phenotype_input()
         .process_data()
 
         output$data_load_result <- shiny::renderText({"Cleared data."})
