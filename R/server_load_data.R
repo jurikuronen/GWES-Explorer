@@ -281,7 +281,7 @@
     data$gff <- NULL
     data$edges <- NULL
 
-    if (length(cleared_data) == 0) {
+    if (!nzchar(cleared_data)) {
         cleared_data <- "There was no data to clear."
     } else {
         cleared_data <- paste0("Cleared the following data:<br>", cleared_data)
