@@ -94,7 +94,8 @@
                                     fasta_file,
                                     loci_file,
                                     phenotype_file,
-                                    gff_file)
+                                    gff_file,
+                                    failure_message)
     {
         result <- .read_data(data,
                              outliers_file,
@@ -107,7 +108,7 @@
             output$data_load_result <- shiny::renderText({"Data loaded!"})
             .process_data()
         } else {
-            output$data_load_result <- shiny::renderText({"Failed to load example data."})
+            output$data_load_result <- shiny::renderText({failure_message})
         }
         output$data_load_status <- shiny::renderUI({ result$status })
     }
@@ -173,7 +174,8 @@
                             fasta_file = .example_fasta_file,
                             loci_file = .example_loci_file,
                             phenotype_file = .example_phenotype_file,
-                            gff_file = .example_gff_file)
+                            gff_file = .example_gff_file,
+                            failure_message = "Failed to load example data.")
     })
 
     # Handle load data event.
@@ -183,7 +185,8 @@
                             fasta_file = .get_file_data("fasta"),
                             loci_file = .get_file_data("loci"),
                             phenotype_file = .get_file_data("phenotype"),
-                            gff_file = .get_file_data("gff"))
+                            gff_file = .get_file_data("gff"),
+                            failure_message = "Failed to load uploaded data.")
     })
 
     # Handle clear data event.
