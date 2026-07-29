@@ -3,5 +3,5 @@
 .STATUS_FAILURE <- 1
 
 .status <- function(result, status_msg) {
-    return(data.frame(success = result, status_msg = shiny::HTML(status_msg)))
+    return(data.frame(success = result, status = shiny::HTML(status_msg)))
 }
