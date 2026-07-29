@@ -114,6 +114,12 @@
 .rescale_weights <- function(weights, a, b) {
     min_w <- min(weights)
     max_w <- max(weights)
+
+    # Avoid division by zero when all weights are equal.
+    if (min_w == max_w) {
+        return(rep((a + b) / 2, length(weights)))
+    }
+
     return((weights - min_w) * (b - a) / (max_w - min_w) + a)
 }
 
