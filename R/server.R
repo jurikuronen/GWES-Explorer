@@ -68,10 +68,14 @@
 
     # Download handlers for saving plots.
     .download_handler <- function(input, key, plot) {
-        download_name <- paste0("GWES-Explorer_", format(Sys.time(), "%Y%m%d_%H%M%S"), "_", key, "_plot")
         shiny::downloadHandler(
             filename = function() {
-                paste0(download_name, ".", input[[paste0(key, "_plot_type")]])
+                paste0("GWES-Explorer_",
+                       format(Sys.time(), "%Y%m%d_%H%M%S"),
+                       "_",
+                       key,
+                       "_plot.",
+                       input[[paste0(key, "_plot_type")]])
             },
             content = function(file) {
                 ggsave(
