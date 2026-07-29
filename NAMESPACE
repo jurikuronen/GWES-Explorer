@@ -1,3 +1,3 @@
 export(launch_GWESExplorer)
 import(ggplot2)
-useDynLib(GWESExplorer)
+useDynLib(GWESExplorer, .registration = TRUE)
