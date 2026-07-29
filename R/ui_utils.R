@@ -18,7 +18,7 @@
 }
 
 .save_plot_button <- function(prefix, width, height) {
-    if (requireNamespace("svg_lite", quietly = TRUE)) {
+    if (requireNamespace("svglite", quietly = TRUE)) {
         filetype_choices <- c("png", "tiff", "svg", "jpeg", "ps", "pdf")
     } else {
         filetype_choices <- c("png", "tiff", "jpeg", "ps", "pdf")
