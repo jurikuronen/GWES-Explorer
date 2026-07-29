@@ -67,7 +67,7 @@
     }
 
     # Download handlers for saving plots.
-    .download_handler <- function(input, key, plot) {
+    .download_handler <- function(input, key, plot_function) {
         shiny::downloadHandler(
             filename = function() {
                 paste0("GWES-Explorer_",
@@ -78,9 +78,10 @@
                        input[[paste0(key, "_plot_type")]])
             },
             content = function(file) {
+                # Generate the plot here so each download includes the current selections and settings.
                 ggsave(
                     filename = file,
-                    plot = plot,
+                    plot = plot_function(),
                     device = input[[paste0(key, "_plot_type")]],
                     width = input[[paste0(key, "_plot_width")]],
                     height = input[[paste0(key, "_plot_height")]],
@@ -309,12 +310,16 @@
     # Set download handlers for Manhattan and phylogenetic tree plots.
     output$gwes_manhattan_plot_download <- .download_handler(input,
                                                              key = "gwes_manhattan",
-                                                             plot = .gwes_manhattan_plot(data,
-                                                                                         input,
-                                                                                         .mh_gwes_ranges))
+                                                             plot_function = function() {
+                                                                 .gwes_manhattan_plot(data,
+                                                                                      input,
+                                                                                      .mh_gwes_ranges)
+                                                             })
     output$phylogenetic_tree_plot_download <- .download_handler(input,
                                                                 key = "phylogenetic_tree",
-                                                                plot = .tree_plot(data, input))
+                                                                plot_function = function() {
+                                                                    .tree_plot(data, input)
+                                                                })
 
     # Setup modifying circular plot signals from Shiny UI.
     vegawidget::vw_shiny_set_signal("circular_plot",
