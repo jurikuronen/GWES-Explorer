@@ -34,7 +34,8 @@
     if (!is.null(data$tree) && !is.null(data$msa)) {
         phylo_object <- .generate_phylogenetic_object(data, input)
         selected_rows <- input$outliers_table_rows_selected
-        if (is.null(selected_rows)) {
+        # length() is zero for both NULL and an empty selection.
+        if (length(selected_rows) == 0) {
             return(phylo_object)
         } else {
             # Append a heatmap of a matrix to the right side of the phylogenetic tree.
