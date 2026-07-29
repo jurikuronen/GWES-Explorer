@@ -20,7 +20,7 @@
             data$outliers <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read outliers file.",
                                                    "<br><br>",
-                                                   error_msg)))
+                                                   .escape_html(error_msg))))
         }
 
         data$outliers <- data$outliers[order(data$outliers$Direct == FALSE), ]
@@ -50,7 +50,7 @@
             data$tree <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read tree file.",
                                                    "<br><br>",
-                                                   error_msg)))
+                                                   .escape_html(error_msg))))
         }
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid tree file data."))
@@ -72,7 +72,7 @@
         if (inherits(fa, "try-error")) {
             return(.status(.STATUS_FAILURE, paste0("Failed to read fasta file.",
                                                    "<br><br>",
-                                                   fa)))
+                                                   .escape_html(fa))))
         }
 
         # All fasta sequences must have the same length.
@@ -92,7 +92,7 @@
         if (inherits(snp_loci, "try-error")) {
             return(.status(.STATUS_FAILURE, paste0("Failed to read loci file.",
                                                    "<br><br>",
-                                                   snp_loci)))
+                                                   .escape_html(snp_loci))))
         }
 
         # Convert list of sequences to a matrix and upper case.
@@ -120,7 +120,7 @@
             data$phenotype <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read phenotypic data file.",
                                                    "<br><br>",
-                                                   error_msg)))
+                                                   .escape_html(error_msg))))
         }
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid phenotypic data file data."))
@@ -166,7 +166,7 @@
             data$gff <- NULL
             return(.status(.STATUS_FAILURE, paste0("Failed to read GFF3 file.",
                                                    "<br><br>",
-                                                   error_msg)))
+                                                   .escape_html(error_msg))))
         }
         ranges <- .determine_ranges(data, gff_file$datapath)
 
@@ -253,17 +253,17 @@
         .precompute_circular_plot_data(loaded_data)
     }
     # Compile status message listing successfully read files.
-    status_msg <- paste0("Read in files:<br>- ", outliers_file$name)
+    status_msg <- paste0("Read in files:<br>- ", .escape_html(outliers_file$name))
     if (all(tree_data_files_provided)) {
-        status_msg <- paste0(status_msg, "<br>- ", tree_file$name)
-        status_msg <- paste0(status_msg, "<br>- ", fasta_file$name)
-        status_msg <- paste0(status_msg, "<br>- ", loci_file$name)
+        status_msg <- paste0(status_msg, "<br>- ", .escape_html(tree_file$name))
+        status_msg <- paste0(status_msg, "<br>- ", .escape_html(fasta_file$name))
+        status_msg <- paste0(status_msg, "<br>- ", .escape_html(loci_file$name))
     }
     if (!is.null(phenotype_file)) {
-        status_msg <- paste0(status_msg, "<br>- ", phenotype_file$name)
+        status_msg <- paste0(status_msg, "<br>- ", .escape_html(phenotype_file$name))
     }
     if (!is.null(gff_file)) {
-        status_msg <- paste0(status_msg, "<br>- ", gff_file$name)
+        status_msg <- paste0(status_msg, "<br>- ", .escape_html(gff_file$name))
     }
 
     # Copy loaded data into the session. The temporary environment will be garbage collected.
@@ -321,7 +321,7 @@
     if (inherits(reset_result, "try-error")) {
         return(.status(.STATUS_FAILURE, paste0("Failed to reset uploaded files.",
                                                "<br><br>",
-                                               reset_result)))
+                                               .escape_html(reset_result))))
     }
     return(.status(.STATUS_SUCCESS, ""))
 }

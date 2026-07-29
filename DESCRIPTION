@@ -16,8 +16,8 @@ License: GPL-3
 Encoding: UTF-8
 RoxygenNote: 7.1.1
 Imports:
-    ape, colourpicker, dplyr, DT, ggnewscale, ggplot2, ggtree, readr, Rcpp, seqinr, shiny, shinyjs, shinyWidgets,
-    stats, tibble, treeio, utils, vegawidget, viridis
+    ape, colourpicker, dplyr, DT, ggnewscale, ggplot2, ggtree, htmltools, readr, Rcpp, seqinr, shiny, shinyjs,
+    shinyWidgets, stats, tibble, treeio, utils, vegawidget, viridis
 Suggests:
     svglite
 LinkingTo: Rcpp
