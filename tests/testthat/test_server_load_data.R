@@ -66,3 +66,25 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
     expect_identical(data$outliers, previous_outliers)
     expect_identical(data$edges, previous_edges)
 })
+
+test_that(".read_tree detects the format from file names", {
+    tree_paths <- c(newick = tempfile(), nexus = tempfile())
+    on.exit(unlink(tree_paths))
+    writeLines("(A:1,B:1);", tree_paths[["newick"]])
+    writeLines(c("#NEXUS", "Begin trees;", "Tree tree_1 = (A:1,B:1);", "End;"), tree_paths[["nexus"]])
+
+    cases <- list(
+        "Newick" = data.frame(datapath = tree_paths[["newick"]], name = "tree.nwk"),
+        "Nexus" = data.frame(datapath = tree_paths[["nexus"]], name = "tree.nex")
+    )
+
+    for (case_name in names(cases)) {
+        tree_file <- cases[[case_name]]
+        data <- new.env(parent = emptyenv())
+
+        result <- .read_tree(data, tree_file)
+
+        expect_identical(result$success, .STATUS_SUCCESS, info = case_name)
+        expect_false(is.null(data$tree), info = case_name)
+    }
+})

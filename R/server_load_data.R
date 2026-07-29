@@ -34,12 +34,13 @@
 
 # Read in tree.
 .read_tree <- function(data, tree_file) {
-    if ("datapath" %in% colnames(tree_file)) {
+    if (all(c("datapath", "name") %in% colnames(tree_file))) {
         filepath <- tree_file$datapath
+        filename <- tree_file$name
 
-        if (endsWith(filepath, ".nex")) {
+        if (endsWith(filename, ".nex")) {
             data$tree <- try({ treeio::read.nexus(file = filepath) }, silent = TRUE)
-        } else if (endsWith(filepath, ".nwk")) {
+        } else if (endsWith(filename, ".nwk")) {
             data$tree <- try({ treeio::read.newick(file = filepath) }, silent = TRUE)
         } else {
             return(.status(.STATUS_FAILURE, "Unknown format for tree file: file must end in .nex or .nwk."))
