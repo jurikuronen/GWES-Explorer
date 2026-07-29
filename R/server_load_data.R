@@ -1,13 +1,18 @@
 # Read in outlier lists.
 .read_outliers <- function(data, outliers_file) {
-    outliers_col_names <- c("Pos_1", "Pos_2", "Distance", "Direct", "MI", "MI_wogaps", "Gap_effect", "Extreme")
-    outliers_col_types <- c("integer", "integer", "integer", "logical", "numeric", "numeric", "numeric", "logical")
     if ("datapath" %in% colnames(outliers_file)) {
         data$outliers <- try({
             readr::read_delim(file = outliers_file$datapath,
                               delim = " ",
                               col_types = "iiildddl",
-                              col_names = outliers_col_names)
+                              col_names = c("Pos_1",
+                                            "Pos_2",
+                                            "Distance",
+                                            "Direct",
+                                            "MI",
+                                            "MI_wogaps",
+                                            "Gap_effect",
+                                            "Extreme"))
         }, silent = TRUE)
 
         if (inherits(data$outliers, "try-error")) {
