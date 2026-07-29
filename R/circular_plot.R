@@ -1,31 +1,31 @@
-.render_circular_plot <- function() {
+.render_circular_plot <- function(data) {
     vegawidget::renderVegawidget({
-        if (is.null(.data$edges)) {
+        if (is.null(data$edges)) {
             return(NULL)
         }
-        .data$edges
+        data$edges
     })
 }
 
-.set_circular_plot_signals <- function(selected_row) {
+.set_circular_plot_signals <- function(data, selected_row) {
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_region_1",
-                                    .data$outliers_direct$Pos_1_region[selected_row])
+                                    data$outliers_direct$Pos_1_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_gene_1",
-                                    .data$outliers_direct$Pos_1_gene[selected_row])
+                                    data$outliers_direct$Pos_1_gene[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_position_1",
-                                    .data$outliers_direct$Pos_1[selected_row])
+                                    data$outliers_direct$Pos_1[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_region_2",
-                                    .data$outliers_direct$Pos_2_region[selected_row])
+                                    data$outliers_direct$Pos_2_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_gene_2",
-                                    .data$outliers_direct$Pos_2_gene[selected_row])
+                                    data$outliers_direct$Pos_2_gene[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_position_2",
-                                    .data$outliers_direct$Pos_2[selected_row])
+                                    data$outliers_direct$Pos_2[selected_row])
 }
 
 # Calculate region boundaries. Returns a string vector with "start-end" strings.

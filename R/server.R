@@ -152,7 +152,7 @@
         output$manhattan_plot <- .render_gwes_manhattan_plot(input, .mh_gwes_ranges)
         output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(input, .outlier_columns)
         output$tree_plot <- .render_tree_plot(input)
-        output$circular_plot <- .render_circular_plot()
+        output$circular_plot <- .render_circular_plot(.data)
     }
 
     # Set reactive file upload states.
@@ -257,7 +257,7 @@
         output$tree_plot <- .render_tree_plot(input)
         selected_rows <- input$outliers_table_rows_selected
         if (!is.null(.data$gff) && length(selected_rows) > 0) {
-            .set_circular_plot_signals(selected_rows[1])
+            .set_circular_plot_signals(.data, selected_rows[1])
         }
     })
 
