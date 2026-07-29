@@ -1,16 +1,13 @@
-.Rproj.user
+# R and RStudio files.
+.Rproj.user/
 .Rhistory
 .RData
 .Ruserdata
 *.Rproj
 
-# Vim temporary files
-*.swp
-*.swo
+# R package check output.
+*.Rcheck/
 
-# C++ object and shared library files
+# C++ object and shared library files.
 *.o
 *.so
-
-# Ignore development files and notes.
-dev/
