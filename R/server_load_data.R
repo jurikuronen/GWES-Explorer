@@ -198,6 +198,7 @@
     data$msa <- NULL
     data$phenotype <- NULL
     data$gff <- NULL
+    data$edges <- NULL
 
     # Read outliers file.
     if (is.null(outliers_file)) {
