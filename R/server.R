@@ -37,12 +37,8 @@
                                            phenotype = 0,
                                            gff = 0)
 
-    # Flag to prevent events from occurring when creating/updating tables.
-    .phenotype_selections_updated <- 0
-
     # Update phenotype selections for this session.
     .update_select_phenotype_input <- function() {
-        .phenotype_selections_updated <<- 1
         if (!is.null(data$phenotype)) {
             n <- as.list(0:ncol(data$phenotype))
             names(n) <- c("No phenotype selected",
@@ -159,6 +155,8 @@
         output$outliers_table <- .generate_outliers_table(input, .outlier_columns)
         output$manhattan_plot <- .render_gwes_manhattan_plot(data, input, .mh_gwes_ranges)
         output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(data, input, .outlier_columns)
+        # Session data is not reactive, so recreate the renderer here.
+        # Shiny reruns it when phenotype or row selection inputs change.
         output$tree_plot <- .render_tree_plot(data, input)
         output$circular_plot <- .render_circular_plot(data)
     }
@@ -262,20 +260,10 @@
 
     # Handle row selection event.
     shiny::observeEvent(input$outliers_table_rows_selected, {
-        output$tree_plot <- .render_tree_plot(data, input)
         selected_rows <- input$outliers_table_rows_selected
         if (!is.null(data$gff) && length(selected_rows) > 0) {
             .set_circular_plot_signals(data, selected_rows[1])
         }
-    })
-
-    # Handle phenotype selection event.
-    shiny::observeEvent(input$select_phenotype, {
-        # Trigger event only if the selections weren't just updated.
-        if (.phenotype_selections_updated == 0) {
-            output$tree_plot <- .render_tree_plot(data, input)
-        }
-        .phenotype_selections_updated <<- 0
     })
 
     # Render file input buttons.
