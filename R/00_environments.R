@@ -1,4 +1,3 @@
-# Global environments for storing data, settings and statuses.
-.data <- new.env()
+# Global environments for storing settings and statuses.
 .settings <- new.env()
 .status <- new.env()

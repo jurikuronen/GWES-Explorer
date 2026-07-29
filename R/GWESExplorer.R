@@ -13,15 +13,6 @@ launch_GWESExplorer <- function(launch_in_browser = TRUE,
 {
     options(shiny.maxRequestSize = max_request_size) # Set maximum file size limit.
 
-    # Initialize data keys.
-    .data$edges <- NULL
-    .data$gff <- NULL
-    .data$msa <- NULL
-    .data$outliers <- NULL
-    .data$outliers_direct <- NULL
-    .data$phenotype <- NULL
-    .data$tree <- NULL
-
     shiny::shinyApp(.create_ui_layout(),
                     .server,
                     options = list(launch.browser = launch_in_browser))

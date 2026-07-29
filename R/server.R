@@ -1,6 +1,9 @@
 # Define server logic for the Shiny application.
 .server <- function(input, output, session) {
 
+    # Application data for this session.
+    data <- new.env(parent = emptyenv())
+
     # Example data files for "Load example data" action.
     .example_file <- function(name) {
         tibble::tibble(datapath = system.file("extdata",
@@ -40,10 +43,10 @@
     # Update phenotype selections for this session.
     .update_select_phenotype_input <- function() {
         .phenotype_selections_updated <<- 1
-        if (!is.null(.data$phenotype)) {
-            n <- as.list(0:ncol(.data$phenotype))
+        if (!is.null(data$phenotype)) {
+            n <- as.list(0:ncol(data$phenotype))
             names(n) <- c("No phenotype selected",
-                          colnames(.data$phenotype))
+                          colnames(data$phenotype))
             shiny::updateSelectInput(session,
                                      inputId = "select_phenotype",
                                      choices = n)
@@ -93,7 +96,7 @@
                                     phenotype_file,
                                     gff_file)
     {
-        result <- .read_data(.data,
+        result <- .read_data(data,
                              outliers_file,
                              tree_file,
                              fasta_file,
@@ -119,8 +122,8 @@
 
     # Helper function to generate the outliers table.
     .generate_outliers_table <- function(input, outlier_columns) {
-        if (!is.null(.data$outliers)) {
-            return(DT::renderDT(.data$outliers_direct[, outlier_columns],
+        if (!is.null(data$outliers)) {
+            return(DT::renderDT(data$outliers_direct[, outlier_columns],
                                 server = FALSE,
                                 options = list(pageLength = 25, scrollX = TRUE),
                                 selection = input$select_row_type))
@@ -141,7 +144,7 @@
         .update_select_phenotype_input()
 
         # Update outlier columns based on what was read.
-        if (is.null(.data$gff)) {
+        if (is.null(data$gff)) {
             .outlier_columns <<- .default_outlier_columns
         } else {
             .outlier_columns <<- .extended_outlier_columns
@@ -149,10 +152,10 @@
 
         # Render plots after reading data was completed.
         output$outliers_table <- .generate_outliers_table(input, .outlier_columns)
-        output$manhattan_plot <- .render_gwes_manhattan_plot(.data, input, .mh_gwes_ranges)
-        output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(.data, input, .outlier_columns)
-        output$tree_plot <- .render_tree_plot(.data, input)
-        output$circular_plot <- .render_circular_plot(.data)
+        output$manhattan_plot <- .render_gwes_manhattan_plot(data, input, .mh_gwes_ranges)
+        output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(data, input, .outlier_columns)
+        output$tree_plot <- .render_tree_plot(data, input)
+        output$circular_plot <- .render_circular_plot(data)
     }
 
     # Set reactive file upload states.
@@ -189,7 +192,7 @@
         output$data_load_result <- shiny::renderText({"Clearing data..."})
         output$data_load_status <- shiny::renderUI({""})
 
-        result <- .clear_data(.data)
+        result <- .clear_data(data)
         .outlier_columns <<- .default_outlier_columns
         .update_select_phenotype_input()
         .process_data()
@@ -254,10 +257,10 @@
 
     # Handle row selection event.
     shiny::observeEvent(input$outliers_table_rows_selected, {
-        output$tree_plot <- .render_tree_plot(.data, input)
+        output$tree_plot <- .render_tree_plot(data, input)
         selected_rows <- input$outliers_table_rows_selected
-        if (!is.null(.data$gff) && length(selected_rows) > 0) {
-            .set_circular_plot_signals(.data, selected_rows[1])
+        if (!is.null(data$gff) && length(selected_rows) > 0) {
+            .set_circular_plot_signals(data, selected_rows[1])
         }
     })
 
@@ -265,7 +268,7 @@
     shiny::observeEvent(input$select_phenotype, {
         # Trigger event only if the selections weren't just updated.
         if (.phenotype_selections_updated == 0) {
-            output$tree_plot <- .render_tree_plot(.data, input)
+            output$tree_plot <- .render_tree_plot(data, input)
         }
         .phenotype_selections_updated <<- 0
     })
@@ -300,12 +303,12 @@
     # Set download handlers for Manhattan and phylogenetic tree plots.
     output$gwes_manhattan_plot_download <- .download_handler(input,
                                                              key = "gwes_manhattan",
-                                                             plot = .gwes_manhattan_plot(.data,
+                                                             plot = .gwes_manhattan_plot(data,
                                                                                          input,
                                                                                          .mh_gwes_ranges))
     output$phylogenetic_tree_plot_download <- .download_handler(input,
                                                                 key = "phylogenetic_tree",
-                                                                plot = .tree_plot(.data, input))
+                                                                plot = .tree_plot(data, input))
 
     # Setup modifying circular plot signals from Shiny UI.
     vegawidget::vw_shiny_set_signal("circular_plot",
