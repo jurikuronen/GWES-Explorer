@@ -68,7 +68,6 @@
 
     # Download handlers for saving plots.
     .download_handler <- function(input, key, plot) {
-        dpi <- 96
         download_name <- paste0("GWES-Explorer_", format(Sys.time(), "%Y%m%d_%H%M%S"), "_", key, "_plot")
         shiny::downloadHandler(
             filename = function() {
@@ -79,9 +78,9 @@
                     filename = file,
                     plot = plot,
                     device = input[[paste0(key, "_plot_type")]],
-                    width = input[[paste0(key, "_plot_width")]] * input[[paste0(key, "_plot_dpi")]] / dpi,
-                    height = input[[paste0(key, "_plot_height")]] * input[[paste0(key, "_plot_dpi")]] / dpi,
-                    dpi = dpi,
+                    width = input[[paste0(key, "_plot_width")]],
+                    height = input[[paste0(key, "_plot_height")]],
+                    dpi = input[[paste0(key, "_plot_dpi")]],
                     units = input[[paste0(key, "_plot_unit")]]
                 )
             }

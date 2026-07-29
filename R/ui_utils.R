@@ -47,7 +47,7 @@
         .div_inline_block(2.5, shiny::numericInput(paste0(prefix, "_dpi"),
                                                  label = "DPI",
                                                  value = 300,
-                                                 min = 0,
+                                                 min = 1,
                                                  max = 5000)),
         .div_inline_block(7.5, shiny::radioButtons(paste0(prefix, "_type"),
                                                  label = "File type",
