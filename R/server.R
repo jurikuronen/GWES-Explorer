@@ -2,18 +2,19 @@
 .server <- function(input, output, session) {
 
     # Example data files for "Load example data" action.
-    .example_outliers_file <- tibble::tibble(datapath = "example_data/maela_outliers.outliers",
-                                             name = "maela_outliers.outliers")
-    .example_tree_file <- tibble::tibble(datapath = "example_data/maela_tree.nex",
-                                         name = "maela_tree.nex")
-    .example_fasta_file <- tibble::tibble(datapath = "example_data/maela_fasta.fasta",
-                                          name = "maela_fasta.fasta")
-    .example_loci_file <- tibble::tibble(datapath = "example_data/maela_loci.loci",
-                                         name = "maela_loci.loci")
-    .example_phenotype_file <- tibble::tibble(datapath = "example_data/maela_phenotypes.csv",
-                                              name = "maela_phenotypes.csv")
-    .example_gff_file <- tibble::tibble(datapath = "example_data/maela_gff.gff3",
-                                        name = "maela_gff.gff3")
+    .example_file <- function(name) {
+        tibble::tibble(datapath = system.file("extdata",
+                                              name,
+                                              package = "GWESExplorer",
+                                              mustWork = TRUE),
+                       name = name)
+    }
+    .example_outliers_file <- .example_file("maela_outliers.outliers")
+    .example_tree_file <- .example_file("maela_tree.nex")
+    .example_fasta_file <- .example_file("maela_fasta.fasta")
+    .example_loci_file <- .example_file("maela_loci.loci")
+    .example_phenotype_file <- .example_file("maela_phenotypes.csv")
+    .example_gff_file <- .example_file("maela_gff.gff3")
 
     # Column names in outliers table.
     .default_outlier_columns <- c("Pos_1", "Pos_2", "MI", "MI_wogaps", "Distance")
