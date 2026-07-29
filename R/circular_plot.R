@@ -94,7 +94,7 @@
 
     # Precompute main plot.
     circular_data <- .create_circular_data(data)
-    top_level_dependencies <- .create_top_level_links(data, circular_data)
+    top_level_dependencies <- .create_top_level_links(data)
     edges <- .circular_plot_vega_spec(circular_data, top_level_dependencies)
 
     # Add gene data.
@@ -117,7 +117,7 @@
     return((weights - min_w) * (b - a) / (max_w - min_w) + a)
 }
 
-.create_top_level_links <- function(data, circular_data) {
+.create_top_level_links <- function(data) {
     dependencies <- transform(data$outliers_direct,
                               source = Pos_1_region,
                               target = Pos_2_region,
