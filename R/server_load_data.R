@@ -191,16 +191,6 @@
 
 # Read files uploaded from the Shiny UI.
 .read_data <- function(data, outliers_file, tree_file, fasta_file, loci_file, phenotype_file, gff_file) {
-    # Clear any previous data.
-    data$outliers <- NULL
-    data$outliers_direct <- NULL
-    data$tree <- NULL
-    data$msa <- NULL
-    data$phenotype <- NULL
-    data$gff <- NULL
-    data$edges <- NULL
-
-    # Read outliers file.
     if (is.null(outliers_file)) {
         return(.status(.STATUS_FAILURE, "Outliers file must be provided."))
     }
@@ -213,18 +203,29 @@
                        "Tree plot requires all three files: tree, fasta and loci."))
     }
 
-    read_outliers_status <- .read_outliers(data, outliers_file)
+    # Load data into a temporary environment so failures leave the current session data unchanged.
+    loaded_data <- new.env(parent = emptyenv())
+    loaded_data$outliers <- NULL
+    loaded_data$outliers_direct <- NULL
+    loaded_data$tree <- NULL
+    loaded_data$msa <- NULL
+    loaded_data$phenotype <- NULL
+    loaded_data$gff <- NULL
+    loaded_data$edges <- NULL
+
+    # Read outliers file.
+    read_outliers_status <- .read_outliers(loaded_data, outliers_file)
     if (read_outliers_status$success == .STATUS_FAILURE) {
         return(read_outliers_status)
     }
 
     # Read tree, fasta and loci files if provided.
     if (all(tree_data_files_provided)) {
-        read_tree_status <- .read_tree(data, tree_file)
+        read_tree_status <- .read_tree(loaded_data, tree_file)
         if (read_tree_status$success == .STATUS_FAILURE) {
             return(read_tree_status)
         }
-        read_msa_status <- .read_msa(data, fasta_file, loci_file)
+        read_msa_status <- .read_msa(loaded_data, fasta_file, loci_file)
         if (read_msa_status$success == .STATUS_FAILURE) {
             return(read_msa_status)
         }
@@ -232,7 +233,7 @@
 
     # Read phenotype file if provided.
     if (!is.null(phenotype_file)) {
-        read_phenotype_status <- .read_phenotype(data, phenotype_file)
+        read_phenotype_status <- .read_phenotype(loaded_data, phenotype_file)
         if (read_phenotype_status$success == .STATUS_FAILURE) {
             return(read_phenotype_status)
         }
@@ -240,11 +241,11 @@
 
     # Read GFF3 file if provided.
     if (!is.null(gff_file)) {
-        read_gff_status <- .read_gff(data, gff_file)
+        read_gff_status <- .read_gff(loaded_data, gff_file)
         if (read_gff_status$success == .STATUS_FAILURE) {
             return(read_gff_status)
         }
-        .precompute_circular_plot_data(data)
+        .precompute_circular_plot_data(loaded_data)
     }
     # Compile status message listing successfully read files.
     status_msg <- paste0("Read in files:<br>- ", outliers_file$name)
@@ -259,6 +260,12 @@
     if (!is.null(gff_file)) {
         status_msg <- paste0(status_msg, "<br>- ", gff_file$name)
     }
+
+    # Copy loaded data into the session. The temporary environment will be garbage collected.
+    for (key in c("outliers", "outliers_direct", "tree", "msa", "phenotype", "gff", "edges")) {
+        data[[key]] <- loaded_data[[key]]
+    }
+
     return(.status(.STATUS_SUCCESS, status_msg))
 }
 
