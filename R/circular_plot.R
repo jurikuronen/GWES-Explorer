@@ -123,10 +123,10 @@
                               target = Pos_2_region,
                               weight = MI
     )[c("source", "target", "weight")]
-    dependencies$count <- ave(dependencies$target,
-                              dependencies$source,
-                              dependencies$target,
-                              FUN = length)
+    dependencies$count <- stats::ave(dependencies$target,
+                                     dependencies$source,
+                                     dependencies$target,
+                                     FUN = length)
     dependencies$count <- 1 + log(log(dependencies$count + 2))
     dependencies <- dependencies[!duplicated(dependencies[c("source", "target")]), ]
     dependencies[, 3] <- .rescale_weights(dependencies$weight, 0.75, 1)
