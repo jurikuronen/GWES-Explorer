@@ -9,7 +9,7 @@
 
 .gwes_manhattan_plot <- function(data, input, mh_gwes_ranges) {
     if (!is.null(data$outliers)) {
-        Distance = MI = Direct = fontsize = NULL  # R CMD check hack.
+        Distance = MI = Direct = NULL  # R CMD check hack.
         min_mi <- min(data$outliers$MI)
         max_mi <- max(data$outliers$MI)
         max_distance <- max(data$outliers$Distance)
