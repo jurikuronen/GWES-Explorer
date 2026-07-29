@@ -234,7 +234,7 @@
         if (read_gff_status$success == .STATUS_FAILURE) {
             return(read_gff_status)
         }
-        .precompute_circular_plot_data()
+        .precompute_circular_plot_data(data)
     }
     # Compile status message listing successfully read files.
     status_msg <- paste0("Read in files:<br>- ", outliers_file$name)
