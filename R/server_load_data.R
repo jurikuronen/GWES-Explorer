@@ -203,13 +203,22 @@
     if (is.null(outliers_file)) {
         return(.status(.STATUS_FAILURE, "Outliers file must be provided."))
     }
+
+    tree_data_files_provided <- c(!is.null(tree_file),
+                                  !is.null(fasta_file),
+                                  !is.null(loci_file))
+    if (any(tree_data_files_provided) && !all(tree_data_files_provided)) {
+        return(.status(.STATUS_FAILURE,
+                       "Tree plot requires all three files: tree, fasta and loci."))
+    }
+
     read_outliers_status <- .read_outliers(data, outliers_file)
     if (read_outliers_status$success == .STATUS_FAILURE) {
         return(read_outliers_status)
     }
 
     # Read tree, fasta and loci files if provided.
-    if (!is.null(tree_file) && !is.null(fasta_file) && !is.null(loci_file)) {
+    if (all(tree_data_files_provided)) {
         read_tree_status <- .read_tree(data, tree_file)
         if (read_tree_status$success == .STATUS_FAILURE) {
             return(read_tree_status)
@@ -238,7 +247,7 @@
     }
     # Compile status message listing successfully read files.
     status_msg <- paste0("Read in files:<br>- ", outliers_file$name)
-    if (!is.null(tree_file) && !is.null(fasta_file) && !is.null(loci_file)) {
+    if (all(tree_data_files_provided)) {
         status_msg <- paste0(status_msg, "<br>- ", tree_file$name)
         status_msg <- paste0(status_msg, "<br>- ", fasta_file$name)
         status_msg <- paste0(status_msg, "<br>- ", loci_file$name)
