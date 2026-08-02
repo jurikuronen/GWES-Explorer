@@ -25,6 +25,10 @@
 
         data$outliers <- data$outliers[order(data$outliers$Direct == FALSE), ]
         data$outliers_direct <- data$outliers[data$outliers$Direct == TRUE, ]
+
+        if (nrow(data$outliers_direct) == 0) {
+            return(.status(.STATUS_FAILURE, "Outliers file must contain at least one direct outlier link."))
+        }
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid outliers file data."))
     }
