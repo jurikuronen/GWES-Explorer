@@ -158,7 +158,7 @@
     return(ranges)
 }
 
-# Read in GFF data.
+# Read in GFF3 data.
 .read_gff <- function(data, gff_file) {
     if ("datapath" %in% colnames(gff_file)) {
         data$gff <- try({ ape::read.gff(file = gff_file$datapath, GFF3 = TRUE) }, silent = TRUE)
@@ -183,11 +183,25 @@
                                                    "<br><br>",
                                                    "Expected types 'gene' or 'CDS' or not found.")))
         }
+
+        # Keep the gene locations and names needed for the circular plot.
         data$gff <- dplyr::select(data$gff[data$gff$type == gff_type_filter, ], "start", "end", "attributes")
+
+        # Extract the gene names from the GFF3 attributes.
         data$gff$Name <- .cpp_get_gff_name_from_attributes(data$gff$attributes)
+
+        # The full attribute strings are no longer needed.
         data$gff$attributes <- NULL
-        data$gff <- .cpp_add_igrs_to_gff(data$gff, data$outliers_direct, ranges)
-        data$gff <- data$gff[order(data$gff$start), ]
+
+        # Ensure that the genes are sorted in genomic order for intergenic region (IGR) calculation.
+        data$gff <- data$gff[order(data$gff$start, data$gff$end), ]
+
+        # Find all IGRs with at least one outlier position and append them to the GFF3 data.
+        igrs <- .cpp_find_igrs_with_outliers(data$gff$start, data$gff$end, data$outliers_direct, ranges)
+        data$gff <- rbind(data$gff, igrs)
+
+        # The new IGR rows were appended, so the data must be sorted again.
+        data$gff <- data$gff[order(data$gff$start, data$gff$end), ]
     } else {
         return(.status(.STATUS_FAILURE, "Internal error: got invalid GFF3 file data."))
     }

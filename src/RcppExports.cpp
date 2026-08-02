@@ -34,38 +34,41 @@ BEGIN_RCPP
 END_RCPP
 }
 // get_gff_name_from_attributes
-Rcpp::CharacterVector get_gff_name_from_attributes(Rcpp::CharacterVector attributes);
+Rcpp::CharacterVector get_gff_name_from_attributes(const Rcpp::CharacterVector& attributes);
 RcppExport SEXP _GWESExplorer_get_gff_name_from_attributes(SEXP attributesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::CharacterVector >::type attributes(attributesSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::CharacterVector& >::type attributes(attributesSEXP);
     rcpp_result_gen = Rcpp::wrap(get_gff_name_from_attributes(attributes));
     return rcpp_result_gen;
 END_RCPP
 }
-// add_igrs_to_gff
-Rcpp::DataFrame add_igrs_to_gff(Rcpp::List gff, Rcpp::List outliers_direct, Rcpp::NumericVector region_ranges);
-RcppExport SEXP _GWESExplorer_add_igrs_to_gff(SEXP gffSEXP, SEXP outliers_directSEXP, SEXP region_rangesSEXP) {
+// find_igrs_with_outliers
+Rcpp::DataFrame find_igrs_with_outliers(const Rcpp::NumericVector& gene_start_positions, const Rcpp::NumericVector& gene_end_positions, const Rcpp::List& outliers_direct, const Rcpp::NumericVector& region_ranges);
+RcppExport SEXP _GWESExplorer_find_igrs_with_outliers(SEXP gene_start_positionsSEXP, SEXP gene_end_positionsSEXP, SEXP outliers_directSEXP, SEXP region_rangesSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type gff(gffSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type outliers_direct(outliers_directSEXP);
-    Rcpp::traits::input_parameter< Rcpp::NumericVector >::type region_ranges(region_rangesSEXP);
-    rcpp_result_gen = Rcpp::wrap(add_igrs_to_gff(gff, outliers_direct, region_ranges));
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gene_start_positions(gene_start_positionsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gene_end_positions(gene_end_positionsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::List& >::type outliers_direct(outliers_directSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type region_ranges(region_rangesSEXP);
+    rcpp_result_gen = Rcpp::wrap(find_igrs_with_outliers(gene_start_positions, gene_end_positions, outliers_direct, region_ranges));
     return rcpp_result_gen;
 END_RCPP
 }
-// compute_outlier_genes
-Rcpp::DataFrame compute_outlier_genes(Rcpp::List gff, Rcpp::List outliers_direct);
-RcppExport SEXP _GWESExplorer_compute_outlier_genes(SEXP gffSEXP, SEXP outliers_directSEXP) {
+// find_outlier_gene_or_igr_indices
+Rcpp::DataFrame find_outlier_gene_or_igr_indices(const Rcpp::NumericVector& gene_or_igr_start_positions, const Rcpp::NumericVector& gene_or_igr_end_positions, const Rcpp::NumericVector& outlier_positions_1, const Rcpp::NumericVector& outlier_positions_2);
+RcppExport SEXP _GWESExplorer_find_outlier_gene_or_igr_indices(SEXP gene_or_igr_start_positionsSEXP, SEXP gene_or_igr_end_positionsSEXP, SEXP outlier_positions_1SEXP, SEXP outlier_positions_2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< Rcpp::List >::type gff(gffSEXP);
-    Rcpp::traits::input_parameter< Rcpp::List >::type outliers_direct(outliers_directSEXP);
-    rcpp_result_gen = Rcpp::wrap(compute_outlier_genes(gff, outliers_direct));
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gene_or_igr_start_positions(gene_or_igr_start_positionsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gene_or_igr_end_positions(gene_or_igr_end_positionsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type outlier_positions_1(outlier_positions_1SEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type outlier_positions_2(outlier_positions_2SEXP);
+    rcpp_result_gen = Rcpp::wrap(find_outlier_gene_or_igr_indices(gene_or_igr_start_positions, gene_or_igr_end_positions, outlier_positions_1, outlier_positions_2));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -74,8 +77,8 @@ static const R_CallMethodDef CallEntries[] = {
     {"_GWESExplorer_create_pos_links", (DL_FUNC) &_GWESExplorer_create_pos_links, 2},
     {"_GWESExplorer_sorted_pos_links", (DL_FUNC) &_GWESExplorer_sorted_pos_links, 1},
     {"_GWESExplorer_get_gff_name_from_attributes", (DL_FUNC) &_GWESExplorer_get_gff_name_from_attributes, 1},
-    {"_GWESExplorer_add_igrs_to_gff", (DL_FUNC) &_GWESExplorer_add_igrs_to_gff, 3},
-    {"_GWESExplorer_compute_outlier_genes", (DL_FUNC) &_GWESExplorer_compute_outlier_genes, 2},
+    {"_GWESExplorer_find_igrs_with_outliers", (DL_FUNC) &_GWESExplorer_find_igrs_with_outliers, 4},
+    {"_GWESExplorer_find_outlier_gene_or_igr_indices", (DL_FUNC) &_GWESExplorer_find_outlier_gene_or_igr_indices, 4},
     {NULL, NULL, 0}
 };
 

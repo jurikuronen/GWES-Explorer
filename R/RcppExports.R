@@ -2,22 +2,22 @@
 # Generator token: 10BE3573-1514-4C36-9D1C-5A225CD40393
 
 .cpp_create_pos_links <- function(outliers_direct, pos_data) {
-    .Call('_GWESExplorer_create_pos_links', PACKAGE = 'GWESExplorer', outliers_direct, pos_data)
+    .Call(`_GWESExplorer_create_pos_links`, outliers_direct, pos_data)
 }
 
 .cpp_sorted_pos_links <- function(pos_links) {
-    .Call('_GWESExplorer_sorted_pos_links', PACKAGE = 'GWESExplorer', pos_links)
+    .Call(`_GWESExplorer_sorted_pos_links`, pos_links)
 }
 
 .cpp_get_gff_name_from_attributes <- function(attributes) {
-    .Call('_GWESExplorer_get_gff_name_from_attributes', PACKAGE = 'GWESExplorer', attributes)
+    .Call(`_GWESExplorer_get_gff_name_from_attributes`, attributes)
 }
 
-.cpp_add_igrs_to_gff <- function(gff, outliers_direct, region_ranges) {
-    .Call('_GWESExplorer_add_igrs_to_gff', PACKAGE = 'GWESExplorer', gff, outliers_direct, region_ranges)
+.cpp_find_igrs_with_outliers <- function(gene_start_positions, gene_end_positions, outliers_direct, region_ranges) {
+    .Call(`_GWESExplorer_find_igrs_with_outliers`, gene_start_positions, gene_end_positions, outliers_direct, region_ranges)
 }
 
-.cpp_compute_outlier_genes <- function(gff, outliers_direct) {
-    .Call('_GWESExplorer_compute_outlier_genes', PACKAGE = 'GWESExplorer', gff, outliers_direct)
+.cpp_find_outlier_gene_or_igr_indices <- function(gene_or_igr_start_positions, gene_or_igr_end_positions, outlier_positions_1, outlier_positions_2) {
+    .Call(`_GWESExplorer_find_outlier_gene_or_igr_indices`, gene_or_igr_start_positions, gene_or_igr_end_positions, outlier_positions_1, outlier_positions_2)
 }
 

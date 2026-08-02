@@ -82,15 +82,21 @@
 .precompute_circular_plot_data <- function(data) {
     data$gff$gene_regions <- .compute_gene_regions(data, .circular_plot_regions())
 
-    # Precompute pos gene/region information.
-    pos_genes <- .cpp_compute_outlier_genes(data$gff, data$outliers_direct)
+    # Find the gene or calculated IGR containing each outlier position.
+    outlier_gene_or_igr_indices <- .cpp_find_outlier_gene_or_igr_indices(data$gff$start,
+                                                                         data$gff$end,
+                                                                         data$outliers_direct$Pos_1,
+                                                                         data$outliers_direct$Pos_2)
 
-    data$outliers_direct$Pos_1_gene <- pos_genes$pos1_gene
-    data$outliers_direct$Pos_2_gene <- pos_genes$pos2_gene
-    data$outliers_direct$Pos_1_gene_name <- data$gff$Name[pos_genes$pos1_gene]
-    data$outliers_direct$Pos_2_gene_name <- data$gff$Name[pos_genes$pos2_gene]
-    data$outliers_direct$Pos_1_region <- data$gff$gene_regions[pos_genes$pos1_gene]
-    data$outliers_direct$Pos_2_region <- data$gff$gene_regions[pos_genes$pos2_gene]
+    pos_1_gene_or_igr_indices <- outlier_gene_or_igr_indices$pos1_gene_or_igr_index
+    pos_2_gene_or_igr_indices <- outlier_gene_or_igr_indices$pos2_gene_or_igr_index
+
+    data$outliers_direct$Pos_1_gene <- pos_1_gene_or_igr_indices
+    data$outliers_direct$Pos_2_gene <- pos_2_gene_or_igr_indices
+    data$outliers_direct$Pos_1_gene_name <- data$gff$Name[pos_1_gene_or_igr_indices]
+    data$outliers_direct$Pos_2_gene_name <- data$gff$Name[pos_2_gene_or_igr_indices]
+    data$outliers_direct$Pos_1_region <- data$gff$gene_regions[pos_1_gene_or_igr_indices]
+    data$outliers_direct$Pos_2_region <- data$gff$gene_regions[pos_2_gene_or_igr_indices]
 
     # Precompute main plot.
     circular_data <- .create_circular_data(data)
