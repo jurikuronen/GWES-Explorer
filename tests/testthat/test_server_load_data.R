@@ -67,6 +67,39 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
     expect_identical(data$edges, previous_edges)
 })
 
+test_that(".read_gff appends and sorts calculated IGRs", {
+    gff_path <- tempfile(fileext = ".gff3")
+    on.exit(unlink(gff_path))
+
+    # Write the genes in reverse order to check that .read_gff sorts them by position.
+    writeLines(
+        c(
+            "##gff-version 3",
+            "##sequence-region chromosome 1 6000",
+            "chromosome\t.\tgene\t4998\t6000\t.\t+\t.\tID=gene2;Name=test2",
+            "chromosome\t.\tgene\t1\t1000\t.\t+\t.\tID=gene1;Name=test1"
+        ),
+        gff_path
+    )
+
+    data <- new.env(parent = emptyenv())
+
+    # Position 4500 is in the gap between the genes, while position 5500 is inside the second gene.
+    data$outliers_direct <- data.frame(Pos_1 = 4500, Pos_2 = 5500)
+
+    result <- .read_gff(data, data.frame(datapath = gff_path, name = "test.gff3"))
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_named(data$gff, c("start", "end", "Name"))
+
+    # The sorted result should contain the first gene, the calculated IGR and then the second gene.
+    expect_equal(data$gff$start, c(1, 1001, 4998))
+    expect_equal(data$gff$end, c(1000, 4997, 6000))
+
+    # The IGR is 1001-4997, so its midpoint 2999 gives it the name IGR_2k.
+    expect_identical(as.character(data$gff$Name), c("test1", "IGR_2k", "test2"))
+})
+
 test_that(".read_tree detects the format from file names", {
     tree_paths <- c(newick = tempfile(), nexus = tempfile())
     on.exit(unlink(tree_paths))
