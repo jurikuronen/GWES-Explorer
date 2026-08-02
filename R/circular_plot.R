@@ -108,12 +108,12 @@
 
     # Add gene data.
     gene_data <- .create_gene_data(data)
-    pos_data <- .create_pos_data(data)
-    pos_links <- .cpp_create_pos_links(data$outliers_direct, pos_data)
-    pos_links$weight <- .rescale_weights(pos_links$MI, 0.5, 1)
-    gene_data <- .add_link_info_to_gene_data(data, gene_data, pos_links)
+    position_data <- .create_position_data(data)
+    position_links <- .cpp_create_bidirectional_position_links(data$outliers_direct, position_data)
+    position_links$weight <- .rescale_weights(position_links$MI, 0.5, 1)
+    gene_data <- .add_link_info_to_gene_data(data, gene_data, position_links)
     edges$data <- append(edges$data, .circular_plot_vega_gene_data(gene_data))
-    edges$data <- append(edges$data, .circular_plot_vega_pos_data_and_links(pos_data, pos_links))
+    edges$data <- append(edges$data, .circular_plot_vega_pos_data_and_links(position_data, position_links))
     edges$marks <- append(edges$marks, .circular_plot_vega_gene_marks())
     edges$marks <- append(edges$marks, .circular_plot_vega_pos_marks())
 
@@ -165,69 +165,82 @@
     return(gene_data)
 }
 
-.create_pos_data <- function(data) {
-    pos_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
-        add_position_data <- function(key) {
-            region_pos <- which(data$outliers_direct[[paste0(key, "_region")]] == region)
-            if (length(region_pos) == 0) {
+.create_position_data <- function(data) {
+    position_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
+        create_position_data_for_endpoint <- function(position_column) {
+            outlier_indices <- which(data$outliers_direct[[paste0(position_column, "_region")]] == region)
+            if (length(outlier_indices) == 0) {
                 return(NULL)
             }
             data.frame(
-                name = data$outliers_direct[[key]][region_pos],
-                parent = data$outliers_direct[[paste0(key, "_gene")]][region_pos],
-                idx = region_pos,
+                name = data$outliers_direct[[position_column]][outlier_indices],
+                parent = data$outliers_direct[[paste0(position_column, "_gene")]][outlier_indices],
+                idx = outlier_indices,
                 region = region,
-                weight = data$outliers_direct$MI[region_pos],
+                weight = data$outliers_direct$MI[outlier_indices],
                 stringsAsFactors = FALSE
             )
         }
-        rbind(add_position_data("Pos_1"), add_position_data("Pos_2"))
+        rbind(create_position_data_for_endpoint("Pos_1"), create_position_data_for_endpoint("Pos_2"))
     }))
 
-    pos_data <- pos_data[order(-pos_data$weight), ]
-    pos_data <- pos_data[!duplicated(pos_data$name), ]
-    pos_data$weight <- .rescale_weights(pos_data$weight, 0.5, 1)
-    pos_data <- pos_data[order(pos_data$region), ]
+    position_data <- position_data[order(-position_data$weight), ]
+    position_data <- position_data[!duplicated(position_data$name), ]
+    position_data$weight <- .rescale_weights(position_data$weight, 0.5, 1)
+    position_data <- position_data[order(position_data$region), ]
 
-    gene_start  <- data$gff$start[pos_data$parent]
-    gene_end    <- data$gff$end[pos_data$parent]
+    gene_start  <- data$gff$start[position_data$parent]
+    gene_end    <- data$gff$end[position_data$parent]
     gene_length <- gene_end - gene_start
-    pos_in_gene <- pmin(0.9, pmax(0.1, (pos_data$name - gene_start) / gene_length))
-    pos_data <- cbind(pos_data, pos_in_gene)
+    position_data$pos_in_gene <- pmin(0.9, pmax(0.1, (position_data$name - gene_start) / gene_length))
 
-    return(pos_data)
+    return(position_data)
 }
 
-.add_link_info_to_gene_data <- function(data, gene_data, pos_links) {
-    x <- .cpp_sorted_pos_links(pos_links)
-    n <- nrow(gene_data)
-    genes_linked_to <- vector("list", n)
-    n_genes_linked_to <- integer(n)
-    n_outliers <- integer(n)
-    tooltip_lengths <- integer(n)
+.add_link_info_to_gene_data <- function(data, gene_data, position_links) {
+    sorted_gene_links <- .cpp_sort_gene_links_for_tooltips(position_links)
+    n_genes <- nrow(gene_data)
+    genes_linked_to <- vector("list", n_genes)
+    n_genes_linked_to <- integer(n_genes)
+    n_outliers <- integer(n_genes)
+    tooltip_lengths <- integer(n_genes)
 
-    for (i in seq_len(nrow(x))) {
-        gene1 <- x$gene_1[i]
-        gene2 <- x$gene_2[i]
-        mi <- x$MI[i]
-        start_new_gene <- is.null(genes_linked_to[gene1][[1]])
-        # Initialize.
-        if (start_new_gene) {
-            genes_linked_to[gene1][[1]] <- "Linked to the following genes:"
+    for (link_index in seq_len(nrow(sorted_gene_links))) {
+        source_gene_index <- sorted_gene_links$gene_1[link_index]
+        target_gene_index <- sorted_gene_links$gene_2[link_index]
+        mutual_information <- sorted_gene_links$MI[link_index]
+        first_link_for_source_gene <- is.null(genes_linked_to[[source_gene_index]])
+
+        if (first_link_for_source_gene) {
+            genes_linked_to[[source_gene_index]] <- "Linked to the following genes:"
         }
+
         # Add new linked gene's info.
-        if (start_new_gene || (x$gene_1[i - 1] == gene1 && x$gene_2[i - 1] != gene2)) {
-            n_genes_linked_to[gene1] <- n_genes_linked_to[gene1] + 1
-            gene_info <- sprintf("%s (%s-%s)", data$gff$Name[gene2], data$gff$start[gene2], data$gff$end[gene2])
-            genes_linked_to[gene1][[1]] <- append(genes_linked_to[gene1][[1]], gene_info)
+        if (first_link_for_source_gene ||
+            (sorted_gene_links$gene_1[link_index - 1L] == source_gene_index &&
+             sorted_gene_links$gene_2[link_index - 1L] != target_gene_index))
+        {
+            n_genes_linked_to[source_gene_index] <- n_genes_linked_to[source_gene_index] + 1L
+            linked_gene_info <- sprintf("%s (%s-%s)",
+                                        data$gff$Name[target_gene_index],
+                                        data$gff$start[target_gene_index],
+                                        data$gff$end[target_gene_index])
+            genes_linked_to[[source_gene_index]] <- append(genes_linked_to[[source_gene_index]], linked_gene_info)
         }
-        genes_linked_to[gene1][[1]] <- append(genes_linked_to[gene1][[1]], mi)
-        n_outliers[gene1] <- n_outliers[gene1] + 1
+
+        genes_linked_to[[source_gene_index]] <- append(genes_linked_to[[source_gene_index]],
+                                                        mutual_information)
+        n_outliers[source_gene_index] <- n_outliers[source_gene_index] + 1L
     }
-    for (i in seq_len(nrow(gene_data))) tooltip_lengths[i] <- length(genes_linked_to[i][[1]])
+
+    for (gene_index in seq_len(nrow(gene_data))) {
+        tooltip_lengths[gene_index] <- length(genes_linked_to[[gene_index]])
+    }
+
     gene_data$genes_linked_to <- genes_linked_to
     gene_data$n_genes_linked_to <- n_genes_linked_to
     gene_data$n_outliers <- n_outliers
     gene_data$length <- tooltip_lengths
+
     return(gene_data)
 }

@@ -210,8 +210,8 @@ Rcpp::DataFrame find_igrs_with_outliers(const Rcpp::NumericVector& gene_start_po
 // [[Rcpp::export(.cpp_find_outlier_gene_or_igr_indices)]]
 Rcpp::DataFrame find_outlier_gene_or_igr_indices(const Rcpp::NumericVector& gene_or_igr_start_positions,
                                                  const Rcpp::NumericVector& gene_or_igr_end_positions,
-                                                 const Rcpp::NumericVector& outlier_positions_1,
-                                                 const Rcpp::NumericVector& outlier_positions_2)
+                                                 const Rcpp::IntegerVector& outlier_positions_1,
+                                                 const Rcpp::IntegerVector& outlier_positions_2)
 {
     if (gene_or_igr_start_positions.size() == 0) {
         Rcpp::stop("Gene and IGR data must contain at least one row.");
@@ -246,12 +246,12 @@ Rcpp::DataFrame find_outlier_gene_or_igr_indices(const Rcpp::NumericVector& gene
             Rcpp::stop("Outlier position is not within a GFF3 gene or intergenic region.");
         }
 
-        // R uses 1-based row indices.
-        return gene_or_igr_index + 1;
+        // R uses 1-based integer row indices.
+        return static_cast<int>(gene_or_igr_index + 1);
     };
 
-    std::vector<std::size_t> outlier_gene_or_igr_indices_1(outlier_positions_1.size());
-    std::vector<std::size_t> outlier_gene_or_igr_indices_2(outlier_positions_2.size());
+    Rcpp::IntegerVector outlier_gene_or_igr_indices_1(outlier_positions_1.size());
+    Rcpp::IntegerVector outlier_gene_or_igr_indices_2(outlier_positions_2.size());
 
     std::transform(outlier_positions_1.begin(),
                    outlier_positions_1.end(),
@@ -263,6 +263,6 @@ Rcpp::DataFrame find_outlier_gene_or_igr_indices(const Rcpp::NumericVector& gene
                    find_gene_or_igr_index);
 
     return Rcpp::DataFrame::create(
-            Rcpp::Named("pos1_gene_or_igr_index") = Rcpp::wrap(outlier_gene_or_igr_indices_1),
-            Rcpp::Named("pos2_gene_or_igr_index") = Rcpp::wrap(outlier_gene_or_igr_indices_2));
+            Rcpp::Named("pos1_gene_or_igr_index") = outlier_gene_or_igr_indices_1,
+            Rcpp::Named("pos2_gene_or_igr_index") = outlier_gene_or_igr_indices_2);
 }
