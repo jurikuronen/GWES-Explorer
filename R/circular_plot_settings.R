@@ -17,8 +17,8 @@
 .settings$circular_plot_flip_gene_view_2              <- TRUE
 .settings$circular_plot_gene_arc_angle_1              <- 45
 .settings$circular_plot_gene_arc_angle_2              <- 45
-.settings$circular_plot_n_groups                      <- 12
-.settings$circular_plot_n_regions_per_group           <- 10
+.settings$circular_plot_n_groups                      <- 12L
+.settings$circular_plot_n_regions_per_group           <- 10L
 .settings$circular_plot_opacity_active                <- 1
 .settings$circular_plot_opacity_background            <- 1
 .settings$circular_plot_opacity_connected             <- 0.5

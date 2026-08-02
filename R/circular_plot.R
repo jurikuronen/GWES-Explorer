@@ -35,17 +35,19 @@
 
 .get_region_indices <- function(data, n_regions) {
     n_genes <- nrow(data$gff)
-    c(ceiling(1:(n_regions-1) * (n_genes / n_regions)), n_genes)
+    as.integer(c(ceiling(seq_len(n_regions - 1L) * (n_genes / n_regions)), n_genes))
 }
 
 .compute_gene_regions <- function(data, n_regions) {
     region_indices <- .get_region_indices(data, n_regions)
-    gene_regions <- numeric(max(region_indices))
-    for (r in 1:n_regions) {
-        start <- ifelse(r > 1, region_indices[r - 1] + 1, 1)
-        end <- region_indices[r]
-        gene_regions[start:end] <- r
+    gene_regions <- integer(max(region_indices))
+
+    for (region in seq_len(n_regions)) {
+        start <- if (region > 1L) region_indices[region - 1L] + 1L else 1L
+        end <- region_indices[region]
+        gene_regions[start:end] <- region
     }
+
     return(gene_regions)
 }
 
@@ -53,27 +55,28 @@
     n_groups <- .circular_plot_groups()
     n_regions_per_group <- .circular_plot_regions_per_group()
     n_regions <- n_groups * n_regions_per_group
-    sz <- n_groups + n_groups * n_regions_per_group + 1
+    sz <- n_groups + n_groups * n_regions_per_group + 1L
 
     group_names <- .get_region_boundaries(data$gff$end[.get_region_indices(data, n_groups)])
 
     # Initialize circular data.
     circular_data <- data.frame(
-        id = 1:sz,
-        name = NA,
-        size = NA,
-        parent = NA,
-        draw = NA,
+        id = seq_len(sz),
+        name = rep(NA_character_, sz),
+        size = rep(NA_real_, sz),
+        parent = rep(NA_integer_, sz),
+        draw = rep(NA, sz),
         stringsAsFactors = FALSE
     )
 
     # Set parents for hidden levels
-    circular_data$parent[(n_regions+1):(sz-1)] <- sz
-    circular_data$parent[1:n_regions] <- floor((0:(n_regions-1)) / n_regions_per_group) + n_regions + 1
+    circular_data$parent[seq.int(n_regions + 1L, sz - 1L)] <- sz
+    circular_data$parent[seq_len(n_regions)] <- (seq_len(n_regions) - 1L) %/% n_regions_per_group + n_regions + 1L
 
     # Set draw status for region slices.
-    circular_data$draw[1:n_regions] <- TRUE
-    circular_data$name[(seq(n_regions_per_group / 2, sz - n_groups - 1, n_regions_per_group))] <- group_names
+    circular_data$draw[seq_len(n_regions)] <- TRUE
+    group_label_indices <- seq.int(n_regions_per_group %/% 2L, sz - n_groups - 1L, n_regions_per_group)
+    circular_data$name[group_label_indices] <- group_names
 
     return(circular_data)
 }
@@ -198,11 +201,12 @@
 .add_link_info_to_gene_data <- function(data, gene_data, pos_links) {
     x <- .cpp_sorted_pos_links(pos_links)
     n <- nrow(gene_data)
-    genes_linked_to <- sapply(character(n), function(x) NULL)
-    n_genes_linked_to <- numeric(n)
-    n_outliers <- numeric(n)
-    length <- numeric(n)
-    for (i in 1:nrow(x)) {
+    genes_linked_to <- vector("list", n)
+    n_genes_linked_to <- integer(n)
+    n_outliers <- integer(n)
+    tooltip_lengths <- integer(n)
+
+    for (i in seq_len(nrow(x))) {
         gene1 <- x$gene_1[i]
         gene2 <- x$gene_2[i]
         mi <- x$MI[i]
@@ -220,10 +224,10 @@
         genes_linked_to[gene1][[1]] <- append(genes_linked_to[gene1][[1]], mi)
         n_outliers[gene1] <- n_outliers[gene1] + 1
     }
-    for (i in 1:nrow(gene_data)) length[i] <- length(genes_linked_to[i][[1]])
+    for (i in seq_len(nrow(gene_data))) tooltip_lengths[i] <- length(genes_linked_to[i][[1]])
     gene_data$genes_linked_to <- genes_linked_to
     gene_data$n_genes_linked_to <- n_genes_linked_to
     gene_data$n_outliers <- n_outliers
-    gene_data$length <- length
+    gene_data$length <- tooltip_lengths
     return(gene_data)
 }
