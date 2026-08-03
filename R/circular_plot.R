@@ -30,7 +30,7 @@
 
 # Calculate region boundaries. Returns a string vector with "start-end" strings.
 .get_region_boundaries <- function(region_end_positions) {
-    paste0(c(1, head(region_end_positions, -1) + 1), "-", region_end_positions)
+    paste0(c(1, utils::head(region_end_positions, -1) + 1), "-", region_end_positions)
 }
 
 .get_region_end_rows <- function(data, n_regions) {
@@ -135,11 +135,11 @@
 }
 
 .create_top_level_links <- function(data) {
-    dependencies <- transform(data$outliers_direct,
-                              source = Pos_1_region,
-                              target = Pos_2_region,
-                              weight = MI
-    )[c("source", "target", "weight")]
+    dependencies <- data.frame(
+        source = data$outliers_direct$Pos_1_region,
+        target = data$outliers_direct$Pos_2_region,
+        weight = data$outliers_direct$MI
+    )
     dependencies$count <- stats::ave(dependencies$target,
                                      dependencies$source,
                                      dependencies$target,
