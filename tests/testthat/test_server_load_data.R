@@ -67,6 +67,25 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
     expect_identical(data$edges, previous_edges)
 })
 
+test_that(".read_outliers rejects files without direct outlier links", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines("10 20 10 0 0.5 0.4 0.1 0", outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "indirect-only.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_FAILURE)
+    expect_identical(
+        as.character(result$status),
+        "Outliers file must contain at least one direct outlier link."
+    )
+    expect_equal(nrow(data$outliers_direct), 0)
+})
+
 test_that(".read_gff appends and sorts calculated IGRs", {
     gff_path <- tempfile(fileext = ".gff3")
     on.exit(unlink(gff_path))

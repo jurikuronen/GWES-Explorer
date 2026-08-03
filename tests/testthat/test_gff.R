@@ -234,8 +234,8 @@ test_that(".cpp_find_outlier_gene_or_igr_indices selects the latest-starting gen
         outlier_positions_2 = c(325, 400, 700)
     )
 
-    expect_equal(result$pos1_gene_or_igr_index, c(3, 2, 1))
-    expect_equal(result$pos2_gene_or_igr_index, c(4, 2, 1))
+    expect_identical(result$pos1_gene_or_igr_index, c(3L, 2L, 1L))
+    expect_identical(result$pos2_gene_or_igr_index, c(4L, 2L, 1L))
 })
 
 test_that(".cpp_find_outlier_gene_or_igr_indices maps positions at interval boundaries", {
@@ -246,8 +246,8 @@ test_that(".cpp_find_outlier_gene_or_igr_indices maps positions at interval boun
         outlier_positions_2 = c(21, 30)
     )
 
-    expect_equal(result$pos1_gene_or_igr_index, c(1, 1))
-    expect_equal(result$pos2_gene_or_igr_index, c(2, 2))
+    expect_identical(result$pos1_gene_or_igr_index, c(1L, 1L))
+    expect_identical(result$pos2_gene_or_igr_index, c(2L, 2L))
 })
 
 test_that(".cpp_find_outlier_gene_or_igr_indices returns no indices when there are no outliers", {
@@ -260,6 +260,8 @@ test_that(".cpp_find_outlier_gene_or_igr_indices returns no indices when there a
 
     expect_named(result, c("pos1_gene_or_igr_index", "pos2_gene_or_igr_index"))
     expect_equal(nrow(result), 0)
+    expect_identical(result$pos1_gene_or_igr_index, integer())
+    expect_identical(result$pos2_gene_or_igr_index, integer())
 })
 
 test_that(".cpp_find_outlier_gene_or_igr_indices preserves input order", {
@@ -271,8 +273,8 @@ test_that(".cpp_find_outlier_gene_or_igr_indices preserves input order", {
     )
 
     # Verify that the indices remain aligned with their original outlier links.
-    expect_equal(result$pos1_gene_or_igr_index, c(2, 3, 1))
-    expect_equal(result$pos2_gene_or_igr_index, c(2, 3, 1))
+    expect_identical(result$pos1_gene_or_igr_index, c(2L, 3L, 1L))
+    expect_identical(result$pos2_gene_or_igr_index, c(2L, 3L, 1L))
 })
 
 test_that(".cpp_find_outlier_gene_or_igr_indices rejects invalid gene and IGR data", {
