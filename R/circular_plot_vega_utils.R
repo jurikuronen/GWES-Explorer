@@ -50,7 +50,8 @@
     list(signal = paste("{title: datum.feature,",
                         "'Location': datum.start + '-' + datum.end,",
                         "'Outliers': datum.n_outliers,",
-                        "'Linked to': datum.n_features_linked_to}"))
+                        "'Linked to': datum.n_features_linked_to,",
+                        "'Self-links': datum.n_self_links}"))
 }
 
 .initialize_circular_spec <- function() {
