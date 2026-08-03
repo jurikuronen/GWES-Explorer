@@ -119,6 +119,31 @@ test_that(".read_gff appends and sorts calculated IGRs", {
     expect_identical(as.character(data$gff$Name), c("test1", "IGR_2k", "test2"))
 })
 
+test_that(".read_gff uses CDS features when gene features are absent", {
+    gff_path <- tempfile(fileext = ".gff3")
+    on.exit(unlink(gff_path))
+
+    writeLines(
+        c(
+            "##gff-version 3",
+            "##sequence-region chromosome 1 300",
+            "chromosome\t.\tCDS\t201\t300\t.\t+\t.\tID=cds2;Name=cds2",
+            "chromosome\t.\tCDS\t1\t100\t.\t+\t.\tID=cds1;Name=cds1"
+        ),
+        gff_path
+    )
+
+    data <- new.env(parent = emptyenv())
+    data$outliers_direct <- data.frame(Pos_1 = 50L, Pos_2 = 150L)
+
+    result <- .read_gff(data, data.frame(datapath = gff_path, name = "features.gff3"))
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_equal(data$gff$start, c(1, 101, 201))
+    expect_equal(data$gff$end, c(100, 200, 300))
+    expect_identical(as.character(data$gff$Name), c("cds1", "IGR_0k", "cds2"))
+})
+
 test_that(".read_tree detects the format from file names", {
     tree_paths <- c(newick = tempfile(), nexus = tempfile())
     on.exit(unlink(tree_paths))

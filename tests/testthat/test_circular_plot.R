@@ -1,3 +1,57 @@
+# Builds a small circular-plot test data set.
+.make_precomputed_circular_plot_test_data <- function() {
+    # The circular plot normally has 120 regions. Use three so each test GFF row
+    # occupies its own region, then restore the global settings when this helper returns.
+    previous_n_groups <- .settings$circular_plot_n_groups
+    previous_n_regions_per_group <- .settings$circular_plot_n_regions_per_group
+    on.exit({
+        .settings$circular_plot_n_groups <- previous_n_groups
+        .settings$circular_plot_n_regions_per_group <- previous_n_regions_per_group
+    })
+
+    .settings$circular_plot_n_groups <- 1L
+    .settings$circular_plot_n_regions_per_group <- 3L
+
+    # This represents GFF data after loading has inserted an IGR between two CDS rows.
+    data <- new.env(parent = emptyenv())
+    data$gff <- data.frame(
+        start = c(1, 101, 201),
+        end = c(100, 200, 300),
+        Name = c("cds1", "IGR_0k", "cds2")
+    )
+
+    # Link a position in the first CDS to a position in the generated IGR.
+    data$outliers_direct <- data.frame(
+        Pos_1 = 50L,
+        Pos_2 = 150L,
+        MI = 0.8
+    )
+    data$edges <- NULL
+
+    # This mutates data by mapping the endpoints to GFF rows and building the Vega specification.
+    .precompute_circular_plot_data(data)
+
+    return(data)
+}
+
+# Finds a Vega data set by name.
+.get_vega_dataset <- function(spec, dataset_name) {
+    matching_datasets <- which(vapply(spec$data,
+                                      function(dataset) identical(dataset$name, dataset_name),
+                                      logical(1)))
+    expect_length(matching_datasets, 1L)
+    return(spec$data[[matching_datasets[[1L]]]])
+}
+
+# Finds the formula that writes a given field.
+.get_vega_formula_expression <- function(dataset, output_field) {
+    matching_formulas <- which(vapply(dataset$transform,
+                                      function(transform) identical(transform$as, output_field),
+                                      logical(1)))
+    expect_length(matching_formulas, 1L)
+    return(dataset$transform[[matching_formulas[[1L]]]]$expr)
+}
+
 test_that(".rescale_weights scales varying weights", {
     expect_equal(.rescale_weights(c(2, 4, 6), 0.5, 1), c(0.5, 0.75, 1))
 })
@@ -474,4 +528,86 @@ test_that(".add_link_info_to_gene_data builds tooltips for links between differe
     expect_identical(result$n_genes_linked_to, c(2L, 1L, 1L, 0L))
     expect_identical(result$n_outliers, c(3L, 2L, 1L, 0L))
     expect_identical(result$length, c(6L, 4L, 3L, 0L))
+})
+
+test_that(".precompute_circular_plot_data finds the GFF row containing each outlier position", {
+    data <- .make_precomputed_circular_plot_test_data()
+
+    expect_identical(data$gff$gene_regions, c(1L, 2L, 3L))
+    expect_identical(data$outliers_direct$Pos_1_gene, 1L)
+    expect_identical(data$outliers_direct$Pos_2_gene, 2L)
+    expect_identical(data$outliers_direct$Pos_1_gene_name, "cds1")
+    expect_identical(data$outliers_direct$Pos_2_gene_name, "IGR_0k")
+    expect_identical(data$outliers_direct$Pos_1_region, 1L)
+    expect_identical(data$outliers_direct$Pos_2_region, 2L)
+})
+
+test_that(".precompute_circular_plot_data creates feature and position data", {
+    data <- .make_precomputed_circular_plot_test_data()
+    gene_data <- .get_vega_dataset(data$edges, "gene_data")$values
+    position_data <- .get_vega_dataset(data$edges, "pos_data")$values
+
+    expect_named(gene_data,
+                 c("id", "name", "region", "angle_step", "step_size", "start", "end",
+                   "genes_linked_to", "n_genes_linked_to", "n_outliers", "length"))
+    expect_identical(gene_data$id, c(1L, 2L, 3L))
+    expect_identical(as.character(gene_data$name), c("cds1", "IGR_0k", "cds2"))
+    expect_identical(gene_data$region, c(1L, 2L, 3L))
+    expect_identical(gene_data$start, c(1, 101, 201))
+    expect_identical(gene_data$end, c(100, 200, 300))
+
+    expect_identical(gene_data$genes_linked_to[[1]],
+                     c("Linked to the following genes:", "IGR_0k (101-200)", "0.8"))
+    expect_identical(gene_data$genes_linked_to[[2]],
+                     c("Linked to the following genes:", "cds1 (1-100)", "0.8"))
+    expect_null(gene_data$genes_linked_to[[3]])
+    expect_identical(gene_data$n_genes_linked_to, c(1L, 1L, 0L))
+    expect_identical(gene_data$n_outliers, c(1L, 1L, 0L))
+    expect_identical(gene_data$length, c(3L, 3L, 0L))
+
+    expected_position_fields <- c("name", "parent", "region", "weight", "pos_in_gene")
+    expect_named(position_data[expected_position_fields], expected_position_fields)
+    expect_identical(position_data$name, c(50L, 150L))
+    expect_identical(position_data$parent, c(1L, 2L))
+    expect_identical(position_data$region, c(1L, 2L))
+    expect_equal(position_data$weight, c(0.75, 0.75))
+    expect_equal(position_data$pos_in_gene, c(49 / 99, 49 / 99))
+})
+
+test_that(".precompute_circular_plot_data creates links with 1-based GFF rows and 0-based Vega position-data indices", {
+    data <- .make_precomputed_circular_plot_test_data()
+    position_links <- .get_vega_dataset(data$edges, "pos_links")$values
+
+    expect_named(position_links,
+                 c("region_1", "region_2", "gene_1", "gene_2",
+                   "pos_data_idx_1", "pos_data_idx_2", "MI", "weight"))
+    expect_identical(position_links$region_1, c(1L, 2L))
+    expect_identical(position_links$region_2, c(2L, 1L))
+    # These values are 1-based rows in data$gff.
+    expect_identical(position_links$gene_1, c(1L, 2L))
+    expect_identical(position_links$gene_2, c(2L, 1L))
+    # These values are 0-based indices into Vega's position data.
+    expect_identical(position_links$pos_data_idx_1, c(0L, 1L))
+    expect_identical(position_links$pos_data_idx_2, c(1L, 0L))
+    expect_identical(position_links$MI, c(0.8, 0.8))
+    expect_equal(position_links$weight, c(0.75, 0.75))
+})
+
+test_that(".precompute_circular_plot_data creates Vega lookups for 1-based GFF rows and 0-based position-data indices", {
+    data <- .make_precomputed_circular_plot_test_data()
+    position_data <- .get_vega_dataset(data$edges, "pos_data")
+    position_links <- .get_vega_dataset(data$edges, "pos_links")
+
+    expect_identical(
+        .get_vega_formula_expression(position_data, "parent_gene"),
+        "data('gene_data')[datum.parent - 1].name"
+    )
+    expect_identical(
+        .get_vega_formula_expression(position_links, "x"),
+        "data('pos_data')[datum.pos_data_idx_1].x_1"
+    )
+    expect_identical(
+        .get_vega_formula_expression(position_links, "x2"),
+        "data('pos_data')[datum.pos_data_idx_2].x_2"
+    )
 })
