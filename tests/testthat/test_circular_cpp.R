@@ -1,3 +1,40 @@
+.make_valid_outliers_direct <- function() {
+    data.frame(
+        Pos_1 = 100L,
+        Pos_2 = 200L,
+        Pos_1_region = 1L,
+        Pos_2_region = 2L,
+        Pos_1_feature_row = 10L,
+        Pos_2_feature_row = 20L,
+        MI = 0.9
+    )
+}
+
+.expect_error_for_invalid_endpoint_values <- function(field_names, error_message) {
+    invalid_values <- list(
+        "zero" = 0L,
+        "negative" = -1L,
+        "missing" = NA_integer_
+    )
+
+    for (field_name in field_names) {
+        for (case_name in names(invalid_values)) {
+            outliers_direct <- .make_valid_outliers_direct()
+            outliers_direct[[field_name]] <- invalid_values[[case_name]]
+
+            expect_error(
+                .cpp_create_bidirectional_position_links(
+                    outliers_direct,
+                    data.frame(position = c(100L, 200L))
+                ),
+                error_message,
+                fixed = TRUE,
+                info = paste(field_name, case_name)
+            )
+        }
+    }
+}
+
 test_that(".cpp_create_bidirectional_position_links creates both directions for every link", {
     outliers_direct <- data.frame(
         Pos_1 = c(300L, 100L),
@@ -75,15 +112,7 @@ test_that(".cpp_create_bidirectional_position_links rejects an empty outlier tab
 })
 
 test_that(".cpp_create_bidirectional_position_links rejects non-positive or missing position-data values", {
-    outliers_direct <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
-    )
+    outliers_direct <- .make_valid_outliers_direct()
     invalid_positions <- list(
         "zero" = 0L,
         "negative" = -1L,
@@ -103,15 +132,7 @@ test_that(".cpp_create_bidirectional_position_links rejects non-positive or miss
 })
 
 test_that(".cpp_create_bidirectional_position_links rejects duplicate position-data values", {
-    outliers_direct <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
-    )
+    outliers_direct <- .make_valid_outliers_direct()
 
     expect_error(
         .cpp_create_bidirectional_position_links(
@@ -124,123 +145,27 @@ test_that(".cpp_create_bidirectional_position_links rejects duplicate position-d
 })
 
 test_that(".cpp_create_bidirectional_position_links rejects non-positive or missing outlier positions", {
-    valid_outliers <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
+    .expect_error_for_invalid_endpoint_values(
+        c("Pos_1", "Pos_2"),
+        "Outlier positions must be positive integers."
     )
-    cases <- list(
-        "first position is zero" = list(column = "Pos_1", value = 0L),
-        "first position is negative" = list(column = "Pos_1", value = -1L),
-        "first position is missing" = list(column = "Pos_1", value = NA_integer_),
-        "second position is zero" = list(column = "Pos_2", value = 0L),
-        "second position is negative" = list(column = "Pos_2", value = -1L),
-        "second position is missing" = list(column = "Pos_2", value = NA_integer_)
-    )
-
-    for (case_name in names(cases)) {
-        case <- cases[[case_name]]
-        outliers_direct <- valid_outliers
-        outliers_direct[[case$column]] <- case$value
-
-        expect_error(
-            .cpp_create_bidirectional_position_links(
-                outliers_direct,
-                data.frame(position = c(100L, 200L))
-            ),
-            "Outlier positions must be positive integers.",
-            fixed = TRUE,
-            info = case_name
-        )
-    }
 })
 
 test_that(".cpp_create_bidirectional_position_links rejects non-positive or missing region IDs", {
-    valid_outliers <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
+    .expect_error_for_invalid_endpoint_values(
+        c("Pos_1_region", "Pos_2_region"),
+        "Region IDs must be positive integers."
     )
-    cases <- list(
-        "first region is zero" = list(column = "Pos_1_region", value = 0L),
-        "first region is negative" = list(column = "Pos_1_region", value = -1L),
-        "first region is missing" = list(column = "Pos_1_region", value = NA_integer_),
-        "second region is zero" = list(column = "Pos_2_region", value = 0L),
-        "second region is negative" = list(column = "Pos_2_region", value = -1L),
-        "second region is missing" = list(column = "Pos_2_region", value = NA_integer_)
-    )
-
-    for (case_name in names(cases)) {
-        case <- cases[[case_name]]
-        outliers_direct <- valid_outliers
-        outliers_direct[[case$column]] <- case$value
-
-        expect_error(
-            .cpp_create_bidirectional_position_links(
-                outliers_direct,
-                data.frame(position = c(100L, 200L))
-            ),
-            "Region IDs must be positive integers.",
-            fixed = TRUE,
-            info = case_name
-        )
-    }
 })
 
 test_that(".cpp_create_bidirectional_position_links rejects non-positive or missing feature rows", {
-    valid_outliers <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
+    .expect_error_for_invalid_endpoint_values(
+        c("Pos_1_feature_row", "Pos_2_feature_row"),
+        "Feature rows must be positive integers."
     )
-    cases <- list(
-        "first feature row is zero" = list(column = "Pos_1_feature_row", value = 0L),
-        "first feature row is negative" = list(column = "Pos_1_feature_row", value = -1L),
-        "first feature row is missing" = list(column = "Pos_1_feature_row", value = NA_integer_),
-        "second feature row is zero" = list(column = "Pos_2_feature_row", value = 0L),
-        "second feature row is negative" = list(column = "Pos_2_feature_row", value = -1L),
-        "second feature row is missing" = list(column = "Pos_2_feature_row", value = NA_integer_)
-    )
-
-    for (case_name in names(cases)) {
-        case <- cases[[case_name]]
-        outliers_direct <- valid_outliers
-        outliers_direct[[case$column]] <- case$value
-
-        expect_error(
-            .cpp_create_bidirectional_position_links(
-                outliers_direct,
-                data.frame(position = c(100L, 200L))
-            ),
-            "Feature rows must be positive integers.",
-            fixed = TRUE,
-            info = case_name
-        )
-    }
 })
 
 test_that(".cpp_create_bidirectional_position_links rejects non-finite MI values", {
-    valid_outliers <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
-    )
     invalid_mi_values <- list(
         "missing" = NA_real_,
         "not a number" = NaN,
@@ -249,7 +174,7 @@ test_that(".cpp_create_bidirectional_position_links rejects non-finite MI values
     )
 
     for (case_name in names(invalid_mi_values)) {
-        outliers_direct <- valid_outliers
+        outliers_direct <- .make_valid_outliers_direct()
         outliers_direct$MI <- invalid_mi_values[[case_name]]
 
         expect_error(
@@ -265,15 +190,7 @@ test_that(".cpp_create_bidirectional_position_links rejects non-finite MI values
 })
 
 test_that(".cpp_create_bidirectional_position_links requires both endpoints in position data", {
-    outliers_direct <- data.frame(
-        Pos_1 = 100L,
-        Pos_2 = 200L,
-        Pos_1_region = 1L,
-        Pos_2_region = 2L,
-        Pos_1_feature_row = 10L,
-        Pos_2_feature_row = 20L,
-        MI = 0.9
-    )
+    outliers_direct <- .make_valid_outliers_direct()
     cases <- list(
         "position table is empty" = integer(),
         "first endpoint is absent" = 200L,
@@ -396,4 +313,3 @@ test_that(".cpp_sort_feature_links_for_tooltips rejects non-finite MI values", {
         )
     }
 })
-
