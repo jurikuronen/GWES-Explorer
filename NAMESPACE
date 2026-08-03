@@ -1,3 +1,4 @@
 export(launch_GWESExplorer)
 import(ggplot2)
+importFrom(Rcpp, evalCpp)
 useDynLib(GWESExplorer, .registration = TRUE)
