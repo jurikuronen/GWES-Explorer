@@ -8,12 +8,12 @@
                   ")"))
 }
 
-.pos_angle_expr <- function(dataset, angle_expr) {
+.position_angle_expr <- function(dataset, angle_expr) {
     return(paste0("(",
-                  .vega_data_query(dataset, "datum.parent - 1", angle_expr),
+                  .vega_data_query(dataset, "datum.feature_row - 1", angle_expr),
                   " - ",
                   .angular_distance(dataset, angle_expr),
-                  " / 2 + datum.pos_in_gene * ",
+                  " / 2 + datum.position_in_feature * ",
                   .angular_distance(dataset, angle_expr), ")"))
 }
 
@@ -38,19 +38,19 @@
                                expr = filter_expr)))
 }
 
-.vega_data_query <- function(data, idx, member) {
-    paste0("data('", data, "')[", idx, "].", member)
+.vega_data_query <- function(data, index, member) {
+    paste0("data('", data, "')[", index, "].", member)
 }
 
 .vega_get_region_angle <- function() {
     .vega_data_query("region_data", "datum.region - 1", "angle")
 }
 
-.vega_get_gene_tooltip <- function() {
-    list(signal = paste("{title: datum.name,",
+.vega_get_feature_tooltip <- function() {
+    list(signal = paste("{title: datum.feature,",
                         "'Location': datum.start + '-' + datum.end,",
                         "'Outliers': datum.n_outliers,",
-                        "'Genes linked to': datum.n_genes_linked_to}"))
+                        "'Linked to': datum.n_features_linked_to}"))
 }
 
 .initialize_circular_spec <- function() {
@@ -131,34 +131,34 @@
         .is_active_region("parent.target"))
 }
 
-.gene_is_selected <- function(selection) {
-    paste0("(selected_gene_", selection, " != null)")
+.feature_is_selected <- function(selection) {
+    paste0("(selected_feature_", selection, " != null)")
 }
 
-.is_active_gene <- function(element) {
-    paste0("(", element, " === active_gene)")
+.is_active_feature <- function(element) {
+    paste0("(", element, " === active_feature)")
 }
 
-.is_selected_gene <- function(element, selection) {
-    paste0("(", element, " === selected_gene_", selection, ")")
+.is_selected_feature <- function(element, selection) {
+    paste0("(", element, " === selected_feature_", selection, ")")
 }
 
-.some_gene_is_selected <- function() {
-    .or(.gene_is_selected(1),
-        .gene_is_selected(2))
+.some_feature_is_selected <- function() {
+    .or(.feature_is_selected(1),
+        .feature_is_selected(2))
 }
 
-.both_genes_are_selected <- function() {
-    .and(.gene_is_selected(1),
-         .gene_is_selected(2))
+.both_features_are_selected <- function() {
+    .and(.feature_is_selected(1),
+         .feature_is_selected(2))
 }
 
-.pos_link_is_selected <- function() {
-    .and(.is_selected_gene("datum.gene_1", 1),
-         .is_selected_gene("datum.gene_2", 2))
+.position_link_is_selected <- function() {
+    .and(.is_selected_feature("datum.feature_row_1", 1),
+         .is_selected_feature("datum.feature_row_2", 2))
 }
 
-.is_connected_to_selected_gene <- function() {
-    .or(.is_selected_gene("datum.gene_1", 1),
-        .is_selected_gene("datum.gene_2", 2))
+.is_connected_to_selected_feature <- function() {
+    .or(.is_selected_feature("datum.feature_row_1", 1),
+        .is_selected_feature("datum.feature_row_2", 2))
 }

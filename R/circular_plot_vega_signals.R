@@ -83,17 +83,17 @@
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
-        # Mouseovered gene
+        # Mouseovered feature.
         list(
-            name = "active_gene",
+            name = "active_feature",
             value = NULL,
             on = list(
-                list(events = "@gene_arc_1:mouseover", update = "datum.id"),
-                list(events = "@gene_arc_2:mouseover", update = "datum.id"),
-                list(events = "@gene_text_1:mouseover", update = "datum.id"),
-                list(events = "@gene_text_2:mouseover", update = "datum.id"),
-                list(events = "@gene_background_1:mouseover", update = "null"),
-                list(events = "@gene_background_2:mouseover", update = "null"),
+                list(events = "@feature_arc_1:mouseover", update = "datum.feature_row"),
+                list(events = "@feature_arc_2:mouseover", update = "datum.feature_row"),
+                list(events = "@feature_text_1:mouseover", update = "datum.feature_row"),
+                list(events = "@feature_text_2:mouseover", update = "datum.feature_row"),
+                list(events = "@feature_background_1:mouseover", update = "null"),
+                list(events = "@feature_background_2:mouseover", update = "null"),
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
@@ -104,9 +104,9 @@
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "!event.shiftKey"),
                      update = "datum.id"),
-                list(events = list(type = "click", markname = "gene_text_1", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_text_1", filter = "!event.shiftKey"),
                      update = "datum.region"),
-                list(events = list(type = "click", markname = "gene_arc_1", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_arc_1", filter = "!event.shiftKey"),
                      update = "datum.region"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"),
                      update = "null")
@@ -118,43 +118,43 @@
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "event.shiftKey"),
                      update = "datum.id"),
-                list(events = list(type = "click", markname = "gene_text_2", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_text_2", filter = "!event.shiftKey"),
                      update = "datum.region"),
-                list(events = list(type = "click", markname = "gene_arc_2", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_arc_2", filter = "!event.shiftKey"),
                      update = "datum.region"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"),
                      update = "null")
             )
         ),
 
-        # Selected genes.
+        # Selected features.
         list(
-            name = "selected_gene_1",
+            name = "selected_feature_1",
             value = NULL,
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "!event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_text_1", filter = "!event.shiftKey"),
-                     update = "datum.id"),
-                list(events = list(type = "click", markname = "gene_arc_1", filter = "!event.shiftKey"),
-                     update = "datum.id"),
-                list(events = list(type = "click", markname = "gene_background_1", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_text_1", filter = "!event.shiftKey"),
+                     update = "datum.feature_row"),
+                list(events = list(type = "click", markname = "feature_arc_1", filter = "!event.shiftKey"),
+                     update = "datum.feature_row"),
+                list(events = list(type = "click", markname = "feature_background_1", filter = "!event.shiftKey"),
                      update = "null"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"),
                      update = "null")
             )
         ),
         list(
-            name = "selected_gene_2",
+            name = "selected_feature_2",
             value = NULL,
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_text_2", filter = "!event.shiftKey"),
-                     update = "datum.id"),
-                list(events = list(type = "click", markname = "gene_arc_2", filter = "!event.shiftKey"),
-                     update = "datum.id"),
-                list(events = list(type = "click", markname = "gene_background_2", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_text_2", filter = "!event.shiftKey"),
+                     update = "datum.feature_row"),
+                list(events = list(type = "click", markname = "feature_arc_2", filter = "!event.shiftKey"),
+                     update = "datum.feature_row"),
+                list(events = list(type = "click", markname = "feature_background_2", filter = "!event.shiftKey"),
                      update = "null"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"),
                      update = "null")
@@ -168,11 +168,11 @@
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "!event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_text_1", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_text_1", filter = "!event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_arc_1", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_arc_1", filter = "!event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_background_1", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_background_1", filter = "!event.shiftKey"),
                      update = "null"),
                 list(events = list(type = "click", filter = "!event.item && !event.shiftKey"),
                      update = "null")
@@ -184,11 +184,11 @@
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_text_2", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_text_2", filter = "!event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_arc_2", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_arc_2", filter = "!event.shiftKey"),
                      update = "null"),
-                list(events = list(type = "click", markname = "gene_background_2", filter = "!event.shiftKey"),
+                list(events = list(type = "click", markname = "feature_background_2", filter = "!event.shiftKey"),
                      update = "null"),
                 list(events = list(type = "click", filter = "!event.item && event.shiftKey"),
                      update = "null")

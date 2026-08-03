@@ -15,28 +15,28 @@
  *
  * Both directions are needed because either endpoint can be shown in the first selected region.
  *
- * Gene and region indices are 1-based for R, while position-data indices are 0-based for Vega.
+ * Feature rows and region IDs are 1-based for R, while position-data indices are 0-based for Vega.
 */
 // [[Rcpp::export(.cpp_create_bidirectional_position_links)]]
 Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outliers_direct,
                                                     const Rcpp::DataFrame& position_data)
 {
-    const Rcpp::IntegerVector positions = position_data["name"];
+    const Rcpp::IntegerVector positions = position_data["position"];
     const Rcpp::IntegerVector outlier_positions_1 = outliers_direct["Pos_1"];
     const Rcpp::IntegerVector outlier_positions_2 = outliers_direct["Pos_2"];
-    const Rcpp::IntegerVector region_indices_1 = outliers_direct["Pos_1_region"];
-    const Rcpp::IntegerVector region_indices_2 = outliers_direct["Pos_2_region"];
-    const Rcpp::IntegerVector gene_indices_1 = outliers_direct["Pos_1_gene"];
-    const Rcpp::IntegerVector gene_indices_2 = outliers_direct["Pos_2_gene"];
+    const Rcpp::IntegerVector region_ids_1 = outliers_direct["Pos_1_region"];
+    const Rcpp::IntegerVector region_ids_2 = outliers_direct["Pos_2_region"];
+    const Rcpp::IntegerVector feature_rows_1 = outliers_direct["Pos_1_feature_row"];
+    const Rcpp::IntegerVector feature_rows_2 = outliers_direct["Pos_2_feature_row"];
     const Rcpp::NumericVector mutual_information = outliers_direct["MI"];
 
     const auto n_outliers = outlier_positions_1.size();
 
     if (outlier_positions_2.size() != n_outliers ||
-        region_indices_1.size() != n_outliers ||
-        region_indices_2.size() != n_outliers ||
-        gene_indices_1.size() != n_outliers ||
-        gene_indices_2.size() != n_outliers ||
+        region_ids_1.size() != n_outliers ||
+        region_ids_2.size() != n_outliers ||
+        feature_rows_1.size() != n_outliers ||
+        feature_rows_2.size() != n_outliers ||
         mutual_information.size() != n_outliers)
     {
         Rcpp::stop("Circular plot outlier columns must have equal lengths.");
@@ -46,7 +46,8 @@ Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outli
         Rcpp::stop("Circular plot data must contain at least one direct outlier link.");
     }
 
-    std::map<int, int> position_to_data_index;
+    // Map each genomic position to its 0-based index in the Vega position data.
+    std::map<int, int> position_data_index_by_position;
 
     for (R_xlen_t i = 0; i < positions.size(); ++i) {
         const auto position = positions[i];
@@ -55,7 +56,7 @@ Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outli
             Rcpp::stop("Position data values must be positive integers.");
         }
 
-        const auto inserted = position_to_data_index.emplace(position, static_cast<int>(i));
+        const auto inserted = position_data_index_by_position.emplace(position, static_cast<int>(i));
 
         if (!inserted.second) {
             Rcpp::stop("Circular plot position data must contain each position only once.");
@@ -63,18 +64,18 @@ Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outli
     }
 
     const auto n_directed_links = n_outliers * 2;
-    Rcpp::IntegerVector output_region_indices_1(n_directed_links);
-    Rcpp::IntegerVector output_region_indices_2(n_directed_links);
-    Rcpp::IntegerVector output_gene_indices_1(n_directed_links);
-    Rcpp::IntegerVector output_gene_indices_2(n_directed_links);
+    Rcpp::IntegerVector output_region_ids_1(n_directed_links);
+    Rcpp::IntegerVector output_region_ids_2(n_directed_links);
+    Rcpp::IntegerVector output_feature_rows_1(n_directed_links);
+    Rcpp::IntegerVector output_feature_rows_2(n_directed_links);
     Rcpp::IntegerVector output_position_data_indices_1(n_directed_links);
     Rcpp::IntegerVector output_position_data_indices_2(n_directed_links);
     Rcpp::NumericVector output_mutual_information(n_directed_links);
 
-    const auto get_position_data_index = [&position_to_data_index](int position) {
-        const auto position_it = position_to_data_index.find(position);
+    const auto get_position_data_index = [&position_data_index_by_position](int position) {
+        const auto position_it = position_data_index_by_position.find(position);
 
-        if (position_it == position_to_data_index.end()) {
+        if (position_it == position_data_index_by_position.end()) {
             Rcpp::stop("Every outlier position must be present in the circular plot position data.");
         }
 
@@ -85,10 +86,10 @@ Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outli
     for (R_xlen_t i = 0; i < n_outliers; ++i) {
         const auto outlier_position_1 = outlier_positions_1[i];
         const auto outlier_position_2 = outlier_positions_2[i];
-        const auto region_index_1 = region_indices_1[i];
-        const auto region_index_2 = region_indices_2[i];
-        const auto gene_index_1 = gene_indices_1[i];
-        const auto gene_index_2 = gene_indices_2[i];
+        const auto region_id_1 = region_ids_1[i];
+        const auto region_id_2 = region_ids_2[i];
+        const auto feature_row_1 = feature_rows_1[i];
+        const auto feature_row_2 = feature_rows_2[i];
         const auto mutual_information_value = mutual_information[i];
 
         if (outlier_position_1 == NA_INTEGER || outlier_position_1 < 1 ||
@@ -97,14 +98,16 @@ Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outli
             Rcpp::stop("Outlier positions must be positive integers.");
         }
 
-        if (region_index_1 == NA_INTEGER || region_index_1 < 1 ||
-            region_index_2 == NA_INTEGER || region_index_2 < 1)
+        if (region_id_1 == NA_INTEGER || region_id_1 < 1 ||
+            region_id_2 == NA_INTEGER || region_id_2 < 1)
         {
-            Rcpp::stop("Region indices must be positive integers.");
+            Rcpp::stop("Region IDs must be positive integers.");
         }
 
-        if (gene_index_1 == NA_INTEGER || gene_index_1 < 1 || gene_index_2 == NA_INTEGER || gene_index_2 < 1) {
-            Rcpp::stop("Gene indices must be positive integers.");
+        if (feature_row_1 == NA_INTEGER || feature_row_1 < 1 ||
+            feature_row_2 == NA_INTEGER || feature_row_2 < 1)
+        {
+            Rcpp::stop("Feature rows must be positive integers.");
         }
 
         if (!std::isfinite(mutual_information_value)) {
@@ -117,78 +120,79 @@ Rcpp::DataFrame create_bidirectional_position_links(const Rcpp::DataFrame& outli
         const auto reverse_link_index = direct_link_index + 1;
 
         // Add both directions so the link works whichever endpoint region is selected first.
-        output_region_indices_1[direct_link_index] = region_index_1;
-        output_region_indices_2[direct_link_index] = region_index_2;
-        output_gene_indices_1[direct_link_index] = gene_index_1;
-        output_gene_indices_2[direct_link_index] = gene_index_2;
+        output_region_ids_1[direct_link_index] = region_id_1;
+        output_region_ids_2[direct_link_index] = region_id_2;
+        output_feature_rows_1[direct_link_index] = feature_row_1;
+        output_feature_rows_2[direct_link_index] = feature_row_2;
         output_position_data_indices_1[direct_link_index] = position_data_index_1;
         output_position_data_indices_2[direct_link_index] = position_data_index_2;
         output_mutual_information[direct_link_index] = mutual_information_value;
 
-        output_region_indices_1[reverse_link_index] = region_index_2;
-        output_region_indices_2[reverse_link_index] = region_index_1;
-        output_gene_indices_1[reverse_link_index] = gene_index_2;
-        output_gene_indices_2[reverse_link_index] = gene_index_1;
+        output_region_ids_1[reverse_link_index] = region_id_2;
+        output_region_ids_2[reverse_link_index] = region_id_1;
+        output_feature_rows_1[reverse_link_index] = feature_row_2;
+        output_feature_rows_2[reverse_link_index] = feature_row_1;
         output_position_data_indices_1[reverse_link_index] = position_data_index_2;
         output_position_data_indices_2[reverse_link_index] = position_data_index_1;
         output_mutual_information[reverse_link_index] = mutual_information_value;
     }
 
     return Rcpp::DataFrame::create(
-            Rcpp::Named("region_1") = output_region_indices_1,
-            Rcpp::Named("region_2") = output_region_indices_2,
-            Rcpp::Named("gene_1") = output_gene_indices_1,
-            Rcpp::Named("gene_2") = output_gene_indices_2,
-            Rcpp::Named("pos_data_idx_1") = output_position_data_indices_1,
-            Rcpp::Named("pos_data_idx_2") = output_position_data_indices_2,
+            Rcpp::Named("region_1") = output_region_ids_1,
+            Rcpp::Named("region_2") = output_region_ids_2,
+            Rcpp::Named("feature_row_1") = output_feature_rows_1,
+            Rcpp::Named("feature_row_2") = output_feature_rows_2,
+            Rcpp::Named("position_data_index_1") = output_position_data_indices_1,
+            Rcpp::Named("position_data_index_2") = output_position_data_indices_2,
             Rcpp::Named("MI") = output_mutual_information);
 }
 
 /*
- * Sorts the bidirectional position links for building gene tooltips.
+ * Sorts the bidirectional position links for building feature tooltips.
  *
- * - Source genes are sorted by index.
- * - Target-gene groups are sorted by highest MI in the group.
- * - Equal target-gene groups are sorted by target index.
+ * - Source features are sorted by row number.
+ * - Target-feature groups are sorted by highest MI in the group.
+ * - Equal target-feature groups are sorted by target row number.
  * - Links within each target group are sorted by MI.
 */
-// [[Rcpp::export(.cpp_sort_gene_links_for_tooltips)]]
-Rcpp::DataFrame sort_gene_links_for_tooltips(const Rcpp::DataFrame& position_links) {
-    const Rcpp::IntegerVector source_gene_indices = position_links["gene_1"];
-    const Rcpp::IntegerVector target_gene_indices = position_links["gene_2"];
+// [[Rcpp::export(.cpp_sort_feature_links_for_tooltips)]]
+Rcpp::DataFrame sort_feature_links_for_tooltips(const Rcpp::DataFrame& position_links) {
+    const Rcpp::IntegerVector source_feature_rows = position_links["feature_row_1"];
+    const Rcpp::IntegerVector target_feature_rows = position_links["feature_row_2"];
     const Rcpp::NumericVector mutual_information = position_links["MI"];
 
-    if (target_gene_indices.size() != source_gene_indices.size() ||
-        mutual_information.size() != source_gene_indices.size())
+    if (target_feature_rows.size() != source_feature_rows.size() ||
+        mutual_information.size() != source_feature_rows.size())
     {
-        Rcpp::stop("Circular plot gene-link columns must have equal lengths.");
+        Rcpp::stop("Circular plot feature-link columns must have equal lengths.");
     }
 
-    if (source_gene_indices.size() == 0) {
+    if (source_feature_rows.size() == 0) {
         Rcpp::stop("Circular plot position links must contain at least one row.");
     }
 
-    // A target gene's highest MI determines where its whole group appears in the tooltip.
-    std::map<std::pair<int, int>, double> highest_mutual_information_by_gene_pair;
+    // A target feature's highest MI determines where its whole group appears in the tooltip.
+    std::map<std::pair<int, int>, double> highest_mutual_information_by_feature_pair;
 
-    // Validate the links and find the highest MI for each source-target gene pair.
-    for (R_xlen_t i = 0; i < source_gene_indices.size(); ++i) {
-        const auto source_gene_index = source_gene_indices[i];
-        const auto target_gene_index = target_gene_indices[i];
+    // Validate the links and find the highest MI for each source-target feature pair.
+    for (R_xlen_t i = 0; i < source_feature_rows.size(); ++i) {
+        const auto source_feature_row = source_feature_rows[i];
+        const auto target_feature_row = target_feature_rows[i];
         const auto mutual_information_value = mutual_information[i];
 
-        if (source_gene_index == NA_INTEGER || source_gene_index < 1 ||
-            target_gene_index == NA_INTEGER || target_gene_index < 1)
+        if (source_feature_row == NA_INTEGER || source_feature_row < 1 ||
+            target_feature_row == NA_INTEGER || target_feature_row < 1)
         {
-            Rcpp::stop("Gene indices must be positive integers.");
+            Rcpp::stop("Feature rows must be positive integers.");
         }
 
         if (!std::isfinite(mutual_information_value)) {
             Rcpp::stop("MI values must be finite.");
         }
 
-        const auto gene_pair = std::make_pair(source_gene_index, target_gene_index);
-        const auto inserted = highest_mutual_information_by_gene_pair.emplace(gene_pair, mutual_information_value);
+        const auto feature_pair = std::make_pair(source_feature_row, target_feature_row);
+        const auto inserted = highest_mutual_information_by_feature_pair.emplace(feature_pair,
+                                                                                  mutual_information_value);
 
         if (!inserted.second) {
             inserted.first->second = std::max(inserted.first->second, mutual_information_value);
@@ -196,36 +200,36 @@ Rcpp::DataFrame sort_gene_links_for_tooltips(const Rcpp::DataFrame& position_lin
     }
 
     // Prepare sorted link indices for the output.
-    std::vector<std::size_t> link_indices(source_gene_indices.size());
+    std::vector<std::size_t> link_indices(source_feature_rows.size());
     std::iota(link_indices.begin(), link_indices.end(), std::size_t{0});
 
     // Compare two input rows by the order detailed in the function comment.
-    const auto sort_link_indices_func = [&source_gene_indices,
-                                         &target_gene_indices,
+    const auto sort_link_indices_func = [&source_feature_rows,
+                                         &target_feature_rows,
                                          &mutual_information,
-                                         &highest_mutual_information_by_gene_pair](std::size_t left_index,
-                                                                                   std::size_t right_index)
+                                         &highest_mutual_information_by_feature_pair](std::size_t left_index,
+                                                                                      std::size_t right_index)
     {
-        const auto left_source_gene_index = source_gene_indices[left_index];
-        const auto right_source_gene_index = source_gene_indices[right_index];
+        const auto left_source_feature_row = source_feature_rows[left_index];
+        const auto right_source_feature_row = source_feature_rows[right_index];
 
-        if (left_source_gene_index != right_source_gene_index) {
-            return left_source_gene_index < right_source_gene_index;
+        if (left_source_feature_row != right_source_feature_row) {
+            return left_source_feature_row < right_source_feature_row;
         }
 
-        const auto left_target_gene_index = target_gene_indices[left_index];
-        const auto right_target_gene_index = target_gene_indices[right_index];
-        const auto left_gene_pair = std::make_pair(left_source_gene_index, left_target_gene_index);
-        const auto right_gene_pair = std::make_pair(right_source_gene_index, right_target_gene_index);
-        const auto left_highest_mi = highest_mutual_information_by_gene_pair.at(left_gene_pair);
-        const auto right_highest_mi = highest_mutual_information_by_gene_pair.at(right_gene_pair);
+        const auto left_target_feature_row = target_feature_rows[left_index];
+        const auto right_target_feature_row = target_feature_rows[right_index];
+        const auto left_feature_pair = std::make_pair(left_source_feature_row, left_target_feature_row);
+        const auto right_feature_pair = std::make_pair(right_source_feature_row, right_target_feature_row);
+        const auto left_highest_mi = highest_mutual_information_by_feature_pair.at(left_feature_pair);
+        const auto right_highest_mi = highest_mutual_information_by_feature_pair.at(right_feature_pair);
 
         if (left_highest_mi != right_highest_mi) {
             return left_highest_mi > right_highest_mi;
         }
 
-        if (left_target_gene_index != right_target_gene_index) {
-            return left_target_gene_index < right_target_gene_index;
+        if (left_target_feature_row != right_target_feature_row) {
+            return left_target_feature_row < right_target_feature_row;
         }
 
         return mutual_information[left_index] > mutual_information[right_index];
@@ -233,19 +237,19 @@ Rcpp::DataFrame sort_gene_links_for_tooltips(const Rcpp::DataFrame& position_lin
 
     std::sort(link_indices.begin(), link_indices.end(), sort_link_indices_func);
 
-    Rcpp::IntegerVector output_source_gene_indices(source_gene_indices.size());
-    Rcpp::IntegerVector output_target_gene_indices(target_gene_indices.size());
+    Rcpp::IntegerVector output_source_feature_rows(source_feature_rows.size());
+    Rcpp::IntegerVector output_target_feature_rows(target_feature_rows.size());
     Rcpp::NumericVector output_mutual_information(mutual_information.size());
 
     for (std::size_t output_index = 0; output_index < link_indices.size(); ++output_index) {
         const auto input_index = link_indices[output_index];
-        output_source_gene_indices[output_index] = source_gene_indices[input_index];
-        output_target_gene_indices[output_index] = target_gene_indices[input_index];
+        output_source_feature_rows[output_index] = source_feature_rows[input_index];
+        output_target_feature_rows[output_index] = target_feature_rows[input_index];
         output_mutual_information[output_index] = mutual_information[input_index];
     }
 
     return Rcpp::DataFrame::create(
-            Rcpp::Named("gene_1") = output_source_gene_indices,
-            Rcpp::Named("gene_2") = output_target_gene_indices,
+            Rcpp::Named("feature_row_1") = output_source_feature_rows,
+            Rcpp::Named("feature_row_2") = output_target_feature_rows,
             Rcpp::Named("MI") = output_mutual_information);
 }

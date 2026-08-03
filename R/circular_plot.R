@@ -12,8 +12,8 @@
                                     "selected_region_1",
                                     data$outliers_direct$Pos_1_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    "selected_gene_1",
-                                    data$outliers_direct$Pos_1_gene[selected_row])
+                                    "selected_feature_1",
+                                    data$outliers_direct$Pos_1_feature_row[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_position_1",
                                     data$outliers_direct$Pos_1[selected_row])
@@ -21,34 +21,34 @@
                                     "selected_region_2",
                                     data$outliers_direct$Pos_2_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    "selected_gene_2",
-                                    data$outliers_direct$Pos_2_gene[selected_row])
+                                    "selected_feature_2",
+                                    data$outliers_direct$Pos_2_feature_row[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_position_2",
                                     data$outliers_direct$Pos_2[selected_row])
 }
 
 # Calculate region boundaries. Returns a string vector with "start-end" strings.
-.get_region_boundaries <- function(region_indices) {
-    paste0(c(1, head(region_indices, -1) + 1), "-", region_indices)
+.get_region_boundaries <- function(region_end_positions) {
+    paste0(c(1, head(region_end_positions, -1) + 1), "-", region_end_positions)
 }
 
-.get_region_indices <- function(data, n_regions) {
-    n_genes <- nrow(data$gff)
-    as.integer(c(ceiling(seq_len(n_regions - 1L) * (n_genes / n_regions)), n_genes))
+.get_region_end_rows <- function(data, n_regions) {
+    n_features <- nrow(data$gff)
+    as.integer(c(ceiling(seq_len(n_regions - 1L) * (n_features / n_regions)), n_features))
 }
 
-.compute_gene_regions <- function(data, n_regions) {
-    region_indices <- .get_region_indices(data, n_regions)
-    gene_regions <- integer(max(region_indices))
+.compute_feature_regions <- function(data, n_regions) {
+    region_end_rows <- .get_region_end_rows(data, n_regions)
+    feature_regions <- integer(max(region_end_rows))
 
     for (region in seq_len(n_regions)) {
-        start <- if (region > 1L) region_indices[region - 1L] + 1L else 1L
-        end <- region_indices[region]
-        gene_regions[start:end] <- region
+        start_row <- if (region > 1L) region_end_rows[region - 1L] + 1L else 1L
+        end_row <- region_end_rows[region]
+        feature_regions[start_row:end_row] <- region
     }
 
-    return(gene_regions)
+    return(feature_regions)
 }
 
 .create_circular_data <- function(data) {
@@ -57,7 +57,7 @@
     n_regions <- n_groups * n_regions_per_group
     sz <- n_groups + n_groups * n_regions_per_group + 1L
 
-    group_names <- .get_region_boundaries(data$gff$end[.get_region_indices(data, n_groups)])
+    group_names <- .get_region_boundaries(data$gff$end[.get_region_end_rows(data, n_groups)])
 
     # Initialize circular data.
     circular_data <- data.frame(
@@ -75,47 +75,49 @@
 
     # Set draw status for region slices.
     circular_data$draw[seq_len(n_regions)] <- TRUE
-    group_label_indices <- seq.int(n_regions_per_group %/% 2L, sz - n_groups - 1L, n_regions_per_group)
-    circular_data$name[group_label_indices] <- group_names
+    group_label_rows <- seq.int(n_regions_per_group %/% 2L, sz - n_groups - 1L, n_regions_per_group)
+    circular_data$name[group_label_rows] <- group_names
 
     return(circular_data)
 }
 
 # Precomputes necessary data for rendering the circular plot.
 .precompute_circular_plot_data <- function(data) {
-    data$gff$gene_regions <- .compute_gene_regions(data, .circular_plot_regions())
+    # Assign each GFF row to one of the circular plot's regions.
+    data$gff$feature_regions <- .compute_feature_regions(data, .circular_plot_regions())
 
-    # Find the gene or calculated IGR containing each outlier position.
-    outlier_gene_or_igr_indices <- .cpp_find_outlier_gene_or_igr_indices(data$gff$start,
-                                                                         data$gff$end,
-                                                                         data$outliers_direct$Pos_1,
-                                                                         data$outliers_direct$Pos_2)
+    # Find the feature containing each outlier position.
+    outlier_feature_rows <- .cpp_find_outlier_feature_rows(data$gff$start,
+                                                           data$gff$end,
+                                                           data$outliers_direct$Pos_1,
+                                                           data$outliers_direct$Pos_2)
 
-    pos_1_gene_or_igr_indices <- outlier_gene_or_igr_indices$pos1_gene_or_igr_index
-    pos_2_gene_or_igr_indices <- outlier_gene_or_igr_indices$pos2_gene_or_igr_index
+    position_1_feature_rows <- outlier_feature_rows$position_1_feature_row
+    position_2_feature_rows <- outlier_feature_rows$position_2_feature_row
 
-    data$outliers_direct$Pos_1_gene <- pos_1_gene_or_igr_indices
-    data$outliers_direct$Pos_2_gene <- pos_2_gene_or_igr_indices
-    data$outliers_direct$Pos_1_gene_name <- data$gff$Name[pos_1_gene_or_igr_indices]
-    data$outliers_direct$Pos_2_gene_name <- data$gff$Name[pos_2_gene_or_igr_indices]
-    data$outliers_direct$Pos_1_region <- data$gff$gene_regions[pos_1_gene_or_igr_indices]
-    data$outliers_direct$Pos_2_region <- data$gff$gene_regions[pos_2_gene_or_igr_indices]
+    data$outliers_direct$Pos_1_feature_row <- position_1_feature_rows
+    data$outliers_direct$Pos_2_feature_row <- position_2_feature_rows
+    data$outliers_direct$Pos_1_feature <- data$gff$Name[position_1_feature_rows]
+    data$outliers_direct$Pos_2_feature <- data$gff$Name[position_2_feature_rows]
+    data$outliers_direct$Pos_1_region <- data$gff$feature_regions[position_1_feature_rows]
+    data$outliers_direct$Pos_2_region <- data$gff$feature_regions[position_2_feature_rows]
 
-    # Precompute main plot.
+    # Build the outer region slices and links.
     circular_data <- .create_circular_data(data)
     top_level_dependencies <- .create_top_level_links(data)
     edges <- .circular_plot_vega_spec(circular_data, top_level_dependencies)
 
-    # Add gene data.
-    gene_data <- .create_gene_data(data)
+    # Add the feature and position data used by the two inner views.
+    feature_data <- .create_feature_data(data)
     position_data <- .create_position_data(data)
     position_links <- .cpp_create_bidirectional_position_links(data$outliers_direct, position_data)
     position_links$weight <- .rescale_weights(position_links$MI, 0.5, 1)
-    gene_data <- .add_link_info_to_gene_data(data, gene_data, position_links)
-    edges$data <- append(edges$data, .circular_plot_vega_gene_data(gene_data))
-    edges$data <- append(edges$data, .circular_plot_vega_pos_data_and_links(position_data, position_links))
-    edges$marks <- append(edges$marks, .circular_plot_vega_gene_marks())
-    edges$marks <- append(edges$marks, .circular_plot_vega_pos_marks())
+    feature_data <- .add_link_info_to_feature_data(data, feature_data, position_links)
+    edges$data <- append(edges$data, .circular_plot_vega_feature_data(feature_data))
+    edges$data <- append(edges$data,
+                         .circular_plot_vega_position_data_and_links(position_data, position_links))
+    edges$marks <- append(edges$marks, .circular_plot_vega_feature_marks())
+    edges$marks <- append(edges$marks, .circular_plot_vega_position_marks())
 
     data$edges <- edges
 }
@@ -148,36 +150,35 @@
     return(dependencies)
 }
 
-.create_gene_data <- function(data) {
-    gene_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
-        region_genes <- which(data$gff$gene_regions == region)
+.create_feature_data <- function(data) {
+    feature_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
+        region_features <- which(data$gff$feature_regions == region)
         data.frame(
-            id = region_genes,
-            name = data$gff$Name[region_genes],
+            feature_row = region_features,
+            feature = data$gff$Name[region_features],
             region = region,
-            angle_step = seq(0, 1, length.out = length(region_genes)),
-            step_size = 1 / length(region_genes),
-            start = data$gff$start[region_genes],
-            end = data$gff$end[region_genes],
+            angle_step = seq(0, 1, length.out = length(region_features)),
+            step_size = 1 / length(region_features),
+            start = data$gff$start[region_features],
+            end = data$gff$end[region_features],
             stringsAsFactors = FALSE
         )
     }))
-    return(gene_data)
+    return(feature_data)
 }
 
 .create_position_data <- function(data) {
     position_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
         create_position_data_for_endpoint <- function(position_column) {
-            outlier_indices <- which(data$outliers_direct[[paste0(position_column, "_region")]] == region)
-            if (length(outlier_indices) == 0) {
+            outlier_rows <- which(data$outliers_direct[[paste0(position_column, "_region")]] == region)
+            if (length(outlier_rows) == 0) {
                 return(NULL)
             }
             data.frame(
-                name = data$outliers_direct[[position_column]][outlier_indices],
-                parent = data$outliers_direct[[paste0(position_column, "_gene")]][outlier_indices],
-                idx = outlier_indices,
+                position = data$outliers_direct[[position_column]][outlier_rows],
+                feature_row = data$outliers_direct[[paste0(position_column, "_feature_row")]][outlier_rows],
                 region = region,
-                weight = data$outliers_direct$MI[outlier_indices],
+                weight = data$outliers_direct$MI[outlier_rows],
                 stringsAsFactors = FALSE
             )
         }
@@ -185,62 +186,65 @@
     }))
 
     position_data <- position_data[order(-position_data$weight), ]
-    position_data <- position_data[!duplicated(position_data$name), ]
+    position_data <- position_data[!duplicated(position_data$position), ]
     position_data$weight <- .rescale_weights(position_data$weight, 0.5, 1)
     position_data <- position_data[order(position_data$region), ]
 
-    gene_start  <- data$gff$start[position_data$parent]
-    gene_end    <- data$gff$end[position_data$parent]
-    gene_length <- gene_end - gene_start
-    position_data$pos_in_gene <- pmin(0.9, pmax(0.1, (position_data$name - gene_start) / gene_length))
+    feature_start <- data$gff$start[position_data$feature_row]
+    feature_end <- data$gff$end[position_data$feature_row]
+    feature_length <- feature_end - feature_start
+    position_data$position_in_feature <- pmin(0.9,
+                                              pmax(0.1,
+                                                   (position_data$position - feature_start) / feature_length))
 
     return(position_data)
 }
 
-.add_link_info_to_gene_data <- function(data, gene_data, position_links) {
-    sorted_gene_links <- .cpp_sort_gene_links_for_tooltips(position_links)
-    n_genes <- nrow(gene_data)
-    genes_linked_to <- vector("list", n_genes)
-    n_genes_linked_to <- integer(n_genes)
-    n_outliers <- integer(n_genes)
-    tooltip_lengths <- integer(n_genes)
+.add_link_info_to_feature_data <- function(data, feature_data, position_links) {
+    sorted_feature_links <- .cpp_sort_feature_links_for_tooltips(position_links)
+    n_features <- nrow(feature_data)
+    features_linked_to <- vector("list", n_features)
+    n_features_linked_to <- integer(n_features)
+    n_outliers <- integer(n_features)
+    tooltip_lengths <- integer(n_features)
 
-    for (link_index in seq_len(nrow(sorted_gene_links))) {
-        source_gene_index <- sorted_gene_links$gene_1[link_index]
-        target_gene_index <- sorted_gene_links$gene_2[link_index]
-        mutual_information <- sorted_gene_links$MI[link_index]
-        first_link_for_source_gene <- is.null(genes_linked_to[[source_gene_index]])
+    for (link_row in seq_len(nrow(sorted_feature_links))) {
+        source_feature_row <- sorted_feature_links$feature_row_1[link_row]
+        target_feature_row <- sorted_feature_links$feature_row_2[link_row]
+        mutual_information <- sorted_feature_links$MI[link_row]
+        first_link_for_source_feature <- is.null(features_linked_to[[source_feature_row]])
 
-        if (first_link_for_source_gene) {
-            genes_linked_to[[source_gene_index]] <- "Linked to the following genes:"
+        if (first_link_for_source_feature) {
+            features_linked_to[[source_feature_row]] <- "Linked to:"
         }
 
-        # Add new linked gene's info.
-        if (first_link_for_source_gene ||
-            (sorted_gene_links$gene_1[link_index - 1L] == source_gene_index &&
-             sorted_gene_links$gene_2[link_index - 1L] != target_gene_index))
+        # Add the linked feature's name and location before its first MI value.
+        if (first_link_for_source_feature ||
+            (sorted_feature_links$feature_row_1[link_row - 1L] == source_feature_row &&
+             sorted_feature_links$feature_row_2[link_row - 1L] != target_feature_row))
         {
-            n_genes_linked_to[source_gene_index] <- n_genes_linked_to[source_gene_index] + 1L
-            linked_gene_info <- sprintf("%s (%s-%s)",
-                                        data$gff$Name[target_gene_index],
-                                        data$gff$start[target_gene_index],
-                                        data$gff$end[target_gene_index])
-            genes_linked_to[[source_gene_index]] <- append(genes_linked_to[[source_gene_index]], linked_gene_info)
+            n_features_linked_to[source_feature_row] <- n_features_linked_to[source_feature_row] + 1L
+            linked_feature_info <- sprintf("%s (%s-%s)",
+                                           data$gff$Name[target_feature_row],
+                                           data$gff$start[target_feature_row],
+                                           data$gff$end[target_feature_row])
+            features_linked_to[[source_feature_row]] <- append(features_linked_to[[source_feature_row]],
+                                                               linked_feature_info)
         }
 
-        genes_linked_to[[source_gene_index]] <- append(genes_linked_to[[source_gene_index]],
-                                                        mutual_information)
-        n_outliers[source_gene_index] <- n_outliers[source_gene_index] + 1L
+        features_linked_to[[source_feature_row]] <- append(features_linked_to[[source_feature_row]],
+                                                           mutual_information)
+        n_outliers[source_feature_row] <- n_outliers[source_feature_row] + 1L
     }
 
-    for (gene_index in seq_len(nrow(gene_data))) {
-        tooltip_lengths[gene_index] <- length(genes_linked_to[[gene_index]])
+    for (feature_row in seq_len(nrow(feature_data))) {
+        tooltip_lengths[feature_row] <- length(features_linked_to[[feature_row]])
     }
 
-    gene_data$genes_linked_to <- genes_linked_to
-    gene_data$n_genes_linked_to <- n_genes_linked_to
-    gene_data$n_outliers <- n_outliers
-    gene_data$length <- tooltip_lengths
+    feature_data$features_linked_to <- features_linked_to
+    feature_data$n_features_linked_to <- n_features_linked_to
+    feature_data$n_outliers <- n_outliers
+    feature_data$length <- tooltip_lengths
 
-    return(gene_data)
+    return(feature_data)
 }

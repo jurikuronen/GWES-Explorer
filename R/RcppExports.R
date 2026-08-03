@@ -5,8 +5,8 @@
     .Call(`_GWESExplorer_create_bidirectional_position_links`, outliers_direct, position_data)
 }
 
-.cpp_sort_gene_links_for_tooltips <- function(position_links) {
-    .Call(`_GWESExplorer_sort_gene_links_for_tooltips`, position_links)
+.cpp_sort_feature_links_for_tooltips <- function(position_links) {
+    .Call(`_GWESExplorer_sort_feature_links_for_tooltips`, position_links)
 }
 
 .cpp_get_gff_name_from_attributes <- function(attributes) {
@@ -17,7 +17,7 @@
     .Call(`_GWESExplorer_find_igrs_with_outliers`, gene_start_positions, gene_end_positions, outliers_direct, region_ranges)
 }
 
-.cpp_find_outlier_gene_or_igr_indices <- function(gene_or_igr_start_positions, gene_or_igr_end_positions, outlier_positions_1, outlier_positions_2) {
-    .Call(`_GWESExplorer_find_outlier_gene_or_igr_indices`, gene_or_igr_start_positions, gene_or_igr_end_positions, outlier_positions_1, outlier_positions_2)
+.cpp_find_outlier_feature_rows <- function(feature_start_positions, feature_end_positions, outlier_positions_1, outlier_positions_2) {
+    .Call(`_GWESExplorer_find_outlier_feature_rows`, feature_start_positions, feature_end_positions, outlier_positions_1, outlier_positions_2)
 }
 

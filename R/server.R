@@ -21,7 +21,7 @@
 
     # Column names in outliers table.
     .default_outlier_columns <- c("Pos_1", "Pos_2", "MI", "MI_wogaps", "Distance")
-    .extended_outlier_columns <- c(.default_outlier_columns, "Pos_1_gene_name", "Pos_2_gene_name")
+    .extended_outlier_columns <- c(.default_outlier_columns, "Pos_1_feature", "Pos_2_feature")
 
     # Currently used column names.
     .outlier_columns <- .default_outlier_columns

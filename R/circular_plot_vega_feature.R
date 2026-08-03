@@ -1,21 +1,21 @@
-.circular_plot_vega_gene_marks <- function() {
+.circular_plot_vega_feature_marks <- function() {
     list(
-        .circular_plot_vega_gene_marks_background(1),
-        .circular_plot_vega_gene_marks_text(1),
-        .circular_plot_vega_gene_marks_arcs(1),
-        .circular_plot_vega_gene_marks_background(2),
-        .circular_plot_vega_gene_marks_text(2),
-        .circular_plot_vega_gene_marks_arcs(2),
-        .circular_plot_vega_gene_marks_hover_background(),
-        .circular_plot_vega_gene_marks_hover_text()
+        .circular_plot_vega_feature_marks_background(1),
+        .circular_plot_vega_feature_marks_text(1),
+        .circular_plot_vega_feature_marks_arcs(1),
+        .circular_plot_vega_feature_marks_background(2),
+        .circular_plot_vega_feature_marks_text(2),
+        .circular_plot_vega_feature_marks_arcs(2),
+        .circular_plot_vega_feature_marks_hover_background(),
+        .circular_plot_vega_feature_marks_hover_text()
     )
 }
 
-.circular_plot_vega_gene_data <- function(gene_data) {
+.circular_plot_vega_feature_data <- function(feature_data) {
     list(
         list(
-            name = "gene_data",
-            values = gene_data,
+            name = "feature_data",
+            values = feature_data,
             transform = list(
                 .vega_formula("angle_step_size_1", "gene_arc_angle_1 * datum.step_size"),
                 .vega_formula("angle_step_size_2", "gene_arc_angle_2 * datum.step_size"),
@@ -41,14 +41,14 @@
                                      " + rotate_gene_view_2) % 360, [90, 270])"))
             )
         ),
-        .vega_simple_filter("gene_data_selected_1", "gene_data", .is_selected_region("datum.region", 1)),
-        .vega_simple_filter("gene_data_selected_2", "gene_data", .is_selected_region("datum.region", 2)),
-        .vega_simple_filter("gene_data_selected_region_1", "region_data", .is_selected_region("datum.id", 1)),
-        .vega_simple_filter("gene_data_selected_region_2", "region_data", .is_selected_region("datum.id", 2))
+        .vega_simple_filter("feature_data_selected_1", "feature_data", .is_selected_region("datum.region", 1)),
+        .vega_simple_filter("feature_data_selected_2", "feature_data", .is_selected_region("datum.region", 2)),
+        .vega_simple_filter("feature_data_selected_region_1", "region_data", .is_selected_region("datum.id", 1)),
+        .vega_simple_filter("feature_data_selected_region_2", "region_data", .is_selected_region("datum.id", 2))
     )
 }
 
-.circular_plot_vega_gene_marks_text <- function(selection) {
+.circular_plot_vega_feature_marks_text <- function(selection) {
     leftside <- paste0("datum.leftside_", selection)
     align_signal <- paste0("flip_gene_view_",
                            selection,
@@ -60,14 +60,14 @@
     text_dx <- paste0("flip_gene_view_", selection, " ? (", leftside, " ? 7 : -7) : (", leftside, " ? -2 : 2) ")
     list(
         type = "text",
-        from = list(data = paste0("gene_data_selected_", selection)),
-        name = paste0("gene_text_", selection),
+        from = list(data = paste0("feature_data_selected_", selection)),
+        name = paste0("feature_text_", selection),
         interactive = TRUE,
         encode = list(
             enter = list(
-                text = list(field = "name"),
+                text = list(field = "feature"),
                 baseline = list(value = "middle"),
-                tooltip = .vega_get_gene_tooltip()
+                tooltip = .vega_get_feature_tooltip()
             ),
             update = list(
                 x = list(field = paste0("x_", selection)),
@@ -77,7 +77,7 @@
                 align = list(signal = align_signal),
                 fontSize = list(signal = "text_size_gene"),
                 fontWeight = list(
-                    list(test = .is_selected_gene("datum.id", selection), value = "bold"),
+                    list(test = .is_selected_feature("datum.feature_row", selection), value = "bold"),
                     list(value = "normal")
                 ),
                 fill = list(value = "black"),
@@ -87,16 +87,16 @@
     )
 }
 
-.circular_plot_vega_gene_marks_arcs <- function(selection) {
+.circular_plot_vega_feature_marks_arcs <- function(selection) {
     list(
         type = "arc",
-        from = list(data = paste0("gene_data_selected_", selection)),
-        name = paste0("gene_arc_", selection),
+        from = list(data = paste0("feature_data_selected_", selection)),
+        name = paste0("feature_arc_", selection),
         interactive = TRUE,
         encode = list(
             enter = list(
                 fill = list(signal = "color_gene_arc"),
-                tooltip = .vega_get_gene_tooltip()
+                tooltip = .vega_get_feature_tooltip()
             ),
             update = list(
                 x = list(signal = "origoX"),
@@ -115,8 +115,8 @@
                 outerRadius = list(signal = paste0("radius_gene_view_", selection)),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_selected_gene("datum.id", selection), signal = "opacity_selected"),
-                    list(test = .gene_is_selected(selection), signal = "opacity_inactive"),
+                    list(test = .is_selected_feature("datum.feature_row", selection), signal = "opacity_selected"),
+                    list(test = .feature_is_selected(selection), signal = "opacity_inactive"),
                     list(signal = "opacity_default")
                 )
             )
@@ -124,15 +124,15 @@
     )
 }
 
-.circular_plot_vega_gene_marks_hover_text <- function() {
+.circular_plot_vega_feature_marks_hover_text <- function() {
     list(
         type = "text",
-        from = list(data = "gene_data"),
-        name = paste0("gene_hover_text"),
+        from = list(data = "feature_data"),
+        name = "feature_hover_text",
         interactive = FALSE,
         encode = list(
             enter = list(
-                text = list(field = "genes_linked_to"),
+                text = list(field = "features_linked_to"),
                 baseline = list(value = "middle")
             ),
             update = list(
@@ -143,7 +143,7 @@
                 fontWeight = list(list(value = "normal")),
                 fill = list(value = "black"),
                 opacity = list(
-                    list(test = .is_active_gene("datum.id"), value = 1),
+                    list(test = .is_active_feature("datum.feature_row"), value = 1),
                     list(value = 0)
                 )
             )
@@ -151,11 +151,11 @@
     )
 }
 
-.circular_plot_vega_gene_marks_hover_background <- function() {
+.circular_plot_vega_feature_marks_hover_background <- function() {
     list(
         type = "rect",
-        from = list(data = "gene_data"),
-        name = "gene_hover_background",
+        from = list(data = "feature_data"),
+        name = "feature_hover_background",
         interactive = FALSE,
         encode = list(
             enter = list(
@@ -171,12 +171,12 @@
                 height = list(signal = "datum.length * (text_size_tooltip + 2) + text_size_tooltip"),
                 strokeOpacity = list(
                     list(test = "datum.length === 0", value = 0),
-                    list(test = .is_active_gene("datum.id"), signal = "opacity_background"),
+                    list(test = .is_active_feature("datum.feature_row"), signal = "opacity_background"),
                     list(value = 0)
                 ),
                 fillOpacity = list(
                     list(test = "datum.length === 0", value = 0),
-                    list(test = .is_active_gene("datum.id"), value = 0.4),
+                    list(test = .is_active_feature("datum.feature_row"), value = 0.4),
                     list(value = 0)
                 )
             )
@@ -184,13 +184,13 @@
     )
 }
 
-.circular_plot_vega_gene_marks_background <- function(selection) {
+.circular_plot_vega_feature_marks_background <- function(selection) {
     arc_angle <- paste0("gene_arc_angle_", selection)
     rotate <- paste0("rotate_gene_view_", selection)
     list(
         type = "arc",
-        from = list(data = paste0("gene_data_selected_region_", selection)),
-        name = paste0("gene_background_", selection),
+        from = list(data = paste0("feature_data_selected_region_", selection)),
+        name = paste0("feature_background_", selection),
         interactive = TRUE,
         encode = list(
             enter = list(
@@ -208,7 +208,7 @@
                                                   " - ",
                                                   arc_angle,
                                                   " / 2 - ",
-                                                  .vega_data_query(paste0("gene_data_selected_",
+                                                  .vega_data_query(paste0("feature_data_selected_",
                                                                           selection),
                                                                    0,
                                                                    "step_size"),
@@ -220,7 +220,7 @@
                                                 " + ",
                                                 arc_angle,
                                                 " / 2 + ",
-                                                .vega_data_query(paste0("gene_data_selected_",
+                                                .vega_data_query(paste0("feature_data_selected_",
                                                                         selection),
                                                                  0,
                                                                  "step_size"),

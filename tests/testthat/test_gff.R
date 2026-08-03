@@ -226,72 +226,72 @@ test_that(".cpp_find_igrs_with_outliers retains a one-position IGR", {
     expect_identical(as.character(result$Name), "IGR_0k")
 })
 
-test_that(".cpp_find_outlier_gene_or_igr_indices selects the latest-starting gene containing each outlier", {
-    result <- .cpp_find_outlier_gene_or_igr_indices(
-        gene_or_igr_start_positions = c(1, 100, 200, 300),
-        gene_or_igr_end_positions = c(1000, 500, 250, 350),
+test_that(".cpp_find_outlier_feature_rows selects the latest-starting feature containing each outlier", {
+    result <- .cpp_find_outlier_feature_rows(
+        feature_start_positions = c(1, 100, 200, 300),
+        feature_end_positions = c(1000, 500, 250, 350),
         outlier_positions_1 = c(225, 275, 600),
         outlier_positions_2 = c(325, 400, 700)
     )
 
-    expect_identical(result$pos1_gene_or_igr_index, c(3L, 2L, 1L))
-    expect_identical(result$pos2_gene_or_igr_index, c(4L, 2L, 1L))
+    expect_identical(result$position_1_feature_row, c(3L, 2L, 1L))
+    expect_identical(result$position_2_feature_row, c(4L, 2L, 1L))
 })
 
-test_that(".cpp_find_outlier_gene_or_igr_indices maps positions at interval boundaries", {
-    result <- .cpp_find_outlier_gene_or_igr_indices(
-        gene_or_igr_start_positions = c(10, 21),
-        gene_or_igr_end_positions = c(20, 30),
+test_that(".cpp_find_outlier_feature_rows maps positions at interval boundaries", {
+    result <- .cpp_find_outlier_feature_rows(
+        feature_start_positions = c(10, 21),
+        feature_end_positions = c(20, 30),
         outlier_positions_1 = c(10, 20),
         outlier_positions_2 = c(21, 30)
     )
 
-    expect_identical(result$pos1_gene_or_igr_index, c(1L, 1L))
-    expect_identical(result$pos2_gene_or_igr_index, c(2L, 2L))
+    expect_identical(result$position_1_feature_row, c(1L, 1L))
+    expect_identical(result$position_2_feature_row, c(2L, 2L))
 })
 
-test_that(".cpp_find_outlier_gene_or_igr_indices returns no indices when there are no outliers", {
-    result <- .cpp_find_outlier_gene_or_igr_indices(
-        gene_or_igr_start_positions = 1,
-        gene_or_igr_end_positions = 100,
+test_that(".cpp_find_outlier_feature_rows returns no rows when there are no outliers", {
+    result <- .cpp_find_outlier_feature_rows(
+        feature_start_positions = 1,
+        feature_end_positions = 100,
         outlier_positions_1 = numeric(),
         outlier_positions_2 = numeric()
     )
 
-    expect_named(result, c("pos1_gene_or_igr_index", "pos2_gene_or_igr_index"))
+    expect_named(result, c("position_1_feature_row", "position_2_feature_row"))
     expect_equal(nrow(result), 0)
-    expect_identical(result$pos1_gene_or_igr_index, integer())
-    expect_identical(result$pos2_gene_or_igr_index, integer())
+    expect_identical(result$position_1_feature_row, integer())
+    expect_identical(result$position_2_feature_row, integer())
 })
 
-test_that(".cpp_find_outlier_gene_or_igr_indices preserves input order", {
-    result <- .cpp_find_outlier_gene_or_igr_indices(
-        gene_or_igr_start_positions = c(1, 101, 201),
-        gene_or_igr_end_positions = c(100, 200, 300),
+test_that(".cpp_find_outlier_feature_rows preserves input order", {
+    result <- .cpp_find_outlier_feature_rows(
+        feature_start_positions = c(1, 101, 201),
+        feature_end_positions = c(100, 200, 300),
         outlier_positions_1 = c(115, 225, 5),
         outlier_positions_2 = c(150, 250, 50)
     )
 
-    # Verify that the indices remain aligned with their original outlier links.
-    expect_identical(result$pos1_gene_or_igr_index, c(2L, 3L, 1L))
-    expect_identical(result$pos2_gene_or_igr_index, c(2L, 3L, 1L))
+    # The feature rows remain aligned with their original outlier links.
+    expect_identical(result$position_1_feature_row, c(2L, 3L, 1L))
+    expect_identical(result$position_2_feature_row, c(2L, 3L, 1L))
 })
 
-test_that(".cpp_find_outlier_gene_or_igr_indices rejects invalid gene and IGR data", {
+test_that(".cpp_find_outlier_feature_rows rejects invalid feature data", {
     expect_error(
-        .cpp_find_outlier_gene_or_igr_indices(numeric(), numeric(), 10, 20),
-        "Gene and IGR data must contain at least one row.",
+        .cpp_find_outlier_feature_rows(numeric(), numeric(), 10, 20),
+        "Feature data must contain at least one row.",
         fixed = TRUE
     )
 
     expect_error(
-        .cpp_find_outlier_gene_or_igr_indices(c(1, 20), 10, 5, 25),
-        "Gene and IGR start and end columns must have equal lengths.",
+        .cpp_find_outlier_feature_rows(c(1, 20), 10, 5, 25),
+        "Feature start and end columns must have equal lengths.",
         fixed = TRUE
     )
 })
 
-test_that(".cpp_find_outlier_gene_or_igr_indices rejects outliers not contained in a gene or IGR", {
+test_that(".cpp_find_outlier_feature_rows rejects outliers not contained in a feature", {
     cases <- list(
         "first position before the first row" = list(
             starts = 10,
@@ -323,13 +323,13 @@ test_that(".cpp_find_outlier_gene_or_igr_indices rejects outliers not contained 
         case <- cases[[case_name]]
 
         expect_error(
-            .cpp_find_outlier_gene_or_igr_indices(
+            .cpp_find_outlier_feature_rows(
                 case$starts,
                 case$ends,
                 case$outlier_positions_1,
                 case$outlier_positions_2
             ),
-            "Outlier position is not within a GFF3 gene or intergenic region.",
+            "Outlier position is not within a GFF3 feature.",
             fixed = TRUE,
             info = case_name
         )

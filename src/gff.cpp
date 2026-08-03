@@ -201,68 +201,68 @@ Rcpp::DataFrame find_igrs_with_outliers(const Rcpp::NumericVector& gene_start_po
 }
 
 /*
- * Finds the gene or calculated IGR containing each outlier position and returns its 1-based R row index.
+ * Finds the feature containing each outlier position and returns its 1-based R row number.
  *
- * When genes overlap, the gene with the greatest start position is selected.
+ * When features overlap, the feature with the greatest start position is selected.
  *
  * Expects that the data is already sorted and validated by the caller.
 */
-// [[Rcpp::export(.cpp_find_outlier_gene_or_igr_indices)]]
-Rcpp::DataFrame find_outlier_gene_or_igr_indices(const Rcpp::NumericVector& gene_or_igr_start_positions,
-                                                 const Rcpp::NumericVector& gene_or_igr_end_positions,
-                                                 const Rcpp::IntegerVector& outlier_positions_1,
-                                                 const Rcpp::IntegerVector& outlier_positions_2)
+// [[Rcpp::export(.cpp_find_outlier_feature_rows)]]
+Rcpp::DataFrame find_outlier_feature_rows(const Rcpp::NumericVector& feature_start_positions,
+                                          const Rcpp::NumericVector& feature_end_positions,
+                                          const Rcpp::IntegerVector& outlier_positions_1,
+                                          const Rcpp::IntegerVector& outlier_positions_2)
 {
-    if (gene_or_igr_start_positions.size() == 0) {
-        Rcpp::stop("Gene and IGR data must contain at least one row.");
+    if (feature_start_positions.size() == 0) {
+        Rcpp::stop("Feature data must contain at least one row.");
     }
 
-    if (gene_or_igr_start_positions.size() != gene_or_igr_end_positions.size()) {
-        Rcpp::stop("Gene and IGR start and end columns must have equal lengths.");
+    if (feature_start_positions.size() != feature_end_positions.size()) {
+        Rcpp::stop("Feature start and end columns must have equal lengths.");
     }
 
-    const auto find_gene_or_igr_index = [&gene_or_igr_start_positions,
-                                         &gene_or_igr_end_positions](std::size_t outlier_position)
+    const auto find_feature_row = [&feature_start_positions,
+                                   &feature_end_positions](std::size_t outlier_position)
     {
-        // Points to the gene or IGR with the greatest start position not exceeding the outlier position.
-        const auto gene_or_igr_start_it = upper_bound_prev(gene_or_igr_start_positions, outlier_position);
+        // Points to the feature with the greatest start position not exceeding the outlier position.
+        const auto feature_start_it = upper_bound_prev(feature_start_positions, outlier_position);
 
-        if (gene_or_igr_start_it == gene_or_igr_start_positions.end()) {
-            Rcpp::stop("Outlier position is not within a GFF3 gene or intergenic region.");
+        if (feature_start_it == feature_start_positions.end()) {
+            Rcpp::stop("Outlier position is not within a GFF3 feature.");
         }
 
-        auto gene_or_igr_index = static_cast<std::size_t>(
-                std::distance(gene_or_igr_start_positions.begin(), gene_or_igr_start_it));
+        auto feature_index = static_cast<std::size_t>(
+                std::distance(feature_start_positions.begin(), feature_start_it));
 
-        // When genes overlap, the latest gene to start before the outlier may not contain the outlier. Move backwards
-        // until finding the latest-starting gene that contains the outlier.
-        while (gene_or_igr_index > 0 &&
-               static_cast<std::size_t>(gene_or_igr_end_positions[gene_or_igr_index]) < outlier_position)
+        // When features overlap, the latest feature to start before the outlier may not contain it. Move backwards
+        // until finding the latest-starting feature that contains the outlier.
+        while (feature_index > 0 &&
+               static_cast<std::size_t>(feature_end_positions[feature_index]) < outlier_position)
         {
-            --gene_or_igr_index;
+            --feature_index;
         }
 
-        if (static_cast<std::size_t>(gene_or_igr_end_positions[gene_or_igr_index]) < outlier_position) {
-            Rcpp::stop("Outlier position is not within a GFF3 gene or intergenic region.");
+        if (static_cast<std::size_t>(feature_end_positions[feature_index]) < outlier_position) {
+            Rcpp::stop("Outlier position is not within a GFF3 feature.");
         }
 
-        // R uses 1-based integer row indices.
-        return static_cast<int>(gene_or_igr_index + 1);
+        // Convert the 0-based C++ index to a 1-based R row number.
+        return static_cast<int>(feature_index + 1);
     };
 
-    Rcpp::IntegerVector outlier_gene_or_igr_indices_1(outlier_positions_1.size());
-    Rcpp::IntegerVector outlier_gene_or_igr_indices_2(outlier_positions_2.size());
+    Rcpp::IntegerVector outlier_feature_rows_1(outlier_positions_1.size());
+    Rcpp::IntegerVector outlier_feature_rows_2(outlier_positions_2.size());
 
     std::transform(outlier_positions_1.begin(),
                    outlier_positions_1.end(),
-                   outlier_gene_or_igr_indices_1.begin(),
-                   find_gene_or_igr_index);
+                   outlier_feature_rows_1.begin(),
+                   find_feature_row);
     std::transform(outlier_positions_2.begin(),
                    outlier_positions_2.end(),
-                   outlier_gene_or_igr_indices_2.begin(),
-                   find_gene_or_igr_index);
+                   outlier_feature_rows_2.begin(),
+                   find_feature_row);
 
     return Rcpp::DataFrame::create(
-            Rcpp::Named("pos1_gene_or_igr_index") = outlier_gene_or_igr_indices_1,
-            Rcpp::Named("pos2_gene_or_igr_index") = outlier_gene_or_igr_indices_2);
+            Rcpp::Named("position_1_feature_row") = outlier_feature_rows_1,
+            Rcpp::Named("position_2_feature_row") = outlier_feature_rows_2);
 }

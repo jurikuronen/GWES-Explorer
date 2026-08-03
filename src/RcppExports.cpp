@@ -22,14 +22,14 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// sort_gene_links_for_tooltips
-Rcpp::DataFrame sort_gene_links_for_tooltips(const Rcpp::DataFrame& position_links);
-RcppExport SEXP _GWESExplorer_sort_gene_links_for_tooltips(SEXP position_linksSEXP) {
+// sort_feature_links_for_tooltips
+Rcpp::DataFrame sort_feature_links_for_tooltips(const Rcpp::DataFrame& position_links);
+RcppExport SEXP _GWESExplorer_sort_feature_links_for_tooltips(SEXP position_linksSEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
     Rcpp::traits::input_parameter< const Rcpp::DataFrame& >::type position_links(position_linksSEXP);
-    rcpp_result_gen = Rcpp::wrap(sort_gene_links_for_tooltips(position_links));
+    rcpp_result_gen = Rcpp::wrap(sort_feature_links_for_tooltips(position_links));
     return rcpp_result_gen;
 END_RCPP
 }
@@ -58,27 +58,27 @@ BEGIN_RCPP
     return rcpp_result_gen;
 END_RCPP
 }
-// find_outlier_gene_or_igr_indices
-Rcpp::DataFrame find_outlier_gene_or_igr_indices(const Rcpp::NumericVector& gene_or_igr_start_positions, const Rcpp::NumericVector& gene_or_igr_end_positions, const Rcpp::IntegerVector& outlier_positions_1, const Rcpp::IntegerVector& outlier_positions_2);
-RcppExport SEXP _GWESExplorer_find_outlier_gene_or_igr_indices(SEXP gene_or_igr_start_positionsSEXP, SEXP gene_or_igr_end_positionsSEXP, SEXP outlier_positions_1SEXP, SEXP outlier_positions_2SEXP) {
+// find_outlier_feature_rows
+Rcpp::DataFrame find_outlier_feature_rows(const Rcpp::NumericVector& feature_start_positions, const Rcpp::NumericVector& feature_end_positions, const Rcpp::IntegerVector& outlier_positions_1, const Rcpp::IntegerVector& outlier_positions_2);
+RcppExport SEXP _GWESExplorer_find_outlier_feature_rows(SEXP feature_start_positionsSEXP, SEXP feature_end_positionsSEXP, SEXP outlier_positions_1SEXP, SEXP outlier_positions_2SEXP) {
 BEGIN_RCPP
     Rcpp::RObject rcpp_result_gen;
     Rcpp::RNGScope rcpp_rngScope_gen;
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gene_or_igr_start_positions(gene_or_igr_start_positionsSEXP);
-    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type gene_or_igr_end_positions(gene_or_igr_end_positionsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type feature_start_positions(feature_start_positionsSEXP);
+    Rcpp::traits::input_parameter< const Rcpp::NumericVector& >::type feature_end_positions(feature_end_positionsSEXP);
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type outlier_positions_1(outlier_positions_1SEXP);
     Rcpp::traits::input_parameter< const Rcpp::IntegerVector& >::type outlier_positions_2(outlier_positions_2SEXP);
-    rcpp_result_gen = Rcpp::wrap(find_outlier_gene_or_igr_indices(gene_or_igr_start_positions, gene_or_igr_end_positions, outlier_positions_1, outlier_positions_2));
+    rcpp_result_gen = Rcpp::wrap(find_outlier_feature_rows(feature_start_positions, feature_end_positions, outlier_positions_1, outlier_positions_2));
     return rcpp_result_gen;
 END_RCPP
 }
 
 static const R_CallMethodDef CallEntries[] = {
     {"_GWESExplorer_create_bidirectional_position_links", (DL_FUNC) &_GWESExplorer_create_bidirectional_position_links, 2},
-    {"_GWESExplorer_sort_gene_links_for_tooltips", (DL_FUNC) &_GWESExplorer_sort_gene_links_for_tooltips, 1},
+    {"_GWESExplorer_sort_feature_links_for_tooltips", (DL_FUNC) &_GWESExplorer_sort_feature_links_for_tooltips, 1},
     {"_GWESExplorer_get_gff_name_from_attributes", (DL_FUNC) &_GWESExplorer_get_gff_name_from_attributes, 1},
     {"_GWESExplorer_find_igrs_with_outliers", (DL_FUNC) &_GWESExplorer_find_igrs_with_outliers, 4},
-    {"_GWESExplorer_find_outlier_gene_or_igr_indices", (DL_FUNC) &_GWESExplorer_find_outlier_gene_or_igr_indices, 4},
+    {"_GWESExplorer_find_outlier_feature_rows", (DL_FUNC) &_GWESExplorer_find_outlier_feature_rows, 4},
     {NULL, NULL, 0}
 };
 
