@@ -136,29 +136,51 @@
 
 # Determine ranges from a GFF3 file.
 .determine_ranges <- function(data, gff_filepath) {
-    ranges <- NULL
+    # Check if the ranges are given in an explicit "region" type row.
+    region_rows <- data$gff[data$gff$type == "region", c("start", "end"), drop = FALSE]
 
-    # Region type explicitly given.
-    if (any(data$gff$type == "region")) {
-        ranges <- as.numeric(dplyr::select(data$gff[data$gff$type == "region", ],
-                                           "start",
-                                           "end"))
-    } else {
-        # Check ##sequence-region pragma.
-        input_file <- readLines(gff_filepath)
-        found_str <- grep(pattern = "^##sequence-region",
-                          x = input_file,
-                          value = TRUE)
-        if (length(found_str) > 0) {
-            # Remove any tab characters.
-            found_str <- gsub('(\t)', '', found_str)
-            found_str_values <- strsplit(found_str, "\\s+")[[1]]
-            ranges <- as.numeric(found_str_values[3:4])
-        } else {
-            # Get end from the maximum value.
-            ranges <- c(1, max(data$gff$end))
-        }
+    # Check if the ranges are given in the ##sequence-region pragma.
+    input_file <- readLines(gff_filepath)
+    pragma_lines <- grep(pattern = "^##sequence-region", x = input_file, value = TRUE)
+
+    if (nrow(region_rows) > 1L || length(pragma_lines) > 1L) {
+        stop("Only one GFF3 region is supported.")
     }
+
+    if (length(pragma_lines) == 1L) {
+        pragma_fields <- strsplit(pragma_lines[[1L]], "\\s+")[[1L]]
+        if (length(pragma_fields) != 4L) {
+            stop("Invalid ##sequence-region pragma: expected a sequence ID, start and end.")
+        }
+        ranges <- as.numeric(pragma_fields[3:4])
+
+        # If the ranges were given in both, they must match.
+        if (nrow(region_rows) == 1L) {
+            region_ranges <- as.numeric(c(region_rows$start[[1L]], region_rows$end[[1L]]))
+
+            if (!identical(ranges, region_ranges)) {
+                stop("GFF3 region row and ##sequence-region pragma must have the same range.")
+            }
+        }
+    } else if (nrow(region_rows) == 1L) {
+        ranges <- as.numeric(c(region_rows$start[[1L]], region_rows$end[[1L]]))
+    } else {
+        # Get end from the maximum value.
+        ranges <- c(1, max(data$gff$end))
+    }
+
+    if (!isTRUE(ranges[[1L]] == 1)) {
+        stop("GFF3 region must start at position 1.")
+    }
+
+    # Require at least a one kilobase span for each circular plot region.
+    minimum_range_length <- .circular_plot_regions() * 1000L
+    if (ranges[[2L]] - ranges[[1L]] + 1L < minimum_range_length) {
+        stop(paste0("GFF3 region must span at least ",
+                    format(minimum_range_length, big.mark = ",", scientific = FALSE, trim = TRUE),
+                    " bases."))
+    }
+
     return(ranges)
 }
 
@@ -173,7 +195,14 @@
                                                    "<br><br>",
                                                    .escape_html(error_msg))))
         }
-        ranges <- .determine_ranges(data, gff_file$datapath)
+        ranges <- try({ .determine_ranges(data, gff_file$datapath) }, silent = TRUE)
+        if (inherits(ranges, "try-error")) {
+            error_msg <- ranges
+            data$gff <- NULL
+            return(.status(.STATUS_FAILURE, paste0("Failed to determine GFF3 region.",
+                                                   "<br><br>",
+                                                   .escape_html(error_msg))))
+        }
 
         # Determine which type to filter.
         gff_types <- unique(as.character(data$gff$type))
