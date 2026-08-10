@@ -1,7 +1,8 @@
-.ui_about_tab_panel <- function() {
+.ui_about_tab_panel <- function(version) {
     shiny::tabPanel(
         title = "About",
         shiny::h2("GWES-Explorer - a genome-wide epistasis analyzer."),
+        shiny::p(paste("Version", version)),
         shiny::p("GWES-Explorer is an interactive visualization tool designed to be used in conjunction with ",
                  shiny::HTML('<a href="https://github.com/santeripuranen/SpydrPick" target="_blank">SpydrPick</a>.'),
                  "GWES-Explorer relies heavily on the Shiny and Vega libraries to deploy it as a web application with ",
