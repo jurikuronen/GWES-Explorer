@@ -49,7 +49,7 @@
         } else {
             shiny::updateSelectInput(session,
                                      inputId = "select_phenotype",
-                                     choices = c("No phenotype selected"))
+                                     choices = c("No phenotype selected" = 0))
         }
     }
 
@@ -157,7 +157,7 @@
         output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(data, input, .outlier_columns)
         # Session data is not reactive, so recreate the renderer here.
         # Shiny reruns it when phenotype or row selection inputs change.
-        output$tree_plot <- .render_tree_plot(data, input)
+        output$tree_plot <- .render_phylogenetic_tree_plot(data, input)
         output$circular_plot <- .render_circular_plot(data$circular_plot_spec)
     }
 
@@ -304,7 +304,7 @@
     output$phylogenetic_tree_plot_download <- .download_handler(input,
                                                                 key = "phylogenetic_tree",
                                                                 plot_function = function() {
-                                                                    .tree_plot(data, input)
+                                                                    .create_phylogenetic_tree_plot(data, input)
                                                                 })
 
     # Setup modifying circular plot signals from Shiny UI.

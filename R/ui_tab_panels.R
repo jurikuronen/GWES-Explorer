@@ -120,7 +120,7 @@
                 shiny::selectInput(
                     inputId = "select_phenotype",
                     label = "Select phenotype:",
-                    choices = c("No phenotype selected")
+                    choices = c("No phenotype selected" = 0)
                 ),
                 # Setting to allow selecting multiple outlier rows.
                 shiny::radioButtons(
