@@ -1,9 +1,11 @@
-.render_circular_plot <- function(data) {
+# Creates a Shiny renderer for a precomputed circular-plot Vega specification.
+# If no GFF3 data was loaded, the specification is NULL and the plot stays empty.
+.render_circular_plot <- function(circular_plot_spec) {
     vegawidget::renderVegawidget({
-        if (is.null(data$edges)) {
+        if (is.null(circular_plot_spec)) {
             return(NULL)
         }
-        data$edges
+        circular_plot_spec
     })
 }
 
@@ -52,7 +54,7 @@
     # Build the outer region slices and links.
     circular_data <- .create_circular_data(data)
     top_level_dependencies <- .create_top_level_links(data)
-    edges <- .circular_plot_vega_spec(circular_data, top_level_dependencies)
+    circular_plot_spec <- .circular_plot_vega_spec(circular_data, top_level_dependencies)
 
     # Add the feature and position data used by the two inner views.
     feature_data <- .create_feature_data(data)
@@ -60,13 +62,14 @@
     position_links <- .cpp_create_bidirectional_position_links(data$outliers_direct, position_data)
     position_links$weight <- .rescale_weights(position_links$MI, 0.5, 1)
     feature_data <- .add_link_info_to_feature_data(data, feature_data, position_links)
-    edges$data <- append(edges$data, .circular_plot_vega_feature_data(feature_data))
-    edges$data <- append(edges$data,
-                         .circular_plot_vega_position_data_and_links(position_data, position_links))
-    edges$marks <- append(edges$marks, .circular_plot_vega_feature_marks())
-    edges$marks <- append(edges$marks, .circular_plot_vega_position_marks())
+    circular_plot_spec$data <- append(circular_plot_spec$data, .circular_plot_vega_feature_data(feature_data))
+    circular_plot_spec$data <- append(circular_plot_spec$data,
+                                      .circular_plot_vega_position_data_and_links(position_data,
+                                                                                  position_links))
+    circular_plot_spec$marks <- append(circular_plot_spec$marks, .circular_plot_vega_feature_marks())
+    circular_plot_spec$marks <- append(circular_plot_spec$marks, .circular_plot_vega_position_marks())
 
-    data$edges <- edges
+    data$circular_plot_spec <- circular_plot_spec
 }
 
 .rescale_weights <- function(weights, a, b) {

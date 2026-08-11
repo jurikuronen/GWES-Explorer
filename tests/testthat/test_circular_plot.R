@@ -26,7 +26,7 @@
         Pos_2 = 150L,
         MI = 0.8
     )
-    data$edges <- NULL
+    data$circular_plot_spec <- NULL
 
     # This mutates data by mapping the endpoints to GFF rows and building the Vega specification.
     .precompute_circular_plot_data(data)
@@ -74,8 +74,8 @@ test_that(".precompute_circular_plot_data maps each outlier to its 1-based featu
 
 test_that(".precompute_circular_plot_data creates feature and position data", {
     data <- .make_precomputed_circular_plot_test_data()
-    feature_data <- .get_vega_dataset(data$edges, "feature_data")$values
-    position_data <- .get_vega_dataset(data$edges, "position_data")$values
+    feature_data <- .get_vega_dataset(data$circular_plot_spec, "feature_data")$values
+    position_data <- .get_vega_dataset(data$circular_plot_spec, "position_data")$values
 
     expect_named(feature_data,
                  c("feature_row", "feature", "region", "angle_step", "step_size", "start", "end",
@@ -108,7 +108,7 @@ test_that(".precompute_circular_plot_data creates feature and position data", {
 
 test_that(".precompute_circular_plot_data creates links with 1-based feature rows and 0-based position-data indices", {
     data <- .make_precomputed_circular_plot_test_data()
-    position_links <- .get_vega_dataset(data$edges, "position_links")$values
+    position_links <- .get_vega_dataset(data$circular_plot_spec, "position_links")$values
 
     expect_named(position_links,
                  c("region_1", "region_2", "feature_row_1", "feature_row_2",
@@ -127,8 +127,8 @@ test_that(".precompute_circular_plot_data creates links with 1-based feature row
 
 test_that(".precompute_circular_plot_data creates Vega lookups from 1-based feature rows and 0-based position-data indices", {
     data <- .make_precomputed_circular_plot_test_data()
-    position_data <- .get_vega_dataset(data$edges, "position_data")
-    position_links <- .get_vega_dataset(data$edges, "position_links")
+    position_data <- .get_vega_dataset(data$circular_plot_spec, "position_data")
+    position_links <- .get_vega_dataset(data$circular_plot_spec, "position_links")
 
     expect_identical(
         .get_vega_formula_expression(position_data, "feature"),

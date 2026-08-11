@@ -158,7 +158,7 @@
         # Session data is not reactive, so recreate the renderer here.
         # Shiny reruns it when phenotype or row selection inputs change.
         output$tree_plot <- .render_tree_plot(data, input)
-        output$circular_plot <- .render_circular_plot(data)
+        output$circular_plot <- .render_circular_plot(data$circular_plot_spec)
     }
 
     # Set reactive file upload states.

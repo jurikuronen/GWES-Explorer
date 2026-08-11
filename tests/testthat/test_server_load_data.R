@@ -58,9 +58,9 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
 
     # Set any existing data.
     previous_outliers <- data.frame(Pos_1 = 1L)
-    previous_edges <- list(name = "previous")
+    previous_circular_plot_spec <- list(name = "previous")
     data$outliers <- previous_outliers
-    data$edges <- previous_edges
+    data$circular_plot_spec <- previous_circular_plot_spec
 
     result <- .read_data(
         data = data,
@@ -74,7 +74,7 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
 
     expect_identical(result$success, .STATUS_FAILURE)
     expect_identical(data$outliers, previous_outliers)
-    expect_identical(data$edges, previous_edges)
+    expect_identical(data$circular_plot_spec, previous_circular_plot_spec)
 })
 
 test_that(".read_outliers rejects files without direct outlier links", {

@@ -29,12 +29,12 @@ test_that(".read_data loads the Maela example files and precomputes circular plo
     expect_identical(data$outliers_direct$Pos_1_feature[[1L]], "SPN23F_RS08380")
     expect_identical(data$outliers_direct$Pos_2_feature[[1L]], "SPN23F_RS09935")
 
-    dataset_names <- vapply(data$edges$data, `[[`, character(1), "name")
+    dataset_names <- vapply(data$circular_plot_spec$data, `[[`, character(1), "name")
     expect_true(all(c("feature_data", "position_data", "position_links") %in% dataset_names))
 
-    feature_data <- data$edges$data[[match("feature_data", dataset_names)]]$values
-    position_data <- data$edges$data[[match("position_data", dataset_names)]]$values
-    position_links <- data$edges$data[[match("position_links", dataset_names)]]$values
+    feature_data <- data$circular_plot_spec$data[[match("feature_data", dataset_names)]]$values
+    position_data <- data$circular_plot_spec$data[[match("position_data", dataset_names)]]$values
+    position_links <- data$circular_plot_spec$data[[match("position_links", dataset_names)]]$values
 
     expect_identical(nrow(feature_data), nrow(data$gff))
     expect_identical(feature_data$feature_row, seq_len(nrow(data$gff)))
@@ -71,14 +71,13 @@ test_that(".read_data loads the Maela example files and precomputes circular plo
     expect_equal(sum(feature_data$n_outliers),
                  2L * nrow(data$outliers_direct) - expected_self_links)
 
-    mark_names <- vapply(data$edges$marks,
+    mark_names <- vapply(data$circular_plot_spec$marks,
                          function(mark) if (is.null(mark$name)) "" else mark$name,
                          character(1))
     expect_true(all(c("feature_text_1", "feature_text_2", "position_symbol_1", "position_symbol_2") %in%
                     mark_names))
 
-    signal_names <- vapply(data$edges$signals, `[[`, character(1), "name")
+    signal_names <- vapply(data$circular_plot_spec$signals, `[[`, character(1), "name")
     expect_true(all(c("active_feature", "selected_feature_1", "selected_feature_2",
                       "selected_position_1", "selected_position_2") %in% signal_names))
 })
-

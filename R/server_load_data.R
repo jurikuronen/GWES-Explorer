@@ -264,7 +264,7 @@
     loaded_data$msa <- NULL
     loaded_data$phenotype <- NULL
     loaded_data$gff <- NULL
-    loaded_data$edges <- NULL
+    loaded_data$circular_plot_spec <- NULL
 
     # Read outliers file.
     read_outliers_status <- .read_outliers(loaded_data, outliers_file)
@@ -315,7 +315,7 @@
     }
 
     # Copy loaded data into the session. The temporary environment will be garbage collected.
-    for (key in c("outliers", "outliers_direct", "tree", "msa", "phenotype", "gff", "edges")) {
+    for (key in c("outliers", "outliers_direct", "tree", "msa", "phenotype", "gff", "circular_plot_spec")) {
         data[[key]] <- loaded_data[[key]]
     }
 
@@ -349,7 +349,7 @@
     data$msa <- NULL
     data$phenotype <- NULL
     data$gff <- NULL
-    data$edges <- NULL
+    data$circular_plot_spec <- NULL
 
     if (!nzchar(cleared_data)) {
         cleared_data <- "There was no data to clear."
