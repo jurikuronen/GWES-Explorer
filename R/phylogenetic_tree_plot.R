@@ -11,6 +11,9 @@
 .create_base_tree_plot <- function(data, input) {
     base_tree_plot <- ggtree::ggtree(data$tree)
 
+    # Convert the plot data to a data frame to prevent invalid-tree warnings from gheatmap().
+    base_tree_plot$data <- as.data.frame(base_tree_plot$data)
+
     selected_phenotype_column <- as.numeric(input$select_phenotype)
 
     # Zero represents the special value "No phenotype selected".
@@ -85,11 +88,16 @@
             # Remove the unnecessary default "value" title.
             legend_title = NULL
         )
-        # Apply the MSA symbol colors and set the legend text and key sizes.
-        tree_plot <- tree_plot +
-            scale_fill_manual(values = msa_color_by_symbol) +
-            theme(legend.text = element_text(size = input$tree_legend_text_size),
-                  legend.key.size = unit(input$tree_legend_key_size, "cm"))
+
+        # Apply the MSA symbol colors.
+        # Suppress also the fill-scale warning when replacing gheatmap()'s default fill scale.
+        tree_plot <- suppressMessages(
+            tree_plot + scale_fill_manual(values = msa_color_by_symbol)
+        )
+
+        # Set the MSA legend text and key sizes.
+        tree_plot <- tree_plot + theme(legend.text = element_text(size = input$tree_legend_text_size),
+                                       legend.key.size = unit(input$tree_legend_key_size, "cm"))
     }
 
     # Zero represents the special value "No phenotype selected".
