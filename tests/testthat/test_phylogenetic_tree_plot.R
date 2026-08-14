@@ -72,6 +72,23 @@ test_that(".create_phylogenetic_tree_plot draws the MSA heatmap without warnings
     expect_identical(.count_tree_plot_heatmaps(result), 1L)
 })
 
+test_that(".create_phylogenetic_tree_plot draws other MSA symbols in grey", {
+    data <- .tree_plot_test_data()
+    # Specify any unlisted MSA symbol.
+    data$msa[1L, 1L] <- "R"
+    input <- .tree_plot_test_input(selected_outlier_rows = 1L)
+
+    result <- .create_phylogenetic_tree_plot(data, input)
+    built_plot <- ggplot2::ggplot_build(result)
+    heatmap_layer <- which(vapply(
+        result$layers,
+        function(layer) inherits(layer$geom, "GeomTile"),
+        logical(1L)
+    ))
+
+    expect_true("grey50" %in% built_plot$data[[heatmap_layer]]$fill)
+})
+
 test_that(".create_phylogenetic_tree_plot draws both heatmaps without warnings", {
     data <- .tree_plot_test_data()
     input <- .tree_plot_test_input(

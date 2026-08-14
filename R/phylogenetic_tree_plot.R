@@ -92,7 +92,9 @@
         # Apply the MSA symbol colors.
         # Suppress also the fill-scale warning when replacing gheatmap()'s default fill scale.
         tree_plot <- suppressMessages(
-            tree_plot + scale_fill_manual(values = msa_color_by_symbol)
+            tree_plot + scale_fill_manual(values = msa_color_by_symbol,
+                                          # Draw other MSA symbols in grey.
+                                          na.value = "grey50")
         )
 
         # Set the MSA legend text and key sizes.
