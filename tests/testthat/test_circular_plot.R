@@ -125,7 +125,10 @@ test_that(".precompute_circular_plot_data creates links with 1-based feature row
     expect_equal(position_links$weight, c(0.75, 0.75))
 })
 
-test_that(".precompute_circular_plot_data creates Vega lookups from 1-based feature rows and 0-based position-data indices", {
+test_that(paste(
+    ".precompute_circular_plot_data creates Vega lookups from 1-based feature rows",
+    "and 0-based position-data indices"
+), {
     data <- .make_precomputed_circular_plot_test_data()
     position_data <- .get_vega_dataset(data$circular_plot_spec, "position_data")
     position_links <- .get_vega_dataset(data$circular_plot_spec, "position_links")

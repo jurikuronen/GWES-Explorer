@@ -70,4 +70,3 @@ test_that(".add_link_info_to_feature_data records self-links separately", {
     expect_identical(result$n_self_links, c(2L, 0L))
     expect_identical(result$length, c(3L, 3L))
 })
-

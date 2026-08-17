@@ -29,4 +29,3 @@ test_that(".create_position_data keeps the highest-MI row for each position", {
     # Map positions within each feature to [0, 1], clamping them to [0.1, 0.9] for display.
     expect_equal(result$position_in_feature, c(0.1, 0.9, 0.5, 0.5, 0.1))
 })
-

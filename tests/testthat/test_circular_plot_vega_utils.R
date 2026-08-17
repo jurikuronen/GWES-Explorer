@@ -5,4 +5,3 @@ test_that(".vega_get_feature_tooltip displays the self-link count", {
                  "'Self-links': datum.n_self_links",
                  fixed = TRUE)
 })
-
