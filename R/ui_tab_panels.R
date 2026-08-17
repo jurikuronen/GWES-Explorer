@@ -76,7 +76,7 @@
                     "MI_wogaps"),
         shiny::br(), shiny::br(),
         shiny::p("Above, ", shiny::code("Pos_1"), " and ", shiny::code("Pos_2"), " refer to a pair of positions in ",
-                 "the output that are ", shiny::code("Distance")," base pairs apart and whose MI score is",
+                 "the output that are ", shiny::code("Distance"), " base pairs apart and whose MI score is",
                  shiny::code("MI"), " and MI score without gaps is ", shiny::code("MI_wogaps"), ". The ",
                  shiny::code("Direct"), " column is a 1/0 Boolean value from the ARACNE filtering step, where 0 ",
                  "indicates being filtered out by ARACNE."),

@@ -220,10 +220,10 @@
         # Re-render file input buttons with blank state.
         output$outliers_file_input <- .render_ui_file_input("outliers_file",
                                                             "SpydrPick outliers file (.outliers, .txt):",
-                                                            c(".outliers",".txt"))
+                                                            c(".outliers", ".txt"))
         output$tree_file_input <- .render_ui_file_input("tree_file",
                                                         "Tree file (Newick [.nwk] or Nexus [.nex]):",
-                                                        c(".nwk",".nex"))
+                                                        c(".nwk", ".nex"))
         output$fasta_file_input <- .render_ui_file_input("fasta_file",
                                                          "Fasta file (.fasta,
                                                      .fa or .aln):", c(".fasta", ".fa", ".aln"))
@@ -269,10 +269,10 @@
     # Render file input buttons.
     output$outliers_file_input <- .render_ui_file_input("outliers_file",
                                                         "SpydrPick outliers file (.outliers, .txt):",
-                                                        c(".outliers",".txt"))
+                                                        c(".outliers", ".txt"))
     output$tree_file_input <- .render_ui_file_input("tree_file",
                                                     "Tree file (Newick [.nwk] or Nexus [.nex]):",
-                                                    c(".nwk",".nex"))
+                                                    c(".nwk", ".nex"))
     output$fasta_file_input <- .render_ui_file_input("fasta_file",
                                                      "Fasta file (.fasta,
                                                      .fa or .aln):", c(".fasta", ".fa", ".aln"))
