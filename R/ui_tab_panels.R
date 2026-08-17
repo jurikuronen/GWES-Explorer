@@ -14,7 +14,7 @@
                  shiny::br(),
                  "GitHub: ",
                  shiny::HTML('<a href="https://github.com/jurikuronen/GWES-Explorer" target="_blank">',
-                             'https://github.com/jurikuronen/GWES-Explorer</a>')
+                             "https://github.com/jurikuronen/GWES-Explorer</a>")
         ),
         style = paste("font-size: 16px;",
                       "word-wrap: break-word;",
