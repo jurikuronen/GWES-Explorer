@@ -39,7 +39,7 @@
     matching_datasets <- which(vapply(spec$data,
                                       function(dataset) identical(dataset$name, dataset_name),
                                       logical(1)))
-    expect_length(matching_datasets, 1L)
+    testthat::expect_length(matching_datasets, 1L)
     return(spec$data[[matching_datasets[[1L]]]])
 }
 
@@ -48,7 +48,7 @@
     matching_formulas <- which(vapply(dataset$transform,
                                       function(transform) identical(transform$as, output_field),
                                       logical(1)))
-    expect_length(matching_formulas, 1L)
+    testthat::expect_length(matching_formulas, 1L)
     return(dataset$transform[[matching_formulas[[1L]]]]$expr)
 }
 

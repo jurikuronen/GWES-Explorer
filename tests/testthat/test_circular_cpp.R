@@ -22,7 +22,7 @@
             outliers_direct <- .make_valid_outliers_direct()
             outliers_direct[[field_name]] <- invalid_values[[case_name]]
 
-            expect_error(
+            testthat::expect_error(
                 .cpp_create_bidirectional_position_links(
                     outliers_direct,
                     data.frame(position = c(100L, 200L))
