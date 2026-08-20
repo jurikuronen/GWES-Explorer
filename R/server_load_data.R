@@ -89,15 +89,15 @@
         }, silent = TRUE)
 
         if (inherits(fa, "try-error")) {
-            return(.status(.STATUS_FAILURE, paste0("Failed to read fasta file.",
+            return(.status(.STATUS_FAILURE, paste0("Failed to read FASTA file.",
                                                    "<br><br>",
                                                    .escape_html(fa))))
         }
 
-        # All fasta sequences must have the same length.
+        # All FASTA sequences must have the same length.
         unique_seq_lengths <- unique(sapply(fa, length))
         if (length(unique_seq_lengths) != 1) {
-            return(.status(.STATUS_FAILURE, paste0("Fasta sequences must have the same length.")))
+            return(.status(.STATUS_FAILURE, paste0("FASTA sequences must have the same length.")))
         }
 
         # Read SNP positions.
@@ -137,12 +137,12 @@
         if (inherits(data$phenotype, "try-error")) {
             error_msg <- data$phenotype
             data$phenotype <- NULL
-            return(.status(.STATUS_FAILURE, paste0("Failed to read phenotypic data file.",
+            return(.status(.STATUS_FAILURE, paste0("Failed to read phenotype data file.",
                                                    "<br><br>",
                                                    .escape_html(error_msg))))
         }
     } else {
-        return(.status(.STATUS_FAILURE, "Internal error: got invalid phenotypic data file data."))
+        return(.status(.STATUS_FAILURE, "Internal error: got invalid phenotype file data."))
     }
 
     return(.status(.STATUS_SUCCESS, ""))
@@ -345,12 +345,12 @@
     # Clear tree and MSA.
     if (!is.null(data$tree) && !is.null(data$msa)) {
         cleared_data <- paste0(cleared_data, "<br>- Tree file",
-                               "<br>- Fasta file",
+                               "<br>- FASTA file",
                                "<br>- Loci file")
     }
     # Clear phenotype file.
     if (!is.null(data$phenotype)) {
-        cleared_data <- paste0(cleared_data, "<br>- Phenotypic data file")
+        cleared_data <- paste0(cleared_data, "<br>- Phenotype data file")
     }
     # Clear GFF3 file.
     if (!is.null(data$gff)) {
@@ -373,7 +373,7 @@
     return(.status(.STATUS_SUCCESS, cleared_data))
 }
 
-.reset_uploaded_files <- function() {
+.clear_file_selections <- function() {
     reset_result <- try({ shinyjs::reset("outliers_file")
                           shinyjs::reset("tree_file")
                           shinyjs::reset("fasta_file")
@@ -381,7 +381,7 @@
                           shinyjs::reset("phenotype_file")
                           shinyjs::reset("gff_file") }, silent = TRUE)
     if (inherits(reset_result, "try-error")) {
-        return(.status(.STATUS_FAILURE, paste0("Failed to reset uploaded files.",
+        return(.status(.STATUS_FAILURE, paste0("Failed to clear file selections.",
                                                "<br><br>",
                                                .escape_html(reset_result))))
     }

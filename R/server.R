@@ -198,8 +198,8 @@
     shiny::observeEvent(input$phenotype_file, { .file_uploaded$phenotype = 1 })
     shiny::observeEvent(input$gff_file, { .file_uploaded$gff = 1 })
 
-    # Handle load example data event.
-    shiny::observeEvent(input$read_example_data_button, {
+    # Handle load example data event: load the included Maela example dataset.
+    shiny::observeEvent(input$load_example_data_button, {
         .read_and_load_data(outliers_file = .example_outliers_file,
                             tree_file = .example_tree_file,
                             fasta_file = .example_fasta_file,
@@ -209,8 +209,8 @@
                             failure_message = "Failed to load example data.")
     })
 
-    # Handle load data event.
-    shiny::observeEvent(input$read_data_button, {
+    # Handle load data event: load the files currently selected in the upload controls.
+    shiny::observeEvent(input$load_data_button, {
         .read_and_load_data(outliers_file = .get_file_data("outliers"),
                             tree_file = .get_file_data("tree"),
                             fasta_file = .get_file_data("fasta"),
@@ -220,9 +220,9 @@
                             failure_message = "Failed to load uploaded data.")
     })
 
-    # Handle clear data event.
-    shiny::observeEvent(input$clear_data_button, {
-        # Clear result and status.
+    # Handle clear data event: clear already loaded data while preserving the file selections.
+    shiny::observeEvent(input$clear_loaded_data_button, {
+        # Replace messages from the previous load attempt with the clearing progress.
         output$data_load_result <- shiny::renderText({"Clearing data..."})
         output$data_load_status <- shiny::renderUI({""})
 
@@ -233,9 +233,9 @@
         output$data_load_status <- shiny::renderUI({ result$status })
     })
 
-    # Handle reset uploaded files event.
-    shiny::observeEvent(input$reset_uploaded_files_button, {
-        # Clear result and status.
+    # Handle clear file selections event: clear the file selections in the upload controls.
+    shiny::observeEvent(input$clear_file_selections_button, {
+        # Remove messages from the previous load attempt.
         output$data_load_result <- shiny::renderText({""})
         output$data_load_status <- shiny::renderUI({""})
 
@@ -246,7 +246,7 @@
         .file_uploaded$phenotype = 0
         .file_uploaded$gff = 0
 
-        # Re-render file input buttons with blank state.
+        # Recreate the file inputs so the browser no longer displays the selected filenames.
         output$outliers_file_input <- .render_ui_file_input("outliers_file",
                                                             "SpydrPick outliers file (.outliers, .txt):",
                                                             c(".outliers", ".txt"))
@@ -254,20 +254,20 @@
                                                         "Tree file (Newick [.nwk] or Nexus [.nex]):",
                                                         c(".nwk", ".nex"))
         output$fasta_file_input <- .render_ui_file_input("fasta_file",
-                                                         "Fasta file (.fasta,
-                                                     .fa or .aln):", c(".fasta", ".fa", ".aln"))
+                                                         "FASTA file (.fasta, .fa, .aln):",
+                                                         c(".fasta", ".fa", ".aln"))
         output$loci_file_input <- .render_ui_file_input("loci_file",
                                                         "Loci file (.loci):",
                                                         ".loci")
         output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
-                                                             "Phenotypic data file (.csv,
-                                                         .txt):", c(".csv", ".txt"))
+                                                             "Phenotype data file (.csv, .txt):",
+                                                             c(".csv", ".txt"))
         output$gff_file_input <- .render_ui_file_input("gff_file",
-                                                       "Gff file (.gff3):",
+                                                       "GFF3 file (.gff3):",
                                                        ".gff3")
 
-        result <- .reset_uploaded_files()
-        output$data_load_result <- shiny::renderText({"Reset uploaded files."})
+        result <- .clear_file_selections()
+        output$data_load_result <- shiny::renderText({"Cleared file selections."})
         output$data_load_status <- shiny::renderUI({ result$status })
     })
 
@@ -303,16 +303,16 @@
                                                     "Tree file (Newick [.nwk] or Nexus [.nex]):",
                                                     c(".nwk", ".nex"))
     output$fasta_file_input <- .render_ui_file_input("fasta_file",
-                                                     "Fasta file (.fasta,
-                                                     .fa or .aln):", c(".fasta", ".fa", ".aln"))
+                                                     "FASTA file (.fasta, .fa, .aln):",
+                                                     c(".fasta", ".fa", ".aln"))
     output$loci_file_input <- .render_ui_file_input("loci_file",
                                                     "Loci file (.loci):",
                                                     ".loci")
     output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
-                                                         "Phenotypic data file (.csv,
-                                                         .txt):", c(".csv", ".txt"))
+                                                         "Phenotype data file (.csv, .txt):",
+                                                         c(".csv", ".txt"))
     output$gff_file_input <- .render_ui_file_input("gff_file",
-                                                   "Gff file (.gff3):",
+                                                   "GFF3 file (.gff3):",
                                                    ".gff3")
 
     # Render UI output for tree plot.

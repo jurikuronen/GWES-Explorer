@@ -40,6 +40,7 @@
     )
 }
 
+# Creates the "Upload data" sidebar for selecting and loading data files.
 .ui_upload_data_sidebar_panel <- function() {
     shiny::sidebarPanel(
         shiny::p("All plots require the SpydrPick outliers file."),
@@ -57,25 +58,38 @@
         shiny::uiOutput("gff_file_input"),
         shiny::hr(),
 
-        shiny::actionButton(inputId = "reset_uploaded_files_button",
-                            label = "Reset uploaded files"),
-        shiny::div(style = "float: right;",
-            shiny::actionButton(inputId = "clear_data_button",
-                                label = "Clear read-in data"),
-            .div_inline_br_block(1),
-            shiny::actionButton(inputId = "read_data_button",
-                                label = "Read in data")),
+        shiny::actionButton(
+            inputId = "clear_file_selections_button",
+            label = "Clear file selections"
+        ),
+        # Align the data clearing and loading buttons to the right of the file-selection button.
+        shiny::div(
+            style = "float: right;",
+            shiny::actionButton(
+                inputId = "clear_loaded_data_button",
+                label = "Clear loaded data"
+            ),
+            .div_inline_block(1, NULL),
+            shiny::actionButton(
+                inputId = "load_data_button",
+                label = "Load data"
+            )
+        ),
         shiny::br(),
         shiny::br(),
-        shiny::div(style = "float: right;",
-            shiny::actionButton(inputId = "read_example_data_button",
-                                label = "Load example data (Maela)")),
-        shiny::br(),
-        .div_inline_block(15,
-                          shiny::p(id = "reading_data_div",
-                                   shiny::textOutput("data_load_result"))),
-        shiny::br(),
-        .div_inline_block(15, shiny::p(id = "reading_data_status_div", shiny::htmlOutput("data_load_status")))
+        shiny::div(
+            style = "float: right;",
+            shiny::actionButton(
+                inputId = "load_example_data_button",
+                label = "Load example data (Maela)"
+            )
+        ),
+        # Clear the preceding floats so the status messages appear below the buttons.
+        shiny::p(
+            style = "clear: both;",
+            shiny::textOutput("data_load_result", inline = TRUE)
+        ),
+        shiny::p(shiny::htmlOutput("data_load_status", inline = TRUE))
     )
 }
 

@@ -1,7 +1,7 @@
 Package: GWESExplorer
 Type: Package
 Title: Genome-wide epistasis analyzer
-Version: 1.21.5
+Version: 1.21.6
 Author: Juri Kuronen, Johan Pensar
 Maintainer: Juri Kuronen <juri.kuronen@gmail.com>
 Description: GWES-Explorer is an interactive visualization tool designed to be used in conjunction

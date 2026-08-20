@@ -1,7 +1,8 @@
 # Create the UI definition of the Shiny app.
 .create_ui_layout <- function() {
-    shinyjs::useShinyjs()
     shiny::fluidPage(
+        # Set up the Shiny app to use shinyjs; required for the shinyjs::reset() calls to work.
+        shinyjs::useShinyjs(),
         shiny::navbarPage(
             title = "GWES-Explorer",
             id = "tabs",
