@@ -96,49 +96,49 @@
 # Creates the "Upload data" main panel describing the input file requirements.
 .ui_upload_data_main_panel <- function() {
     shiny::mainPanel(
-        shiny::h3("Data formats"),
-        shiny::br(),
-
-        shiny::h4("SpydrPick outliers file (.outliers, .txt)"),
+        shiny::h3("SpydrPick outliers file (.outliers, .txt)"),
         shiny::p("All plots require an outliers file in the SpydrPick format. The file must be space-delimited and ",
                  "contain no header row. The first five columns, in this order, are required:"),
-        shiny::code("Pos_1 Pos_2 Distance Direct MI"),
-        shiny::br(), shiny::br(),
+        shiny::tags$pre(
+            style = "display: inline-block;",
+            "Pos_1 Pos_2 Distance Direct MI"
+        ),
         shiny::p(shiny::code("Pos_1"), " and ", shiny::code("Pos_2"), " specify a pair of genomic positions, ",
                  shiny::code("Distance"), " base pairs apart, with mutual information score ", shiny::code("MI"),
-                 ". ", shiny::code("Direct"), " is a 1/0 Boolean value from the ARACNE filtering step: 1 indicates ",
-                 "a direct link and 0 an indirect link. At least one direct link is required."),
+                 "."),
+        shiny::p(shiny::code("Direct"), " is a 1/0 Boolean value from the ARACNE filtering step: 1 indicates a ",
+                 "direct link and 0 an indirect link. At least one direct link is required."),
         shiny::p("An optional sixth column, ", shiny::code("MI_wogaps"), ", gives the MI score calculated without ",
                  "gaps and may be provided to display additional information."),
         shiny::br(),
 
-        shiny::h4("Tree-MSA files"),
+        shiny::h3("Tree-MSA files"),
         shiny::p(
             "The Tree-MSA plot requires a phylogenetic tree, a DNA multiple sequence alignment and a loci file. ",
             "Phenotype data may also be provided."
         ),
 
-        shiny::h5("Phylogenetic tree (.nwk, .nex)"),
+        shiny::h4("Phylogenetic tree (.nwk, .nex)"),
         shiny::p("The tree must be in Newick or Nexus format."),
 
-        shiny::h5("Multiple sequence alignment (.fasta, .fa, .aln)"),
+        shiny::h4("Multiple sequence alignment (.fasta, .fa, .aln)"),
         shiny::p(
             "The alignment must be in FASTA format. All FASTA sequences must have the same length."
         ),
 
-        shiny::h5("Loci file (.loci)"),
+        shiny::h4("Loci file (.loci)"),
         shiny::p(
             "The file must contain one genomic position per line in the same order as the alignment columns."
         ),
 
-        shiny::h5("Optional phenotype file (.csv, .txt)"),
+        shiny::h4("Optional phenotype file (.csv, .txt)"),
         shiny::p(
             "The file must contain comma-separated values with a header row specifying the column names. Its first ",
             "column contains the sample identifiers and the remaining columns contain phenotype values."
         ),
         shiny::br(),
 
-        shiny::h4("GFF3 file for the circular plot (.gff3)"),
+        shiny::h3("GFF3 file for the circular plot (.gff3)"),
         shiny::p(
             "The circular plot requires a GFF3 annotation for the bacterial reference genome corresponding to the ",
             "genomic positions in the SpydrPick results."
