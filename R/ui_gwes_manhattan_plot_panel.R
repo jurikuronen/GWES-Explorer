@@ -1,79 +1,192 @@
+# Creates controls for changing point sizes in the GWES Manhattan plot.
+.gwes_plot_point_size_controls <- function() {
+    # Show the point size options when the user selects "Point size".
+    shiny::conditionalPanel(
+        condition = "input.show_gwes_plot_point_size_settings",
+        .div_inline_block(
+            width_cm = 6,
+            shiny::sliderInput(
+                inputId = "gwes_direct_point_size",
+                label = "Direct point size:",
+                min = 0.05,
+                max = 10,
+                value = 1,
+                step = 0.05
+            )
+        ),
+        .div_inline_block(
+            width_cm = 0.5,
+            content = NULL
+        ),
+        .div_inline_block(
+            width_cm = 6,
+            shiny::sliderInput(
+                inputId = "gwes_indirect_point_size",
+                label = "Indirect point size:",
+                min = 0.05,
+                max = 10,
+                value = 0.5,
+                step = 0.05
+            )
+        ),
+        .div_inline_block(
+            width_cm = 0.5,
+            content = NULL
+        ),
+        .div_inline_block(
+            width_cm = 6,
+            shiny::sliderInput(
+                inputId = "gwes_highlight_size",
+                label = "Highlight size:",
+                min = 0.05,
+                max = 30,
+                value = 5,
+                step = 0.1
+            )
+        )
+    )
+}
+
+# Creates controls for changing text sizes in the GWES Manhattan plot.
+.gwes_plot_text_size_controls <- function() {
+    # Show the text size options when the user selects "Text size".
+    shiny::conditionalPanel(
+        condition = "input.show_gwes_plot_text_size_settings",
+        .div_inline_block(
+            width_cm = 6,
+            shiny::sliderInput(
+                inputId = "gwes_axis_text_size",
+                label = "Axis text size:",
+                min = 6,
+                max = 50,
+                value = 14,
+                step = 1
+            )
+        ),
+        .div_inline_block(
+            width_cm = 0.5,
+            content = NULL
+        ),
+        .div_inline_block(
+            width_cm = 6,
+            shiny::sliderInput(
+                inputId = "gwes_axis_title_size",
+                label = "Axis title size:",
+                min = 6,
+                max = 50,
+                value = 14,
+                step = 1
+            )
+        ),
+        .div_inline_block(
+            width_cm = 0.5,
+            content = NULL
+        ),
+        .div_inline_block(
+            width_cm = 6,
+            shiny::sliderInput(
+                inputId = "gwes_legend_text_size",
+                label = "Legend text size:",
+                min = 6,
+                max = 50,
+                value = 14,
+                step = 1
+            )
+        )
+    )
+}
+
+# Creates controls for changing colors in the GWES Manhattan plot.
+.gwes_plot_color_controls <- function() {
+    # Show the color options when the user selects "Color".
+    shiny::conditionalPanel(
+        condition = "input.show_gwes_plot_color_settings",
+        .div_inline_block(
+            width_cm = 6,
+            colourpicker::colourInput(
+                inputId = "gwes_direct_point_color",
+                label = "Direct point color:",
+                value = "steelblue"
+            )
+        ),
+        .div_inline_block(
+            width_cm = 0.5,
+            content = NULL
+        ),
+        .div_inline_block(
+            width_cm = 6,
+            colourpicker::colourInput(
+                inputId = "gwes_indirect_point_color",
+                label = "Indirect point color:",
+                value = "grey"
+            )
+        ),
+        .div_inline_block(
+            width_cm = 0.5,
+            content = NULL
+        ),
+        .div_inline_block(
+            width_cm = 6,
+            colourpicker::colourInput(
+                inputId = "gwes_highlight_color",
+                label = "Highlight color:",
+                value = "red"
+            )
+        )
+    )
+}
+
+# Creates the "GWES Manhattan" tab panel.
 .gwes_plot_panel <- function() {
-    shiny::tabPanel("GWES Manhattan",
+    shiny::tabPanel(
+        title = "GWES Manhattan",
         shiny::br(),
-        .div_inline_block(3, "Modify figure:"),
-        .div_inline_block(4, .prettySwitch("show_gwes_plot_marker_size", "Marker size")),
-        .div_inline_block(4, .prettySwitch("show_gwes_plot_text_size", "Text size")),
-        .div_inline_block(4, .prettySwitch("show_gwes_plot_colors", "Color")),
-        shiny::conditionalPanel(
-            condition = "input.show_gwes_plot_marker_size",
-            .div_inline_block(6, shiny::sliderInput("gwes_size_direct",
-                                                    "Direct point size:",
-                                                    min = 0.05,
-                                                    max = 10,
-                                                    value = 1,
-                                                    step = 0.05)),
-            .div_inline_br_block(0.5),
-            .div_inline_block(6, shiny::sliderInput("gwes_size_indirect",
-                                                    "Indirect point size:",
-                                                    min = 0.05,
-                                                    max = 10,
-                                                    value = 0.5,
-                                                    step = 0.05)),
-            .div_inline_br_block(0.5),
-            .div_inline_block(6, shiny::sliderInput("gwes_selection_size",
-                                                    "Selection size:",
-                                                    min = 0.05,
-                                                    max = 30,
-                                                    value = 5,
-                                                    step = 0.1)),
+
+        # Switches to open plot settings.
+        .div_inline_block(
+            width_cm = 3,
+            content = "Modify figure:"
         ),
-        shiny::conditionalPanel(
-            condition = "input.show_gwes_plot_text_size",
-            .div_inline_block(6, shiny::sliderInput("gwes_axis_size", "Axis text size:",
-                                                    min = 6,
-                                                    max = 50,
-                                                    value = 14,
-                                                    step = 1)),
-            .div_inline_br_block(0.5),
-            .div_inline_block(6, shiny::sliderInput("gwes_title_size", "Axis title size:",
-                                                    min = 6,
-                                                    max = 50,
-                                                    value = 14,
-                                                    step = 1)),
-            .div_inline_br_block(0.5),
-            .div_inline_block(6, shiny::sliderInput("gwes_legend_size", "Legend size:",
-                                                    min = 6,
-                                                    max = 50,
-                                                    value = 14,
-                                                    step = 1))
+        .plot_settings_switch(
+            input_id = "show_gwes_plot_point_size_settings",
+            label = "Point size"
         ),
-        shiny::conditionalPanel(
-            condition = "input.show_gwes_plot_colors",
-            .div_inline_block(6, colourpicker::colourInput("gwes_color_direct",
-                                                           "Direct color:",
-                                                           value = "steelblue")),
-            .div_inline_br_block(0.5),
-            .div_inline_block(6, colourpicker::colourInput("gwes_color_indirect",
-                                                           "Indirect color:",
-                                                           value = "grey")),
-            .div_inline_br_block(0.5),
-            .div_inline_block(6, colourpicker::colourInput("gwes_selection_color",
-                                                           "Selection color:",
-                                                           value = "red")),
-            .div_inline_br_block(0.5),
+        .plot_settings_switch(
+            input_id = "show_gwes_plot_text_size_settings",
+            label = "Text size"
         ),
-        shiny::br(), shiny::br(),
-        shiny::plotOutput("manhattan_plot",
-                          width = "30cm",
-                          height = "10cm",
-                          click = "manhattan_plot_click",
-                          brush = shiny::brushOpts(id = "manhattan_plot_brush", resetOnNew = TRUE),
-                          dblclick = "manhattan_plot_double_click"
+        .plot_settings_switch(
+            input_id = "show_gwes_plot_color_settings",
+            label = "Color"
+        ),
+
+        # Controls for the selected plot settings.
+        .gwes_plot_point_size_controls(),
+        .gwes_plot_text_size_controls(),
+        .gwes_plot_color_controls(),
+        shiny::br(),
+        shiny::br(),
+
+        # GWES Manhattan plot output.
+        shiny::plotOutput(
+            outputId = "manhattan_plot",
+            width = "30cm",
+            height = "10cm",
+            click = "manhattan_plot_click",
+
+            # Clear the brushed area after redrawing the plot so another double-click resets the zoom.
+            brush = shiny::brushOpts(
+                id = "manhattan_plot_brush",
+                resetOnNew = TRUE
+            ),
+            dblclick = "manhattan_plot_double_click"
         ),
         shiny::br(),
-        shiny::tableOutput("manhattan_plot_table"),
+
+        # Table of outliers near the selected direct point.
+        shiny::tableOutput(outputId = "manhattan_plot_table"),
         shiny::br(),
+
         # Controls for downloading the plot.
         .plot_download_controls(
             prefix = "gwes_manhattan_plot",
@@ -81,9 +194,10 @@
             height = 10
         ),
         shiny::br(),
-        shiny::h4(paste("Select rows in the table on the left; the corresponding pairs will be highlighted in the",
-                        "scatter plot.")),
-        shiny::h4("Select an area and double-click to zoom in; double-click again to zoom out."),
-        shiny::h4("Click on (or near) a direct point to aggregate the corresponding data in the table above.")
+
+        # Instructions for using the plot.
+        shiny::p("Select rows in the table on the left to highlight the corresponding pairs in the plot."),
+        shiny::p("Drag over an area and double-click to zoom in; double-click again to reset the zoom."),
+        shiny::p("Click near a direct point to show nearby outliers in the table above.")
     )
 }

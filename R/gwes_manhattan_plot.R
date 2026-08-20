@@ -24,20 +24,20 @@
                                size = Direct)) +
                 geom_point(
                     data = data$outliers_direct[input$outliers_table_rows_selected, ],
-                    size = input$gwes_selection_size,
-                    color = input$gwes_selection_color,
+                    size = input$gwes_highlight_size,
+                    color = input$gwes_highlight_color,
                     shape = 1
                 ) +
-                scale_size_manual(values = c(input$gwes_size_indirect, input$gwes_size_direct)) +
-                scale_colour_manual(values = c(input$gwes_color_indirect, input$gwes_color_direct)) +
+                scale_size_manual(values = c(input$gwes_indirect_point_size, input$gwes_direct_point_size)) +
+                scale_colour_manual(values = c(input$gwes_indirect_point_color, input$gwes_direct_point_color)) +
                 geom_line(aes(y = min_mi), color = "black") +
                 scale_x_continuous(limits = c(0, max_distance), expand = c(0, 0)) +
                 scale_y_continuous(limits = c(min_mi, max_mi + 0.05), expand = c(0, 0)) +
                 theme(
-                    axis.text = element_text(size = input$gwes_axis_size),
-                    axis.title = element_text(size = input$gwes_title_size),
-                    legend.text = element_text(size = input$gwes_legend_size),
-                    legend.title = element_text(size = input$gwes_legend_size)
+                    axis.text = element_text(size = input$gwes_axis_text_size),
+                    axis.title = element_text(size = input$gwes_axis_title_size),
+                    legend.text = element_text(size = input$gwes_legend_text_size),
+                    legend.title = element_text(size = input$gwes_legend_text_size)
                 ) +
                 coord_cartesian(
                     xlim = mh_gwes_ranges$x,
