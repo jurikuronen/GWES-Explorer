@@ -21,7 +21,6 @@
 
     # Column names in outliers table.
     .default_outlier_columns <- c("Pos_1", "Pos_2", "MI", "MI_wogaps", "Distance")
-    .extended_outlier_columns <- c(.default_outlier_columns, "Pos_1_feature", "Pos_2_feature")
 
     # Currently used column names.
     .outlier_columns <- .default_outlier_columns
@@ -132,9 +131,8 @@
         # Default table when there is no data.
         return(DT::renderDT(tibble::tibble(Pos_1 = integer(),
                                            Pos_2 = integer(),
-                                           Distance = integer(),
                                            MI = numeric(),
-                                           MI_wogaps = numeric()),
+                                           Distance = integer()),
                             server = FALSE,
                             options = list(pageLength = 25, scrollX = TRUE)))
     }
@@ -144,11 +142,10 @@
         # Update Shiny SelectInput if phenotype data was read.
         .update_select_phenotype_input()
 
-        # Update outlier columns based on what was read.
-        if (is.null(data$gff)) {
-            .outlier_columns <<- .default_outlier_columns
-        } else {
-            .outlier_columns <<- .extended_outlier_columns
+        # Keep MI_wogaps out of the tables when the optional sixth column was not provided.
+        .outlier_columns <<- intersect(.default_outlier_columns, names(data$outliers))
+        if (!is.null(data$gff)) {
+            .outlier_columns <<- c(.outlier_columns, "Pos_1_feature", "Pos_2_feature")
         }
 
         # Render plots after reading data was completed.

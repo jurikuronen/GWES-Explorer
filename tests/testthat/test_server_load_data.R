@@ -77,6 +77,64 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
     expect_identical(data$circular_plot_spec, previous_circular_plot_spec)
 })
 
+test_that(".read_outliers reads required columns", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines("10 20 10 1 0.5", outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "required-columns.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(
+        names(data$outliers),
+        c("Pos_1", "Pos_2", "Distance", "Direct", "MI")
+    )
+})
+
+test_that(".read_outliers reads the optional MI_wogaps column", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines("10 20 10 1 0.5 0.4", outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "mi-without-gaps.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(
+        names(data$outliers),
+        c("Pos_1", "Pos_2", "Distance", "Direct", "MI", "MI_wogaps")
+    )
+})
+
+test_that(".read_outliers accepts additional columns", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    additional_values <- seq_len(20)
+    writeLines(
+        paste(c(10, 20, 10, 1, 0.5, 0.4, additional_values), collapse = " "),
+        outliers_path
+    )
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "additional-columns.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(
+        names(data$outliers),
+        c("Pos_1", "Pos_2", "Distance", "Direct", "MI", "MI_wogaps")
+    )
+})
+
 test_that(".read_outliers rejects files without direct outlier links", {
     outliers_path <- tempfile(fileext = ".outliers")
     on.exit(unlink(outliers_path))

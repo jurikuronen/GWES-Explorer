@@ -1,18 +1,32 @@
-# Read in outlier lists.
+# Reads a SpydrPick outliers file.
 .read_outliers <- function(data, outliers_file) {
     if ("datapath" %in% colnames(outliers_file)) {
         data$outliers <- try({
-            readr::read_delim(file = outliers_file$datapath,
-                              delim = " ",
-                              col_types = "iiildddl",
-                              col_names = c("Pos_1",
-                                            "Pos_2",
-                                            "Distance",
-                                            "Direct",
-                                            "MI",
-                                            "MI_wogaps",
-                                            "Gap_effect",
-                                            "Extreme"))
+            column_names <- c("Pos_1", "Pos_2", "Distance", "Direct", "MI", "MI_wogaps")
+
+            n <- readr::count_fields(
+                file = outliers_file$datapath,
+                tokenizer = readr::tokenizer_delim(delim = " "),
+                n_max = 1
+            )
+
+            if (length(n) != 1L || is.na(n) || n < 5L) {
+                stop("Outliers file must contain at least five columns.")
+            }
+
+            # readr requires a name for every input field; "_" skips fields after the optional sixth column.
+            readr::read_delim(
+                file = outliers_file$datapath,
+                delim = " ",
+                col_names = c(
+                    column_names[seq_len(min(n, 6L))],
+                    paste0("Unused_", seq_len(max(n - 6L, 0L)))
+                ),
+                col_types = paste0(
+                    substr("iiildd", 1L, min(n, 6L)),
+                    strrep("_", max(n - 6L, 0L))
+                )
+            )
         }, silent = TRUE)
 
         if (inherits(data$outliers, "try-error")) {
