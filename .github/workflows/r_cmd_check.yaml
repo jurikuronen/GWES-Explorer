@@ -14,11 +14,18 @@ jobs:
     strategy:
       fail-fast: false
       matrix:
-        r-version:
-          - "4.0.0"
-          - release
+        include:
+          # Match R 4.0.0 with its Bioconductor release.
+          - r-version: "4.0.0"
+            bioc-version: "3.11"
+            rspm: https://packagemanager.posit.co/cran/2021-05-17
+          - r-version: release
+            bioc-version: ""
+            rspm: ""
     env:
       R_KEEP_PKG_SOURCE: yes
+      R_BIOC_VERSION: ${{ matrix.bioc-version }}
+      RSPM: ${{ matrix.rspm }}
 
     steps:
       - name: Check out repository
