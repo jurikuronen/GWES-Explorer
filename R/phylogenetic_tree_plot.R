@@ -108,10 +108,12 @@
     # Since the rotated heatmap column labels extend beyond the plotting area, disable clipping and increase the bottom
     # margin so that the labels fit.
     if (phenotype_selected || msa_positions_selected) {
+        plot_margin <- theme_get()$plot.margin
+        # Keep plot.margin as a ggplot2 margin object while scaling its bottom value.
+        plot_margin[3L] <- plot_margin[3L] * input$tree_plot_bottom_margin_multiplier
+
         tree_plot <- tree_plot +
-            # The margins are ordered top, right, bottom and left.
-            theme(plot.margin = theme_get()$plot.margin *
-                      c(1, 1, input$tree_plot_bottom_margin_multiplier, 1)) +
+            theme(plot.margin = plot_margin) +
             coord_cartesian(clip = "off")
     }
 
