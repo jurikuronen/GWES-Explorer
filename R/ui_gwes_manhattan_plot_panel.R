@@ -74,8 +74,12 @@
         shiny::br(),
         shiny::tableOutput("manhattan_plot_table"),
         shiny::br(),
-        .div_inline_block(4, .prettySwitch("gwes_manhattan_plot_download_button", "Save plot")),
-        .save_plot_button("gwes_manhattan_plot", 5, round(5 / 3, 2)),
+        # Controls for downloading the plot.
+        .plot_download_controls(
+            prefix = "gwes_manhattan_plot",
+            width = 30,
+            height = 10
+        ),
         shiny::br(),
         shiny::h4(paste("Select rows in the table on the left; the corresponding pairs will be highlighted in the",
                         "scatter plot.")),

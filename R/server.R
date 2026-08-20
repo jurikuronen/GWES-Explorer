@@ -62,26 +62,58 @@
     }
 
     # Download handlers for saving plots.
-    .download_handler <- function(input, key, plot_function) {
+    .download_handler <- function(input, prefix, plot_function) {
         shiny::downloadHandler(
             filename = function() {
-                paste0("GWES-Explorer_",
-                       format(Sys.time(), "%Y%m%d_%H%M%S"),
-                       "_",
-                       key,
-                       "_plot.",
-                       input[[paste0(key, "_plot_type")]])
+                paste0(
+                    "GWES-Explorer_",
+                    format(Sys.time(), "%Y%m%d_%H%M%S"),
+                    "_",
+                    prefix,
+                    ".",
+                    input[[paste0(prefix, "_type")]]
+                )
             },
             content = function(file) {
+                device <- input[[paste0(prefix, "_type")]]
+                width <- input[[paste0(prefix, "_width")]]
+                height <- input[[paste0(prefix, "_height")]]
+                dpi <- input[[paste0(prefix, "_dpi")]]
+                units <- input[[paste0(prefix, "_unit")]]
+
+                if (device %in% c("png", "tiff", "jpeg")) {
+                    width_inches <- if (units == "cm") width / 2.54 else width
+                    height_inches <- if (units == "cm") height / 2.54 else height
+                    pixel_count <- width_inches * dpi * height_inches * dpi
+
+                    if (pixel_count > 10000000) {
+                        shiny::showNotification(
+                            paste("Image size must not exceed 10 million pixels. Reduce the width, height or DPI."),
+                            type = "error"
+                        )
+                        shiny::req(FALSE)
+                    }
+                }
+
                 # Generate the plot here so each download includes the current selections and settings.
+                plot <- plot_function()
+
+                if (is.null(plot)) {
+                    shiny::showNotification(
+                        "No plot to download.",
+                        type = "error"
+                    )
+                    shiny::req(FALSE)
+                }
+
                 ggsave(
                     filename = file,
-                    plot = plot_function(),
-                    device = input[[paste0(key, "_plot_type")]],
-                    width = input[[paste0(key, "_plot_width")]],
-                    height = input[[paste0(key, "_plot_height")]],
-                    dpi = input[[paste0(key, "_plot_dpi")]],
-                    units = input[[paste0(key, "_plot_unit")]]
+                    plot = plot,
+                    device = device,
+                    width = width,
+                    height = height,
+                    dpi = dpi,
+                    units = units
                 )
             }
         )
@@ -292,14 +324,14 @@
 
     # Set download handlers for Manhattan and phylogenetic tree plots.
     output$gwes_manhattan_plot_download <- .download_handler(input,
-                                                             key = "gwes_manhattan",
+                                                             prefix = "gwes_manhattan_plot",
                                                              plot_function = function() {
                                                                  .gwes_manhattan_plot(data,
                                                                                       input,
                                                                                       .mh_gwes_ranges)
                                                              })
     output$phylogenetic_tree_plot_download <- .download_handler(input,
-                                                                key = "phylogenetic_tree",
+                                                                prefix = "phylogenetic_tree_plot",
                                                                 plot_function = function() {
                                                                     .create_phylogenetic_tree_plot(data, input)
                                                                 })

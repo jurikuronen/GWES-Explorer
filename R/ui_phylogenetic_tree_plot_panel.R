@@ -61,7 +61,11 @@
         shiny::br(), shiny::br(),
         shiny::uiOutput("tree_plot_ui_output"),
         shiny::br(),
-        .div_inline_block(4, .prettySwitch("phylogenetic_tree_plot_download_button", "Save plot")),
-        .save_plot_button("phylogenetic_tree_plot", 5, 5),
+        # Controls for downloading the plot.
+        .plot_download_controls(
+            prefix = "phylogenetic_tree_plot",
+            width = 15,
+            height = 15
+        )
     )
 }
