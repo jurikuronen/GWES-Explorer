@@ -1,20 +1,14 @@
+# Creates a fixed-width block alongside neighboring UI elements.
 .div_inline_block <- function(width_cm, content) {
-    shiny::div(style = paste0("display: inline-block; ",
-                              "vertical-align: top; ",
-                              "width: ", width_cm, "cm"),
-               content)
-}
-
-.div_inline_br_block <- function(width) {
-    .div_inline_block(width, shiny::br())
-}
-
-.prettySwitch <- function(id, name) {
-    shinyWidgets::prettySwitch(id,
-                               name,
-                               fill = TRUE,
-                               status = "primary",
-                               value = FALSE)
+    # Allow neighboring blocks to share a row and align their top edges.
+    shiny::div(
+        style = paste0(
+            "display: inline-block; ",
+            "vertical-align: top; ",
+            "width: ", width_cm, "cm"
+        ),
+        content
+    )
 }
 
 # Creates a toggle switch for showing and hiding plot settings.
