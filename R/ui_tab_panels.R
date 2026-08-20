@@ -165,33 +165,33 @@
     )
 }
 
+# Creates the "Analyze data" tab panel.
 .ui_analyze_data_tab_panel <- function() {
     shiny::tabPanel(
         title = "Analyze data",
         shiny::sidebarLayout(
-            # Sidebar panel - a DT table listing the direct outliers.
+            # Sidebar for selecting interactions and a phenotype for the Tree-MSA plot.
             shiny::sidebarPanel(
-                # Drop-down list for selecting phenotype.
                 shiny::selectInput(
                     inputId = "select_phenotype",
-                    label = "Select phenotype:",
+                    label = "Tree-MSA phenotype:",
+                    # Reserve 0 for "No phenotype selected" so positive values index phenotype columns.
                     choices = c("No phenotype selected" = 0)
                 ),
-                # Setting to allow selecting multiple outlier rows.
                 shiny::radioButtons(
                     inputId = "select_row_type",
                     label = "Select single or multiple rows:",
-                    choices = c(Single = "single",
-                                Multiple = "multiple"),
+                    choices = c(Single = "single", Multiple = "multiple"),
                     selected = "single",
                     inline = TRUE
                 ),
-                # Display outliers table.
-                shiny::div(DT::DTOutput("outliers_table"),
-                           style = "font-size: 70%")
+                # Use smaller text so the outliers table fits in the sidebar.
+                shiny::div(
+                    DT::DTOutput("outliers_table"),
+                    style = "font-size: 70%"
+                )
             ),
 
-            # Main panel with various plot tabs available.
             shiny::mainPanel(
                 shiny::tabsetPanel(
                     type = "tabs",
