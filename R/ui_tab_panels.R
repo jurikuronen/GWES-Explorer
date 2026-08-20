@@ -43,18 +43,18 @@
 # Creates the "Upload data" sidebar for selecting and loading data files.
 .ui_upload_data_sidebar_panel <- function() {
     shiny::sidebarPanel(
-        shiny::p("All plots require the SpydrPick outliers file."),
+        shiny::p("All plots require an outliers file in the SpydrPick format."),
         shiny::uiOutput("outliers_file_input"),
         shiny::hr(),
 
-        shiny::p("Tree plot requires tree, fasta and loci files. Optionally, you can upload a phenotypic data file."),
+        shiny::p("The Tree-MSA plot requires tree, FASTA and loci files. A phenotype data file is optional."),
         shiny::uiOutput("tree_file_input"),
         shiny::uiOutput("fasta_file_input"),
         shiny::uiOutput("loci_file_input"),
         shiny::uiOutput("phenotype_file_input"),
         shiny::hr(),
 
-        shiny::p("Circular plot requires a gff file."),
+        shiny::p("The circular plot requires a GFF3 file."),
         shiny::uiOutput("gff_file_input"),
         shiny::hr(),
 
@@ -93,45 +93,68 @@
     )
 }
 
+# Creates the "Upload data" main panel describing the input file requirements.
 .ui_upload_data_main_panel <- function() {
     shiny::mainPanel(
         shiny::h3("Data formats"),
         shiny::br(),
+
         shiny::h4("SpydrPick outliers file (.outliers, .txt)"),
-        shiny::p("The outliers file obtained with SpydrPick should be a space-delimited no-headers file with at least ",
-                 "the following columns:"),
-        shiny::code("Pos_1", shiny::HTML("&nbsp;"),
-                    "Pos_2", shiny::HTML("&nbsp;"),
-                    "Distance", shiny::HTML("&nbsp;"),
-                    "Direct", shiny::HTML("&nbsp;"),
-                    "MI", shiny::HTML("&nbsp;"),
-                    "MI_wogaps"),
+        shiny::p("All plots require an outliers file in the SpydrPick format. The file must be space-delimited and ",
+                 "contain no header row. The first five columns, in this order, are required:"),
+        shiny::code("Pos_1 Pos_2 Distance Direct MI"),
         shiny::br(), shiny::br(),
-        shiny::p("Above, ", shiny::code("Pos_1"), " and ", shiny::code("Pos_2"), " refer to a pair of positions in ",
-                 "the output that are ", shiny::code("Distance"), " base pairs apart and whose MI score is",
-                 shiny::code("MI"), " and MI score without gaps is ", shiny::code("MI_wogaps"), ". The ",
-                 shiny::code("Direct"), " column is a 1/0 Boolean value from the ARACNE filtering step, where 0 ",
-                 "indicates being filtered out by ARACNE."),
+        shiny::p(shiny::code("Pos_1"), " and ", shiny::code("Pos_2"), " specify a pair of genomic positions, ",
+                 shiny::code("Distance"), " base pairs apart, with mutual information score ", shiny::code("MI"),
+                 ". ", shiny::code("Direct"), " is a 1/0 Boolean value from the ARACNE filtering step: 1 indicates ",
+                 "a direct link and 0 an indirect link. At least one direct link is required."),
+        shiny::p("An optional sixth column, ", shiny::code("MI_wogaps"), ", gives the MI score calculated without ",
+                 "gaps and may be provided to display additional information."),
         shiny::br(),
-        shiny::strong("All plots provided by GWES-Explorer require the outliers file."),
-        shiny::br(), shiny::br(),
-        shiny::h4("Phylogenetic tree files"),
-        shiny::p("The phylogenetic tree plot requires a Newick or Nexus tree file, a fasta and a loci file.",
-                 "Optionally, you can upload a phenotypic data file."),
+
+        shiny::h4("Tree-MSA files"),
+        shiny::p(
+            "The Tree-MSA plot requires a phylogenetic tree, a DNA multiple sequence alignment and a loci file. ",
+            "Phenotype data may also be provided."
+        ),
+
+        shiny::h5("Phylogenetic tree (.nwk, .nex)"),
+        shiny::p("The tree must be in Newick or Nexus format."),
+
+        shiny::h5("Multiple sequence alignment (.fasta, .fa, .aln)"),
+        shiny::p(
+            "The alignment must be in FASTA format. All FASTA sequences must have the same length."
+        ),
+
+        shiny::h5("Loci file (.loci)"),
+        shiny::p(
+            "The file must contain one genomic position per line in the same order as the alignment columns."
+        ),
+
+        shiny::h5("Optional phenotype file (.csv, .txt)"),
+        shiny::p(
+            "The file must contain comma-separated values with a header row specifying the column names. Its first ",
+            "column contains the sample identifiers and the remaining columns contain phenotype values."
+        ),
         shiny::br(),
-        shiny::h4("GFF3 file for the circular plot"),
-        shiny::p("The circular plot requires a GFF3 file with the fields"),
-        shiny::code("type", shiny::HTML("&nbsp;"),
-                    "start", shiny::HTML("&nbsp;"),
-                    "end", shiny::HTML("&nbsp;"),
-                    "attributes"),
-        shiny::br(), shiny::br(),
-        shiny::p("defined. GWES-Explorer primarily looks for \"gene\" in the ", shiny::code("type"), "field and ",
-                 "secondarily \"CDS\". Further, the ", shiny::code("attributes"), " field should have a ",
-                 shiny::code("Name"), " tag present.")
+
+        shiny::h4("GFF3 file for the circular plot (.gff3)"),
+        shiny::p(
+            "The circular plot requires a GFF3 annotation for the bacterial reference genome corresponding to the ",
+            "genomic positions in the SpydrPick results."
+        ),
+        shiny::p(
+            "GWES-Explorer uses ", shiny::code("gene"), " features when present and ", shiny::code("CDS"),
+            " features otherwise."
+        ),
+        shiny::p(
+            "The ", shiny::code("attributes"), " field should contain a ", shiny::code("Name"),
+            " tag for use as the feature label in GWES-Explorer."
+        )
     )
 }
 
+# Creates the "Upload data" tab panel.
 .ui_upload_data_tab_panel <- function() {
     shiny::tabPanel(
         title = "Upload data",
