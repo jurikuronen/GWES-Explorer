@@ -8,24 +8,11 @@ permissions:
   contents: read
 
 jobs:
-  r_cmd_check:
-    name: R ${{ matrix.r-version }}
+  check-release:
+    name: R release
     runs-on: ubuntu-latest
-    strategy:
-      fail-fast: false
-      matrix:
-        include:
-          # Match R 4.0.0 with its Bioconductor release.
-          - r-version: "4.0.0"
-            bioc-version: "3.11"
-            rspm: https://packagemanager.posit.co/cran/2021-05-17
-          - r-version: release
-            bioc-version: ""
-            rspm: ""
     env:
       R_KEEP_PKG_SOURCE: yes
-      R_BIOC_VERSION: ${{ matrix.bioc-version }}
-      RSPM: ${{ matrix.rspm }}
 
     steps:
       - name: Check out repository
@@ -36,7 +23,7 @@ jobs:
       - name: Set up R
         uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2.12.1
         with:
-          r-version: ${{ matrix.r-version }}
+          r-version: release
           use-public-rspm: true
 
       - name: Install dependencies
@@ -45,6 +32,41 @@ jobs:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
           extra-packages: any::rcmdcheck
+
+      - name: Check package
+        uses: r-lib/actions/check-r-package@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2.12.1
+
+  check-minimum-r:
+    name: R 4.0.0
+    runs-on: ubuntu-latest
+    env:
+      R_KEEP_PKG_SOURCE: yes
+      RSPM: https://packagemanager.posit.co/cran/2021-05-17
+      R_BIOC_VERSION: "3.11"
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@d23441a48e516b6c34aea4fa41551a30e30af803 # v6
+        with:
+          persist-credentials: false
+
+      - name: Set up R
+        uses: r-lib/actions/setup-r@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2.12.1
+        with:
+          r-version: "4.0.0"
+          use-public-rspm: true
+
+      # Install from the fixed repositories without relying on modern pak under R 4.0.0.
+      - name: Install dependencies
+        shell: Rscript {0}
+        run: |
+          options(repos = c(CRAN = Sys.getenv("RSPM")))
+          install.packages(c("remotes", "rcmdcheck", "testthat"))
+          options(repos = c(remotes::bioc_install_repos(), CRAN = Sys.getenv("RSPM")))
+          remotes::install_deps(
+            dependencies = c("Depends", "Imports", "LinkingTo"),
+            upgrade = "never"
+          )
 
       - name: Check package
         uses: r-lib/actions/check-r-package@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2.12.1
