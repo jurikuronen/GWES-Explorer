@@ -41,7 +41,7 @@ jobs:
     runs-on: ubuntu-latest
     env:
       R_KEEP_PKG_SOURCE: yes
-      RSPM: https://packagemanager.posit.co/cran/2021-05-17
+      RSPM: https://packagemanager.posit.co/cran/2021-07-14
       R_BIOC_VERSION: "3.11"
 
     steps:
