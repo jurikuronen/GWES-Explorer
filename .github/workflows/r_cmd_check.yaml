@@ -68,5 +68,19 @@ jobs:
             upgrade = "never"
           )
 
+          # Treat Rcpp headers as system headers to avoid compiler deprecation warnings.
+          cat(
+            "PKG_CPPFLAGS=-isystem ",
+            shQuote(system.file(
+              "include",
+              package = "Rcpp",
+              mustWork = TRUE
+            )),
+            "\n",
+            file = Sys.getenv("GITHUB_ENV"),
+            append = TRUE,
+            sep = ""
+          )
+
       - name: Check package
         uses: r-lib/actions/check-r-package@d3c5be51b12e724e68f33216ca3c148b66d5f0b6 # v2.12.1
