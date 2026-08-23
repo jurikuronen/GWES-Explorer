@@ -14,18 +14,18 @@
                 stop("Outliers file must contain at least five columns.")
             }
 
-            # readr requires a name for every input field; "_" skips fields after the optional sixth column.
-            readr::read_delim(
-                file = outliers_file$datapath,
-                delim = " ",
-                col_names = c(
-                    column_names[seq_len(min(n, 6L))],
-                    paste0("Unused_", seq_len(max(n - 6L, 0L)))
+            stats::setNames(
+                readr::read_delim(
+                    file = outliers_file$datapath,
+                    delim = " ",
+                    col_names = FALSE,
+                    col_types = paste0(
+                        substr("iiildd", 1L, min(n, 6L)),
+                        # Skip columns after MI_wogaps.
+                        strrep("_", max(n - 6L, 0L))
+                    )
                 ),
-                col_types = paste0(
-                    substr("iiildd", 1L, min(n, 6L)),
-                    strrep("_", max(n - 6L, 0L))
-                )
+                column_names[seq_len(min(n, 6L))]
             )
         }, silent = TRUE)
 
