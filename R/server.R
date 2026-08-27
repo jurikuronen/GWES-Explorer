@@ -1,17 +1,19 @@
-# Define server logic for the Shiny application.
+# Defines the server logic for the Shiny application.
 .server <- function(input, output, session) {
 
     # Application data for this session.
     data <- new.env(parent = emptyenv())
 
-    # Example data files for "Load example data" action.
-    .example_file <- function(name) {
+    # Creates file information for an example data file.
+    .example_file <- function(filename) {
         tibble::tibble(datapath = system.file("extdata",
-                                              name,
+                                              filename,
                                               package = "GWESExplorer",
                                               mustWork = TRUE),
-                       name = name)
+                       name = filename)
     }
+
+    # Example data files for the "Load example data" action.
     .example_outliers_file <- .example_file("maela_outliers.outliers")
     .example_tree_file <- .example_file("maela_tree.nex")
     .example_fasta_file <- .example_file("maela_fasta.fasta")
@@ -19,40 +21,39 @@
     .example_phenotype_file <- .example_file("maela_phenotypes.csv")
     .example_gff_file <- .example_file("maela_gff.gff3")
 
-    # Column names in outliers table.
+    # Default columns for the outliers tables.
     .default_outlier_columns <- c("Pos_1", "Pos_2", "MI", "MI_wogaps", "Distance")
 
-    # Currently used column names.
+    # Columns currently shown in the outliers tables.
     .outlier_columns <- .default_outlier_columns
 
-    # Reactive values used for zooming in the Manhattan GWES plot.
-    .mh_gwes_ranges <- shiny::reactiveValues(x = NULL, y = NULL)
+    # Zoom ranges for the GWES Manhattan plot.
+    .manhattan_plot_ranges <- shiny::reactiveValues(x = NULL, y = NULL)
 
-    # Reactive values used to check whether some file has been uploaded.
-    .file_uploaded <- shiny::reactiveValues(outliers = 0,
-                                           tree = 0,
-                                           fasta = 0,
-                                           loci = 0,
-                                           phenotype = 0,
-                                           gff = 0)
+    # Tracks whether each file has been uploaded.
+    .file_uploaded <- shiny::reactiveValues(outliers = FALSE,
+                                            tree = FALSE,
+                                            fasta = FALSE,
+                                            loci = FALSE,
+                                            phenotype = FALSE,
+                                            gff = FALSE)
 
-    # Update phenotype selections for this session.
+    # Updates the phenotype choices.
     .update_select_phenotype_input <- function() {
         if (!is.null(data$phenotype)) {
-            n <- as.list(0:ncol(data$phenotype))
-            names(n) <- c("No phenotype selected",
-                          colnames(data$phenotype))
-            shiny::updateSelectInput(session,
-                                     inputId = "select_phenotype",
-                                     choices = n)
+            # Zero represents the special value "No phenotype selected".
+            phenotype_choices <- as.list(0:ncol(data$phenotype))
+            names(phenotype_choices) <- c("No phenotype selected", colnames(data$phenotype))
         } else {
-            shiny::updateSelectInput(session,
-                                     inputId = "select_phenotype",
-                                     choices = c("No phenotype selected" = 0))
+            phenotype_choices <- c("No phenotype selected" = 0)
         }
+
+        shiny::updateSelectInput(session,
+                                 inputId = "select_phenotype",
+                                 choices = phenotype_choices)
     }
 
-    # Helper function to render file input buttons.
+    # Renders a file upload button.
     .render_ui_file_input <- function(input_id, label, accept) {
         shiny::renderUI({
             shiny::fileInput(inputId = input_id,
@@ -61,8 +62,33 @@
         })
     }
 
-    # Download handlers for saving plots.
-    .download_handler <- function(input, prefix, plot_function) {
+    # Renders the file upload buttons.
+    .render_file_upload_buttons <- function() {
+        output$outliers_file_input <- .render_ui_file_input("outliers_file",
+                                                            "SpydrPick outliers file (.outliers, .txt):",
+                                                            c(".outliers", ".txt"))
+        output$tree_file_input <- .render_ui_file_input("tree_file",
+                                                        "Tree file (Newick [.nwk] or Nexus [.nex]):",
+                                                        c(".nwk", ".nex"))
+        output$fasta_file_input <- .render_ui_file_input("fasta_file",
+                                                         "FASTA file (.fasta, .fa, .aln):",
+                                                         c(".fasta", ".fa", ".aln"))
+        output$loci_file_input <- .render_ui_file_input("loci_file",
+                                                        "Loci file (.loci):",
+                                                        ".loci")
+        output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
+                                                             "Phenotype data file (.csv, .txt):",
+                                                             c(".csv", ".txt"))
+        output$gff_file_input <- .render_ui_file_input("gff_file",
+                                                       "GFF3 file (.gff3):",
+                                                       ".gff3")
+    }
+
+    # Render the initial file upload buttons. "Clear file selections" re-renders them.
+    .render_file_upload_buttons()
+
+    # Creates a download handler for saving a plot.
+    .download_handler <- function(prefix, plot_function) {
         shiny::downloadHandler(
             filename = function() {
                 paste0(
@@ -88,7 +114,7 @@
 
                     if (pixel_count > 10000000) {
                         shiny::showNotification(
-                            paste("Image size must not exceed 10 million pixels. Reduce the width, height or DPI."),
+                            "Image size must not exceed 10 million pixels. Reduce the width, height or DPI.",
                             type = "error"
                         )
                         shiny::req(FALSE)
@@ -119,7 +145,7 @@
         )
     }
 
-    # Helper function to read in and load data from the provided files.
+    # Reads and loads data from the provided files.
     .read_and_load_data <- function(outliers_file,
                                     tree_file,
                                     fasta_file,
@@ -128,77 +154,85 @@
                                     gff_file,
                                     failure_message)
     {
-        result <- .read_data(data,
-                             outliers_file,
-                             tree_file,
-                             fasta_file,
-                             loci_file,
-                             phenotype_file,
-                             gff_file)
-        if (result$success == .STATUS_SUCCESS) {
+        load_status <- .read_data(data = data,
+                                  outliers_file = outliers_file,
+                                  tree_file = tree_file,
+                                  fasta_file = fasta_file,
+                                  loci_file = loci_file,
+                                  phenotype_file = phenotype_file,
+                                  gff_file = gff_file)
+        if (load_status$success == .STATUS_SUCCESS) {
             output$data_load_result <- shiny::renderText({"Data loaded!"})
-            .process_data()
+            .update_data_ui()
         } else {
             output$data_load_result <- shiny::renderText({failure_message})
         }
-        output$data_load_status <- shiny::renderUI({ result$status })
+        output$data_load_status <- shiny::renderUI({ load_status$status })
     }
 
-    # Helper function to return uploaded file data based on reactive file upload states.
-    .get_file_data <- function(key) {
-        if (.file_uploaded[[key]] == 1) {
-            return(input[[paste0(key, "_file")]])
+    # Returns uploaded file data based on the file's reactive upload state.
+    .get_file_data <- function(file_key) {
+        if (!.file_uploaded[[file_key]]) {
+            return(NULL)
         }
-        return(NULL)
+
+        return(input[[paste0(file_key, "_file")]])
     }
 
-    # Helper function to generate the outliers table.
-    .generate_outliers_table <- function(input, outlier_columns) {
-        if (!is.null(data$outliers)) {
-            return(DT::renderDT(data$outliers_direct[, outlier_columns],
+    # Renders an interactive table of outliers using DT.
+    .render_outliers_table <- function(outlier_columns) {
+        if (is.null(data$outliers)) {
+            # Default table when there is no data.
+            return(DT::renderDT(tibble::tibble(Pos_1 = integer(),
+                                               Pos_2 = integer(),
+                                               MI = numeric(),
+                                               Distance = integer()),
                                 server = FALSE,
-                                options = list(pageLength = 25, scrollX = TRUE),
-                                selection = input$select_row_type))
+                                options = list(pageLength = 25, scrollX = TRUE)))
         }
-        # Default table when there is no data.
-        return(DT::renderDT(tibble::tibble(Pos_1 = integer(),
-                                           Pos_2 = integer(),
-                                           MI = numeric(),
-                                           Distance = integer()),
+
+        return(DT::renderDT(data$outliers_direct[, outlier_columns],
                             server = FALSE,
-                            options = list(pageLength = 25, scrollX = TRUE)))
+                            options = list(pageLength = 25, scrollX = TRUE),
+                            selection = input$select_row_type))
     }
 
-    # Helper function to process uploaded data.
-    .process_data <- function() {
-        # Update Shiny SelectInput if phenotype data was read.
+    # Render the initial outliers table. It's a reactive DT table, so an event handler is not needed.
+    output$outliers_table <- .render_outliers_table(.outlier_columns)
+
+    # Updates the UI to reflect the loaded data.
+    .update_data_ui <- function() {
+        # Update the phenotype selector for the loaded data.
         .update_select_phenotype_input()
 
         # Keep MI_wogaps out of the tables when the optional sixth column was not provided.
         .outlier_columns <<- intersect(.default_outlier_columns, names(data$outliers))
+
+        # Add feature columns when GFF3 data was provided.
         if (!is.null(data$gff)) {
             .outlier_columns <<- c(.outlier_columns, "Pos_1_feature", "Pos_2_feature")
         }
 
-        # Render plots after reading data was completed.
-        output$outliers_table <- .generate_outliers_table(input, .outlier_columns)
-        output$manhattan_plot <- .render_gwes_manhattan_plot(data, input, .mh_gwes_ranges)
+        # Render the tables and plots for the loaded data.
+        output$outliers_table <- .render_outliers_table(.outlier_columns)
+        output$manhattan_plot <- .render_gwes_manhattan_plot(data, input, .manhattan_plot_ranges)
         output$manhattan_plot_table <- .render_gwes_manhattan_plot_table(data, input, .outlier_columns)
+
         # Session data is not reactive, so recreate the renderer here.
         # Shiny reruns it when phenotype or row selection inputs change.
         output$tree_plot <- .render_phylogenetic_tree_plot(data, input)
         output$circular_plot <- .render_circular_plot(data$circular_plot_spec)
     }
 
-    # Set reactive file upload states.
-    shiny::observeEvent(input$outliers_file, { .file_uploaded$outliers = 1 })
-    shiny::observeEvent(input$tree_file, { .file_uploaded$tree = 1 })
-    shiny::observeEvent(input$fasta_file, { .file_uploaded$fasta = 1 })
-    shiny::observeEvent(input$loci_file, { .file_uploaded$loci = 1 })
-    shiny::observeEvent(input$phenotype_file, { .file_uploaded$phenotype = 1 })
-    shiny::observeEvent(input$gff_file, { .file_uploaded$gff = 1 })
+    # Handle file upload events: mark the corresponding files as uploaded.
+    shiny::observeEvent(input$outliers_file, { .file_uploaded$outliers <- TRUE })
+    shiny::observeEvent(input$tree_file, { .file_uploaded$tree <- TRUE })
+    shiny::observeEvent(input$fasta_file, { .file_uploaded$fasta <- TRUE })
+    shiny::observeEvent(input$loci_file, { .file_uploaded$loci <- TRUE })
+    shiny::observeEvent(input$phenotype_file, { .file_uploaded$phenotype <- TRUE })
+    shiny::observeEvent(input$gff_file, { .file_uploaded$gff <- TRUE })
 
-    # Handle load example data event: load the included Maela example dataset.
+    # Handle the "Load example data" event: load the included Maela example dataset.
     shiny::observeEvent(input$load_example_data_button, {
         .read_and_load_data(outliers_file = .example_outliers_file,
                             tree_file = .example_tree_file,
@@ -209,7 +243,7 @@
                             failure_message = "Failed to load example data.")
     })
 
-    # Handle load data event: load the files currently selected in the upload controls.
+    # Handle the "Load data" event: load the files currently selected in the upload controls.
     shiny::observeEvent(input$load_data_button, {
         .read_and_load_data(outliers_file = .get_file_data("outliers"),
                             tree_file = .get_file_data("tree"),
@@ -220,102 +254,60 @@
                             failure_message = "Failed to load uploaded data.")
     })
 
-    # Handle clear data event: clear already loaded data while preserving the file selections.
+    # Handle the "Clear loaded data" event: clear already loaded data while preserving the file selections.
     shiny::observeEvent(input$clear_loaded_data_button, {
-        # Replace messages from the previous load attempt with the clearing progress.
-        output$data_load_result <- shiny::renderText({"Clearing data..."})
-        output$data_load_status <- shiny::renderUI({""})
-
-        result <- .clear_data(data)
-        .process_data()
+        clear_status <- .clear_data(data)
+        .update_data_ui()
 
         output$data_load_result <- shiny::renderText({"Cleared data."})
-        output$data_load_status <- shiny::renderUI({ result$status })
+        output$data_load_status <- shiny::renderUI({ clear_status$status })
     })
 
-    # Handle clear file selections event: clear the file selections in the upload controls.
+    # Handle the "Clear file selections" event: clear the file selections from the upload buttons.
     shiny::observeEvent(input$clear_file_selections_button, {
-        # Remove messages from the previous load attempt.
-        output$data_load_result <- shiny::renderText({""})
-        output$data_load_status <- shiny::renderUI({""})
-
-        .file_uploaded$outliers = 0
-        .file_uploaded$tree = 0
-        .file_uploaded$fasta = 0
-        .file_uploaded$loci = 0
-        .file_uploaded$phenotype = 0
-        .file_uploaded$gff = 0
+        .file_uploaded$outliers <- FALSE
+        .file_uploaded$tree <- FALSE
+        .file_uploaded$fasta <- FALSE
+        .file_uploaded$loci <- FALSE
+        .file_uploaded$phenotype <- FALSE
+        .file_uploaded$gff <- FALSE
 
         # Recreate the file inputs so the browser no longer displays the selected filenames.
-        output$outliers_file_input <- .render_ui_file_input("outliers_file",
-                                                            "SpydrPick outliers file (.outliers, .txt):",
-                                                            c(".outliers", ".txt"))
-        output$tree_file_input <- .render_ui_file_input("tree_file",
-                                                        "Tree file (Newick [.nwk] or Nexus [.nex]):",
-                                                        c(".nwk", ".nex"))
-        output$fasta_file_input <- .render_ui_file_input("fasta_file",
-                                                         "FASTA file (.fasta, .fa, .aln):",
-                                                         c(".fasta", ".fa", ".aln"))
-        output$loci_file_input <- .render_ui_file_input("loci_file",
-                                                        "Loci file (.loci):",
-                                                        ".loci")
-        output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
-                                                             "Phenotype data file (.csv, .txt):",
-                                                             c(".csv", ".txt"))
-        output$gff_file_input <- .render_ui_file_input("gff_file",
-                                                       "GFF3 file (.gff3):",
-                                                       ".gff3")
+        .render_file_upload_buttons()
 
-        result <- .clear_file_selections()
-        output$data_load_result <- shiny::renderText({"Cleared file selections."})
-        output$data_load_status <- shiny::renderUI({ result$status })
+        clear_status <- .clear_file_selections()
+        if (clear_status$success == .STATUS_FAILURE) {
+            output$data_load_result <- shiny::renderText({"Failed to clear file selections."})
+        } else {
+            output$data_load_result <- shiny::renderText({"Cleared file selections."})
+        }
+        output$data_load_status <- shiny::renderUI({ clear_status$status })
     })
 
-    # Update table selection type.
-    shiny::observeEvent(input$select_row_type,
-                        { output$outliers_table <- .generate_outliers_table(input, .outlier_columns) })
-
-    # When double-clicking the GWES Manhattan plot, zoom onto the brush bounds, otherwise reset the zoom.
+    # Handle a double-click event on the GWES Manhattan plot: zoom to the brushed area or reset the zoom.
     shiny::observeEvent(input$manhattan_plot_double_click, {
         brush <- input$manhattan_plot_brush
-        if (!is.null(brush)) {
-            .mh_gwes_ranges$x <- c(brush$xmin, brush$xmax)
-            .mh_gwes_ranges$y <- c(brush$ymin, brush$ymax)
-        } else {
-            .mh_gwes_ranges$x <- NULL
-            .mh_gwes_ranges$y <- NULL
+        if (is.null(brush)) {
+            .manhattan_plot_ranges$x <- NULL
+            .manhattan_plot_ranges$y <- NULL
+            return()
         }
+
+        .manhattan_plot_ranges$x <- c(brush$xmin, brush$xmax)
+        .manhattan_plot_ranges$y <- c(brush$ymin, brush$ymax)
     })
 
-    # Handle row selection event.
+    # Handle an outliers table row selection event: update the circular plot from the first selected row.
     shiny::observeEvent(input$outliers_table_rows_selected, {
         selected_rows <- input$outliers_table_rows_selected
-        if (!is.null(data$gff) && length(selected_rows) > 0) {
-            .set_circular_plot_signals(data, selected_rows[1])
+        if (is.null(data$gff) || length(selected_rows) == 0) {
+            return()
         }
+
+        .set_circular_plot_signals(data, selected_rows[1])
     })
 
-    # Render file input buttons.
-    output$outliers_file_input <- .render_ui_file_input("outliers_file",
-                                                        "SpydrPick outliers file (.outliers, .txt):",
-                                                        c(".outliers", ".txt"))
-    output$tree_file_input <- .render_ui_file_input("tree_file",
-                                                    "Tree file (Newick [.nwk] or Nexus [.nex]):",
-                                                    c(".nwk", ".nex"))
-    output$fasta_file_input <- .render_ui_file_input("fasta_file",
-                                                     "FASTA file (.fasta, .fa, .aln):",
-                                                     c(".fasta", ".fa", ".aln"))
-    output$loci_file_input <- .render_ui_file_input("loci_file",
-                                                    "Loci file (.loci):",
-                                                    ".loci")
-    output$phenotype_file_input <- .render_ui_file_input("phenotype_file",
-                                                         "Phenotype data file (.csv, .txt):",
-                                                         c(".csv", ".txt"))
-    output$gff_file_input <- .render_ui_file_input("gff_file",
-                                                   "GFF3 file (.gff3):",
-                                                   ".gff3")
-
-    # Render UI output for tree plot.
+    # Render the Tree-MSA plot output reactively at the selected size.
     output$tree_plot_ui_output <- shiny::renderUI({
         shiny::plotOutput("tree_plot",
                           width = paste0(input$tree_plot_width, "cm"),
@@ -323,20 +315,18 @@
     })
 
     # Set download handlers for Manhattan and phylogenetic tree plots.
-    output$gwes_manhattan_plot_download <- .download_handler(input,
-                                                             prefix = "gwes_manhattan_plot",
+    output$gwes_manhattan_plot_download <- .download_handler(prefix = "gwes_manhattan_plot",
                                                              plot_function = function() {
                                                                  .gwes_manhattan_plot(data,
                                                                                       input,
-                                                                                      .mh_gwes_ranges)
+                                                                                      .manhattan_plot_ranges)
                                                              })
-    output$phylogenetic_tree_plot_download <- .download_handler(input,
-                                                                prefix = "phylogenetic_tree_plot",
+    output$phylogenetic_tree_plot_download <- .download_handler(prefix = "phylogenetic_tree_plot",
                                                                 plot_function = function() {
                                                                     .create_phylogenetic_tree_plot(data, input)
                                                                 })
 
-    # Setup modifying circular plot signals from Shiny UI.
+    # Set up circular plot signal updates from the Shiny UI.
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "radius",
                                     value = input$circular_plot_radius)
