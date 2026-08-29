@@ -15,7 +15,7 @@ Description: GWES-Explorer is an interactive browser-based visualization tool fo
 Depends: R (>= 4.0.0)
 License: GPL-3
 Encoding: UTF-8
-RoxygenNote: 7.1.1
+RoxygenNote: 7.3.2
 Imports:
     ape, colourpicker, dplyr, DT, ggnewscale, ggplot2, ggtree, htmltools, readr, Rcpp, seqinr, shiny, shinyjs,
     shinyWidgets, stats, tibble, treeio, utils, vegawidget, viridis

@@ -12,7 +12,8 @@ launch_GWESExplorer(
 \arguments{
 \item{launch_in_browser}{Whether to launch GWES-Explorer in the user's default browser. Defaults to TRUE.}
 
-\item{max_request_size}{Maximum input file size in bytes. Defaults to 32 MiB.}
+\item{max_request_size}{Maximum web request size in bytes, which limits file uploads. Defaults to 32 MiB.
+This changes the global shiny.maxRequestSize option, which resets when the R session ends.}
 }
 \value{
 A Shiny application object.
