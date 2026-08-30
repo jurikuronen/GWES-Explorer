@@ -5,9 +5,11 @@
 .Ruserdata
 *.Rproj
 
-# R package check output.
+# R package build and check output.
+GWESExplorer_*.tar.gz
 *.Rcheck/
 
-# C++ object and shared library files.
+# Compiled files.
 *.o
 *.so
+*.dll
