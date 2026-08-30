@@ -331,38 +331,38 @@
                                     name = "radius",
                                     value = input$circular_plot_radius)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "radius_gene_view_1",
-                                    value = input$circular_plot_radius_gene_view_1)
+                                    name = "feature_view_1_radius",
+                                    value = input$circular_plot_feature_view_1_radius)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "radius_gene_view_2",
-                                    value = input$circular_plot_radius_gene_view_2)
+                                    name = "feature_view_2_radius",
+                                    value = input$circular_plot_feature_view_2_radius)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "rotate",
                                     value = input$circular_plot_rotate)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "rotate_gene_view_1",
-                                    value = input$circular_plot_rotate_gene_view_1)
+                                    name = "feature_view_1_rotation",
+                                    value = input$circular_plot_feature_view_1_rotation)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "rotate_gene_view_2",
-                                    value = input$circular_plot_rotate_gene_view_2)
+                                    name = "feature_view_2_rotation",
+                                    value = input$circular_plot_feature_view_2_rotation)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "gene_arc_angle_1",
-                                    value = input$circular_plot_gene_arc_angle_1)
+                                    name = "feature_view_1_degrees",
+                                    value = input$circular_plot_feature_view_1_degrees)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "gene_arc_angle_2",
-                                    value = input$circular_plot_gene_arc_angle_2)
+                                    name = "feature_view_2_degrees",
+                                    value = input$circular_plot_feature_view_2_degrees)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "flip_gene_view_1",
-                                    value = input$circular_plot_flip_gene_view_1)
+                                    name = "feature_view_1_flip_inwards",
+                                    value = input$circular_plot_feature_view_1_flip_inwards)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "flip_gene_view_2",
-                                    value = input$circular_plot_flip_gene_view_2)
+                                    name = "feature_view_2_flip_inwards",
+                                    value = input$circular_plot_feature_view_2_flip_inwards)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "text_size_region",
                                     value = input$circular_plot_text_size_region)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "text_size_gene",
-                                    value = input$circular_plot_text_size_gene)
+                                    name = "feature_label_text_size",
+                                    value = input$circular_plot_feature_label_text_size)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "text_size_tooltip",
                                     value = input$circular_plot_text_size_tooltip)
@@ -370,12 +370,12 @@
                                     name = "show_region_links",
                                     value = input$circular_plot_show_region_links)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "show_gene_links",
-                                    value = input$circular_plot_show_gene_links)
+                                    name = "show_position_links",
+                                    value = input$circular_plot_show_position_links)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "opacity_region_link_adjustment",
                                     value = input$circular_plot_opacity_region_link_adjustment)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "opacity_gene_link_adjustment",
-                                    value = input$circular_plot_opacity_gene_link_adjustment)
+                                    name = "position_link_opacity_adjustment",
+                                    value = input$circular_plot_position_link_opacity_adjustment)
 }

@@ -1,5 +1,5 @@
 .create_position_data <- function(data) {
-    position_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
+    position_data <- do.call(rbind, lapply(seq_len(.settings$circular_plot_region_count), function(region) {
         create_position_data_for_endpoint <- function(position_column) {
             outlier_rows <- which(data$outliers_direct[[paste0(position_column, "_region")]] == region)
             if (length(outlier_rows) == 0) {

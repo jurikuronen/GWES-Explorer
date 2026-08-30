@@ -22,12 +22,12 @@
 }
 
 .create_circular_data <- function(data) {
-    n_groups <- .circular_plot_groups()
-    n_regions_per_group <- .circular_plot_regions_per_group()
-    n_regions <- n_groups * n_regions_per_group
-    sz <- n_groups + n_groups * n_regions_per_group + 1L
+    region_group_count <- .settings$circular_plot_region_group_count
+    regions_per_group_count <- .settings$circular_plot_regions_per_group_count
+    n_regions <- .settings$circular_plot_region_count
+    sz <- region_group_count + region_group_count * regions_per_group_count + 1L
 
-    group_names <- .get_region_boundaries(data$gff$end[.get_region_end_rows(data, n_groups)])
+    group_names <- .get_region_boundaries(data$gff$end[.get_region_end_rows(data, region_group_count)])
 
     # Initialize circular data.
     circular_data <- data.frame(
@@ -41,11 +41,14 @@
 
     # Set parents for hidden levels
     circular_data$parent[seq.int(n_regions + 1L, sz - 1L)] <- sz
-    circular_data$parent[seq_len(n_regions)] <- (seq_len(n_regions) - 1L) %/% n_regions_per_group + n_regions + 1L
+    circular_data$parent[seq_len(n_regions)] <-
+        (seq_len(n_regions) - 1L) %/% regions_per_group_count + n_regions + 1L
 
     # Set draw status for region slices.
     circular_data$draw[seq_len(n_regions)] <- TRUE
-    group_label_rows <- seq.int(n_regions_per_group %/% 2L, sz - n_groups - 1L, n_regions_per_group)
+    group_label_rows <- seq.int(regions_per_group_count %/% 2L,
+                                sz - region_group_count - 1L,
+                                regions_per_group_count)
     circular_data$name[group_label_rows] <- group_names
 
     return(circular_data)

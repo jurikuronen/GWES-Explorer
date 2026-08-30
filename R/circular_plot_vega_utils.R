@@ -57,10 +57,10 @@
 .initialize_circular_spec <- function() {
     list(
         `$schema` = "https://vega.github.io/schema/vega/v5.json",
-        width = .circular_plot_size(),
-        height = .circular_plot_size(),
+        width = .settings$circular_plot_size,
+        height = .settings$circular_plot_size,
         autosize = "none",
-        padding = .circular_plot_padding()
+        padding = .settings$circular_plot_padding
     )
 }
 

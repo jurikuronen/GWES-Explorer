@@ -186,7 +186,7 @@
     }
 
     # Require at least a one kilobase span for each circular plot region.
-    minimum_range_length <- .circular_plot_regions() * 1000L
+    minimum_range_length <- .settings$circular_plot_region_count * 1000L
     if (ranges[[2L]] - ranges[[1L]] + 1L < minimum_range_length) {
         stop(paste0("GFF3 region must span at least ",
                     format(minimum_range_length, big.mark = ",", scientific = FALSE, trim = TRUE),

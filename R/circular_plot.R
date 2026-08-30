@@ -33,7 +33,7 @@
 # Precomputes necessary data for rendering the circular plot.
 .precompute_circular_plot_data <- function(data) {
     # Assign each GFF row to one of the circular plot's regions.
-    data$gff$feature_regions <- .compute_feature_regions(data, .circular_plot_regions())
+    data$gff$feature_regions <- .compute_feature_regions(data, .settings$circular_plot_region_count)
 
     # Find the feature containing each outlier position.
     outlier_feature_rows <- .cpp_find_outlier_feature_rows(data$gff$start,

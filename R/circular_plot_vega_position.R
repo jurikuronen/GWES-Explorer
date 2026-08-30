@@ -21,10 +21,10 @@
             transform = list(
                 .vega_formula("angle_1", .position_angle_expr("feature_data", "angle_1")),
                 .vega_formula("angle_2", .position_angle_expr("feature_data", "angle_2")),
-                .vega_formula("x_1", "origoX + (radius_gene_view_1 - 5) * cos(PI * datum.angle_1 / 180)"),
-                .vega_formula("y_1", "origoY + (radius_gene_view_1 - 5) * sin(PI * datum.angle_1 / 180)"),
-                .vega_formula("x_2", "origoX + (radius_gene_view_2 - 5) * cos(PI * datum.angle_2 / 180)"),
-                .vega_formula("y_2", "origoY + (radius_gene_view_2 - 5) * sin(PI * datum.angle_2 / 180)"),
+                .vega_formula("x_1", "origoX + (feature_view_1_radius - 5) * cos(PI * datum.angle_1 / 180)"),
+                .vega_formula("y_1", "origoY + (feature_view_1_radius - 5) * sin(PI * datum.angle_1 / 180)"),
+                .vega_formula("x_2", "origoX + (feature_view_2_radius - 5) * cos(PI * datum.angle_2 / 180)"),
+                .vega_formula("y_2", "origoY + (feature_view_2_radius - 5) * sin(PI * datum.angle_2 / 180)"),
                 .vega_formula("feature",
                               .vega_data_query("feature_data", "datum.feature_row - 1", "feature"))
             )
@@ -52,7 +52,7 @@
         ),
         .vega_simple_filter("position_links_selected",
                             "position_links",
-                            .and("show_gene_links",
+                            .and("show_position_links",
                                  .and(.is_selected_region("datum.region_1", 1),
                                       .is_selected_region("datum.region_2", 2))))
     )
@@ -66,8 +66,8 @@
         interactive = TRUE,
         encode = list(
             enter = list(
-                fill = list(value = .circular_plot_color_pos_symbol_fill()),
-                stroke = list(value = .circular_plot_color_pos_symbol_stroke()),
+                fill = list(value = .settings$circular_plot_position_marker_fill_color),
+                stroke = list(value = .settings$circular_plot_position_marker_outline_color),
                 strokeWidth = list(value = 0.5),
                 tooltip = list(signal = "{title: datum.position, 'Located in': datum.feature}")
             ),
@@ -93,12 +93,14 @@
                 x = list(field = "x"), y = list(field = "y"),
                 x2 = list(field = "x2"), y2 = list(field = "y2"),
                 stroke = list(
-                    list(test = .position_link_is_selected(), value = .circular_plot_color_pos_link_selected()),
+                    list(test = .position_link_is_selected(),
+                         value = .settings$circular_plot_position_link_selected_color),
                     list(test = .and(.is_connected_to_selected_feature(),
                                      .negate(.both_features_are_selected())),
-                         value = .circular_plot_color_pos_link_connected()),
-                    list(test = .some_feature_is_selected(), value = .circular_plot_color_pos_link_inactive()),
-                    list(value = .circular_plot_color_pos_link_default())
+                         value = .settings$circular_plot_position_link_active_color),
+                    list(test = .some_feature_is_selected(),
+                         value = .settings$circular_plot_position_link_inactive_color),
+                    list(value = .settings$circular_plot_position_link_default_color)
                 ),
                 strokeWidth = list(field = "weight"),
                 strokeOpacity = list(

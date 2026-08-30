@@ -1,5 +1,5 @@
 .create_feature_data <- function(data) {
-    feature_data <- do.call(rbind, lapply(seq_len(.circular_plot_regions()), function(region) {
+    feature_data <- do.call(rbind, lapply(seq_len(.settings$circular_plot_region_count), function(region) {
         region_features <- which(data$gff$feature_regions == region)
         data.frame(
             feature_row = region_features,

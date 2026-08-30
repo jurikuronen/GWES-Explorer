@@ -1,5 +1,5 @@
 .minimum_circular_plot_range_length <- function() {
-    .circular_plot_regions() * 1000L
+    .settings$circular_plot_region_count * 1000L
 }
 
 .minimum_circular_plot_range_error <- function() {
@@ -336,15 +336,18 @@ test_that(".determine_ranges rejects chromosome ranges shorter than the circular
 })
 
 test_that(".determine_ranges uses the circular plot settings for the minimum chromosome range", {
-    previous_n_groups <- .settings$circular_plot_n_groups
-    previous_n_regions_per_group <- .settings$circular_plot_n_regions_per_group
+    previous_region_group_count <- .settings$circular_plot_region_group_count
+    previous_regions_per_group_count <- .settings$circular_plot_regions_per_group_count
+    previous_region_count <- .settings$circular_plot_region_count
     on.exit({
-        .settings$circular_plot_n_groups <- previous_n_groups
-        .settings$circular_plot_n_regions_per_group <- previous_n_regions_per_group
+        .settings$circular_plot_region_group_count <- previous_region_group_count
+        .settings$circular_plot_regions_per_group_count <- previous_regions_per_group_count
+        .settings$circular_plot_region_count <- previous_region_count
     })
 
-    .settings$circular_plot_n_groups <- 2L
-    .settings$circular_plot_n_regions_per_group <- 3L
+    .settings$circular_plot_region_group_count <- 2L
+    .settings$circular_plot_regions_per_group_count <- 3L
+    .settings$circular_plot_region_count <- 6L
     minimum_range_length <- .minimum_circular_plot_range_length()
 
     gff_path <- tempfile(fileext = ".gff3")

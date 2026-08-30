@@ -9,8 +9,8 @@
                 inputId = "circular_plot_radius",
                 label = "Circular plot radius:",
                 min = 100,
-                max = .circular_plot_radius(),
-                value = .circular_plot_radius(),
+                max = .settings$circular_plot_radius,
+                value = .settings$circular_plot_radius,
                 step = 1
             )
         ),
@@ -25,7 +25,7 @@
                 label = "Circular plot rotation:",
                 min = 0,
                 max = 360,
-                value = .circular_plot_rotate(),
+                value = .settings$circular_plot_rotation,
                 step = 1
             )
         ),
@@ -33,11 +33,11 @@
         .div_inline_block(
             width_cm = 5,
             shiny::sliderInput(
-                inputId = "circular_plot_radius_gene_view_1",
-                label = "Gene view 1 radius:",
+                inputId = "circular_plot_feature_view_1_radius",
+                label = "Feature view 1 radius:",
                 min = 0,
                 max = 400,
-                value = .circular_plot_radius_gene_view_1(),
+                value = .settings$circular_plot_feature_view_1_radius,
                 step = 1
             )
         ),
@@ -48,11 +48,11 @@
         .div_inline_block(
             width_cm = 5,
             shiny::sliderInput(
-                inputId = "circular_plot_gene_arc_angle_1",
-                label = "Gene view 1 arc angle:",
+                inputId = "circular_plot_feature_view_1_degrees",
+                label = "Feature view 1 angular span:",
                 min = 15,
                 max = 135,
-                value = .circular_plot_gene_arc_angle_1(),
+                value = .settings$circular_plot_feature_view_1_degrees,
                 step = 1
             )
         ),
@@ -63,11 +63,11 @@
         .div_inline_block(
             width_cm = 5,
             shiny::sliderInput(
-                inputId = "circular_plot_rotate_gene_view_1",
-                label = "Gene view 1 rotation:",
+                inputId = "circular_plot_feature_view_1_rotation",
+                label = "Feature view 1 rotation:",
                 min = 0,
                 max = 360,
-                value = .circular_plot_rotate_gene_view_1(),
+                value = .settings$circular_plot_feature_view_1_rotation,
                 step = 1
             )
         ),
@@ -78,20 +78,20 @@
         .div_inline_block(
             width_cm = 4,
             shiny::checkboxInput(
-                inputId = "circular_plot_flip_gene_view_1",
-                label = "Flip gene view 1:",
-                value = .circular_plot_flip_gene_view_1()
+                inputId = "circular_plot_feature_view_1_flip_inwards",
+                label = "Flip feature view 1 labels inward:",
+                value = .settings$circular_plot_feature_view_1_flip_inwards
             )
         ),
         shiny::br(),
         .div_inline_block(
             width_cm = 5,
             shiny::sliderInput(
-                inputId = "circular_plot_radius_gene_view_2",
-                label = "Gene view 2 radius:",
+                inputId = "circular_plot_feature_view_2_radius",
+                label = "Feature view 2 radius:",
                 min = 0,
                 max = 400,
-                value = .circular_plot_radius_gene_view_2(),
+                value = .settings$circular_plot_feature_view_2_radius,
                 step = 1
             )
         ),
@@ -102,11 +102,11 @@
         .div_inline_block(
             width_cm = 5,
             shiny::sliderInput(
-                inputId = "circular_plot_gene_arc_angle_2",
-                label = "Gene view 2 arc angle:",
+                inputId = "circular_plot_feature_view_2_degrees",
+                label = "Feature view 2 angular span:",
                 min = 15,
                 max = 135,
-                value = .circular_plot_gene_arc_angle_2(),
+                value = .settings$circular_plot_feature_view_2_degrees,
                 step = 1
             )
         ),
@@ -117,11 +117,11 @@
         .div_inline_block(
             width_cm = 5,
             shiny::sliderInput(
-                inputId = "circular_plot_rotate_gene_view_2",
-                label = "Gene view 2 rotation:",
+                inputId = "circular_plot_feature_view_2_rotation",
+                label = "Feature view 2 rotation:",
                 min = 0,
                 max = 360,
-                value = .circular_plot_rotate_gene_view_2(),
+                value = .settings$circular_plot_feature_view_2_rotation,
                 step = 1
             )
         ),
@@ -132,9 +132,9 @@
         .div_inline_block(
             width_cm = 4,
             shiny::checkboxInput(
-                inputId = "circular_plot_flip_gene_view_2",
-                label = "Flip gene view 2:",
-                value = .circular_plot_flip_gene_view_2()
+                inputId = "circular_plot_feature_view_2_flip_inwards",
+                label = "Flip feature view 2 labels inward:",
+                value = .settings$circular_plot_feature_view_2_flip_inwards
             )
         )
     )
@@ -152,7 +152,7 @@
                 label = "Region label size:",
                 min = 6,
                 max = 25,
-                value = .circular_plot_text_size_region(),
+                value = .settings$circular_plot_region_group_label_text_size,
                 step = 1
             )
         ),
@@ -163,11 +163,11 @@
         .div_inline_block(
             width_cm = 4,
             shiny::sliderInput(
-                inputId = "circular_plot_text_size_gene",
-                label = "Gene view label size:",
+                inputId = "circular_plot_feature_label_text_size",
+                label = "Genomic-feature label size:",
                 min = 6,
                 max = 20,
-                value = .circular_plot_text_size_gene(),
+                value = .settings$circular_plot_feature_label_text_size,
                 step = 1
             )
         ),
@@ -182,7 +182,7 @@
                 label = "Tooltip text size:",
                 min = 6,
                 max = 20,
-                value = .circular_plot_text_size_tooltip(),
+                value = .settings$circular_plot_feature_link_tooltip_text_size,
                 step = 1
             )
         )
@@ -212,8 +212,8 @@
         .div_inline_block(
             width_cm = 4,
             shiny::sliderInput(
-                inputId = "circular_plot_opacity_gene_link_adjustment",
-                label = "Gene view link opacity:",
+                inputId = "circular_plot_position_link_opacity_adjustment",
+                label = "Position link opacity:",
                 min = 0,
                 max = 1,
                 value = 1,
@@ -239,8 +239,8 @@
         .div_inline_block(
             width_cm = 4,
             shiny::checkboxInput(
-                inputId = "circular_plot_show_gene_links",
-                label = "Show gene view links:",
+                inputId = "circular_plot_show_position_links",
+                label = "Show position links:",
                 value = TRUE
             )
         )
@@ -285,11 +285,11 @@
 
         # Instructions for using the plot.
         shiny::p(
-            "Click a region to open a gene view. Shift-click a region to open a second gene view for comparison."
+            "Click a region to open a feature view. Shift-click a region to open a second feature view for comparison."
         ),
         shiny::p(
             paste(
-                "Click an empty area of the plot to close the first gene view. Shift-click an empty area to close",
+                "Click an empty area of the plot to close the first feature view. Shift-click an empty area to close",
                 "the second."
             )
         )

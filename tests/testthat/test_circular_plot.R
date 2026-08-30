@@ -2,15 +2,18 @@
 .make_precomputed_circular_plot_test_data <- function() {
     # The circular plot normally has 120 regions. Use three so each test GFF row
     # occupies its own region, then restore the global settings when this helper returns.
-    previous_n_groups <- .settings$circular_plot_n_groups
-    previous_n_regions_per_group <- .settings$circular_plot_n_regions_per_group
+    previous_region_group_count <- .settings$circular_plot_region_group_count
+    previous_regions_per_group_count <- .settings$circular_plot_regions_per_group_count
+    previous_region_count <- .settings$circular_plot_region_count
     on.exit({
-        .settings$circular_plot_n_groups <- previous_n_groups
-        .settings$circular_plot_n_regions_per_group <- previous_n_regions_per_group
+        .settings$circular_plot_region_group_count <- previous_region_group_count
+        .settings$circular_plot_regions_per_group_count <- previous_regions_per_group_count
+        .settings$circular_plot_region_count <- previous_region_count
     })
 
-    .settings$circular_plot_n_groups <- 1L
-    .settings$circular_plot_n_regions_per_group <- 3L
+    .settings$circular_plot_region_group_count <- 1L
+    .settings$circular_plot_regions_per_group_count <- 3L
+    .settings$circular_plot_region_count <- 3L
 
     # This represents GFF data after loading has inserted an IGR between two CDS rows.
     data <- new.env(parent = emptyenv())

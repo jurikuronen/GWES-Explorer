@@ -9,66 +9,73 @@
     list(
         list(name = "origoX", update = "width / 2"),
         list(name = "origoY", update = "height / 2"),
-        list(name = "tension", value = .circular_plot_tension()),
-        list(name = "extent", value = .circular_plot_extent()),
-        list(name = "rotate", value = .circular_plot_rotate()),
-        list(name = "text_size_gene", value = .circular_plot_text_size_gene()),
-        list(name = "text_size_region", value = .circular_plot_text_size_region()),
-        list(name = "text_size_tooltip", value = .circular_plot_text_size_tooltip()),
-        list(name = "radius", value = .circular_plot_radius()),
-        list(name = "radius_gene_view_1", value = .circular_plot_radius_gene_view_1()),
-        list(name = "radius_gene_view_2", value = .circular_plot_radius_gene_view_2()),
-        list(name = "gene_arc_angle_1", value = .circular_plot_gene_arc_angle_1()),
-        list(name = "gene_arc_angle_2", value = .circular_plot_gene_arc_angle_2()),
-        list(name = "rotate_gene_view_1", value = .circular_plot_rotate_gene_view_1()),
-        list(name = "rotate_gene_view_2", value = .circular_plot_rotate_gene_view_2()),
-        list(name = "flip_gene_view_1", value = .circular_plot_flip_gene_view_1()),
-        list(name = "flip_gene_view_2", value = .circular_plot_flip_gene_view_2()),
+        list(name = "tension", value = .settings$circular_plot_region_link_tension),
+        list(name = "extent", value = .settings$circular_plot_circle_degrees),
+        list(name = "rotate", value = .settings$circular_plot_rotation),
+        list(name = "feature_label_text_size", value = .settings$circular_plot_feature_label_text_size),
+        list(name = "text_size_region", value = .settings$circular_plot_region_group_label_text_size),
+        list(name = "text_size_tooltip", value = .settings$circular_plot_feature_link_tooltip_text_size),
+        list(name = "radius", value = .settings$circular_plot_radius),
+        list(name = "feature_view_1_radius", value = .settings$circular_plot_feature_view_1_radius),
+        list(name = "feature_view_2_radius", value = .settings$circular_plot_feature_view_2_radius),
+        list(name = "feature_view_1_degrees", value = .settings$circular_plot_feature_view_1_degrees),
+        list(name = "feature_view_2_degrees", value = .settings$circular_plot_feature_view_2_degrees),
+        list(name = "feature_view_1_rotation", value = .settings$circular_plot_feature_view_1_rotation),
+        list(name = "feature_view_2_rotation", value = .settings$circular_plot_feature_view_2_rotation),
+        list(name = "feature_view_1_flip_inwards", value = .settings$circular_plot_feature_view_1_flip_inwards),
+        list(name = "feature_view_2_flip_inwards", value = .settings$circular_plot_feature_view_2_flip_inwards),
         # Compute inner angle that has equal arc length.
-        # list(name = "gene_arc_angle_2",
-        #      update = "gene_arc_angle_1 * (radius - radius_offset_1) / (radius - radius_offset_2)"),
+        # list(name = "feature_view_2_degrees",
+        #      update = "feature_view_1_degrees * (radius - radius_offset_1) / (radius - radius_offset_2)"),
         list(name = "show_region_links", value = TRUE),
-        list(name = "show_gene_links", value = TRUE)
+        list(name = "show_position_links", value = TRUE)
     )
 }
 
 .circular_plot_signals_color <- function() {
     list(
-        list(name = "color_gene_arc", value = .circular_plot_color_gene_arc()),
-        list(name = "color_region_arc", value = .circular_plot_color_region_arc()),
-        list(name = "color_scheme_default", value = .circular_plot_color_scheme_default()),
-        list(name = "color_scheme_active", value = .circular_plot_color_scheme_active()),
-        list(name = "color_scheme_selected", value = .circular_plot_color_scheme_selected()),
-        list(name = "color_scheme_inactive", value = .circular_plot_color_scheme_inactive())
+        list(name = "feature_color", value = .settings$circular_plot_feature_color),
+        list(name = "color_region_arc", value = .settings$circular_plot_region_color),
+        list(name = "color_scheme_default", value = .settings$circular_plot_region_link_default_color_palette),
+        list(name = "color_scheme_active", value = .settings$circular_plot_region_link_hovered_color_palette),
+        list(name = "color_scheme_selected", value = .settings$circular_plot_region_link_active_color_palette),
+        list(name = "color_scheme_inactive", value = .settings$circular_plot_region_link_inactive_color_palette)
     )
 }
 
 .circular_plot_signals_opacity <- function() {
     list(
         list(name = "opacity_region_link_adjustment", value = 1),
-        list(name = "opacity_gene_link_adjustment", value = 1),
-        list(name = "opacity_background", value = .circular_plot_opacity_background()),
-        list(name = "opacity_active", value = .circular_plot_opacity_active()),
-        list(name = "opacity_connected", value = .circular_plot_opacity_connected()),
-        list(name = "opacity_default", value = .circular_plot_opacity_default()),
-        list(name = "opacity_inactive", value = .circular_plot_opacity_inactive()),
-        list(name = "opacity_selected", value = .circular_plot_opacity_selected()),
+        list(name = "position_link_opacity_adjustment", value = 1),
+        list(name = "opacity_background", value = .settings$circular_plot_background_opacity),
+        list(name = "opacity_active", value = .settings$circular_plot_region_hovered_opacity),
+        list(name = "opacity_connected", value = .settings$circular_plot_region_connected_opacity),
+        list(name = "opacity_default", value = .settings$circular_plot_region_feature_default_opacity),
+        list(name = "opacity_inactive", value = .settings$circular_plot_region_feature_inactive_opacity),
+        list(name = "opacity_selected", value = .settings$circular_plot_region_feature_selected_opacity),
         list(name = "opacity_region_link_active",
-             update = paste("opacity_region_link_adjustment *", .circular_plot_opacity_region_link_active())),
+             update = paste("opacity_region_link_adjustment *",
+                            .settings$circular_plot_region_link_hovered_base_opacity)),
         list(name = "opacity_region_link_connected",
-             update = paste("opacity_region_link_adjustment *", .circular_plot_opacity_region_link_connected())),
+             update = paste("opacity_region_link_adjustment *",
+                            .settings$circular_plot_region_link_active_base_opacity)),
         list(name = "opacity_region_link_default",
-             update = paste("opacity_region_link_adjustment *", .circular_plot_opacity_region_link_default())),
+             update = paste("opacity_region_link_adjustment *", .settings$circular_plot_region_link_base_opacity)),
         list(name = "opacity_region_link_inactive",
-             update = paste("opacity_region_link_adjustment *", .circular_plot_opacity_region_link_inactive())),
+             update = paste("opacity_region_link_adjustment *",
+                            .settings$circular_plot_region_link_inactive_base_opacity)),
         list(name = "opacity_pos_link_connected",
-             update = paste("opacity_gene_link_adjustment *", .circular_plot_opacity_pos_link_connected())),
+             update = paste("position_link_opacity_adjustment *",
+                            .settings$circular_plot_position_link_active_base_opacity)),
         list(name = "opacity_pos_link_default",
-             update = paste("opacity_gene_link_adjustment *", .circular_plot_opacity_pos_link_default())),
+             update = paste("position_link_opacity_adjustment *",
+                            .settings$circular_plot_position_link_base_opacity)),
         list(name = "opacity_pos_link_inactive",
-             update = paste("opacity_gene_link_adjustment *", .circular_plot_opacity_pos_link_inactive())),
+             update = paste("position_link_opacity_adjustment *",
+                            .settings$circular_plot_position_link_inactive_base_opacity)),
         list(name = "opacity_pos_link_selected",
-             update = paste("opacity_gene_link_adjustment *", .circular_plot_opacity_pos_link_selected()))
+             update = paste("position_link_opacity_adjustment *",
+                            .settings$circular_plot_position_link_selected_base_opacity))
     )
 }
 
