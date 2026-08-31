@@ -13,7 +13,7 @@ Description: GWES-Explorer is an interactive browser-based visualization tool fo
     allows the user to explore interactions at the gene level. All three plots update in response to
     the selected interaction.
 Depends: R (>= 4.0.0)
-License: GPL-3
+License: MIT + file LICENSE
 Encoding: UTF-8
 RoxygenNote: 7.3.2
 Imports:
