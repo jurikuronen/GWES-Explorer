@@ -21,7 +21,7 @@
             "is also provided for trying out the application."
         ),
         shiny::p(
-            "Use the ", shiny::strong("Analyze data"),
+            "Use the ", shiny::strong("Explore results"),
             " tab to select interactions from the outliers table and examine them in the available plots. Additional ",
             "plots can be generated when the required supplementary data are provided."
         ),
@@ -165,10 +165,10 @@
     )
 }
 
-# Creates the "Analyze data" tab panel.
-.ui_analyze_data_tab_panel <- function() {
+# Creates the "Explore results" tab panel.
+.ui_explore_results_tab_panel <- function() {
     shiny::tabPanel(
-        title = "Analyze data",
+        title = "Explore results",
         shiny::sidebarLayout(
             # Sidebar for selecting interactions and a phenotype for the Tree-MSA plot.
             shiny::sidebarPanel(

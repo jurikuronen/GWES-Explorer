@@ -8,7 +8,7 @@
             title = "GWES-Explorer",
             .ui_about_tab_panel(),
             .ui_upload_data_tab_panel(),
-            .ui_analyze_data_tab_panel()
+            .ui_explore_results_tab_panel()
         )
     )
 }
