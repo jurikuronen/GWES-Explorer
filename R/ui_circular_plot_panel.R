@@ -197,7 +197,7 @@
         .div_inline_block(
             width_cm = 4,
             shiny::sliderInput(
-                inputId = "circular_plot_opacity_region_link_adjustment",
+                inputId = "circular_plot_region_link_opacity_adjustment",
                 label = "Region link opacity:",
                 min = 0,
                 max = 1,

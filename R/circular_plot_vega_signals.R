@@ -1,21 +1,24 @@
+# Creates all signals used by the circular plot's Vega specification.
 .circular_plot_vega_signals <- function() {
-    signals <- .circular_plot_signals_main()
-    signals <- append(signals, .circular_plot_signals_color())
-    signals <- append(signals, .circular_plot_signals_opacity())
-    signals <- append(signals, .circular_plot_signals_events())
+    c(
+        .circular_plot_vega_signals_layout(),
+        .circular_plot_vega_signals_text(),
+        .circular_plot_vega_signals_visibility(),
+        .circular_plot_vega_signals_color(),
+        .circular_plot_vega_signals_opacity(),
+        .circular_plot_vega_signals_events()
+    )
 }
 
-.circular_plot_signals_main <- function() {
+# Creates signals that control the layout of the circular plot.
+.circular_plot_vega_signals_layout <- function() {
     list(
-        list(name = "origoX", update = "width / 2"),
-        list(name = "origoY", update = "height / 2"),
-        list(name = "tension", value = .settings$circular_plot_region_link_tension),
-        list(name = "extent", value = .settings$circular_plot_circle_degrees),
-        list(name = "rotate", value = .settings$circular_plot_rotation),
-        list(name = "feature_label_text_size", value = .settings$circular_plot_feature_label_text_size),
-        list(name = "text_size_region", value = .settings$circular_plot_region_group_label_text_size),
-        list(name = "text_size_tooltip", value = .settings$circular_plot_feature_link_tooltip_text_size),
-        list(name = "radius", value = .settings$circular_plot_radius),
+        list(name = "center_x", update = "width / 2"),
+        list(name = "center_y", update = "height / 2"),
+        list(name = "region_link_tension", value = .settings$circular_plot_region_link_tension),
+        list(name = "circle_degrees", value = .settings$circular_plot_circle_degrees),
+        list(name = "circle_rotation", value = .settings$circular_plot_rotation),
+        list(name = "circle_radius", value = .settings$circular_plot_radius),
         list(name = "feature_view_1_radius", value = .settings$circular_plot_feature_view_1_radius),
         list(name = "feature_view_2_radius", value = .settings$circular_plot_feature_view_2_radius),
         list(name = "feature_view_1_degrees", value = .settings$circular_plot_feature_view_1_degrees),
@@ -23,76 +26,99 @@
         list(name = "feature_view_1_rotation", value = .settings$circular_plot_feature_view_1_rotation),
         list(name = "feature_view_2_rotation", value = .settings$circular_plot_feature_view_2_rotation),
         list(name = "feature_view_1_flip_inwards", value = .settings$circular_plot_feature_view_1_flip_inwards),
-        list(name = "feature_view_2_flip_inwards", value = .settings$circular_plot_feature_view_2_flip_inwards),
-        # Compute inner angle that has equal arc length.
-        # list(name = "feature_view_2_degrees",
-        #      update = "feature_view_1_degrees * (radius - radius_offset_1) / (radius - radius_offset_2)"),
+        list(name = "feature_view_2_flip_inwards", value = .settings$circular_plot_feature_view_2_flip_inwards)
+    )
+}
+
+# Creates signals that control text sizes for the circular plot.
+.circular_plot_vega_signals_text <- function() {
+    list(
+        list(name = "feature_label_text_size", value = .settings$circular_plot_feature_label_text_size),
+        list(name = "region_group_label_text_size", value = .settings$circular_plot_region_group_label_text_size),
+        list(name = "feature_link_tooltip_text_size", value = .settings$circular_plot_feature_link_tooltip_text_size)
+    )
+}
+
+# Creates signals that control link visibility for the circular plot.
+.circular_plot_vega_signals_visibility <- function() {
+    list(
         list(name = "show_region_links", value = TRUE),
         list(name = "show_position_links", value = TRUE)
     )
 }
 
-.circular_plot_signals_color <- function() {
+# Creates signals that control colors for the circular plot.
+.circular_plot_vega_signals_color <- function() {
     list(
         list(name = "feature_color", value = .settings$circular_plot_feature_color),
-        list(name = "color_region_arc", value = .settings$circular_plot_region_color),
-        list(name = "color_scheme_default", value = .settings$circular_plot_region_link_default_color_palette),
-        list(name = "color_scheme_active", value = .settings$circular_plot_region_link_hovered_color_palette),
-        list(name = "color_scheme_selected", value = .settings$circular_plot_region_link_active_color_palette),
-        list(name = "color_scheme_inactive", value = .settings$circular_plot_region_link_inactive_color_palette)
+        list(name = "region_color", value = .settings$circular_plot_region_color),
+        list(name = "region_link_default_color_palette",
+             value = .settings$circular_plot_region_link_default_color_palette),
+        list(name = "region_link_hovered_color_palette",
+             value = .settings$circular_plot_region_link_hovered_color_palette),
+        list(name = "region_link_active_color_palette",
+             value = .settings$circular_plot_region_link_active_color_palette),
+        list(name = "region_link_inactive_color_palette",
+             value = .settings$circular_plot_region_link_inactive_color_palette)
     )
 }
 
-.circular_plot_signals_opacity <- function() {
+# Creates signals that control opacity for the circular plot.
+.circular_plot_vega_signals_opacity <- function() {
     list(
-        list(name = "opacity_region_link_adjustment", value = 1),
-        list(name = "position_link_opacity_adjustment", value = 1),
-        list(name = "opacity_background", value = .settings$circular_plot_background_opacity),
-        list(name = "opacity_active", value = .settings$circular_plot_region_hovered_opacity),
-        list(name = "opacity_connected", value = .settings$circular_plot_region_connected_opacity),
-        list(name = "opacity_default", value = .settings$circular_plot_region_feature_default_opacity),
-        list(name = "opacity_inactive", value = .settings$circular_plot_region_feature_inactive_opacity),
-        list(name = "opacity_selected", value = .settings$circular_plot_region_feature_selected_opacity),
-        list(name = "opacity_region_link_active",
-             update = paste("opacity_region_link_adjustment *",
+        # Backgrounds, regions, and features.
+        list(name = "background_opacity", value = .settings$circular_plot_background_opacity),
+        list(name = "region_hovered_opacity", value = .settings$circular_plot_region_hovered_opacity),
+        list(name = "region_connected_opacity", value = .settings$circular_plot_region_connected_opacity),
+        list(name = "region_feature_default_opacity", value = .settings$circular_plot_region_feature_default_opacity),
+        list(name = "region_feature_inactive_opacity", value = .settings$circular_plot_region_feature_inactive_opacity),
+        list(name = "region_feature_selected_opacity", value = .settings$circular_plot_region_feature_selected_opacity),
+
+        # Region links.
+        list(name = "region_link_opacity_adjustment", value = 1),
+        list(name = "region_link_hovered_opacity",
+             update = paste("region_link_opacity_adjustment *",
                             .settings$circular_plot_region_link_hovered_base_opacity)),
-        list(name = "opacity_region_link_connected",
-             update = paste("opacity_region_link_adjustment *",
+        list(name = "region_link_active_opacity",
+             update = paste("region_link_opacity_adjustment *",
                             .settings$circular_plot_region_link_active_base_opacity)),
-        list(name = "opacity_region_link_default",
-             update = paste("opacity_region_link_adjustment *", .settings$circular_plot_region_link_base_opacity)),
-        list(name = "opacity_region_link_inactive",
-             update = paste("opacity_region_link_adjustment *",
+        list(name = "region_link_default_opacity",
+             update = paste("region_link_opacity_adjustment *", .settings$circular_plot_region_link_base_opacity)),
+        list(name = "region_link_inactive_opacity",
+             update = paste("region_link_opacity_adjustment *",
                             .settings$circular_plot_region_link_inactive_base_opacity)),
-        list(name = "opacity_pos_link_connected",
+
+        # Outlier position links.
+        list(name = "position_link_opacity_adjustment", value = 1),
+        list(name = "position_link_active_opacity",
              update = paste("position_link_opacity_adjustment *",
                             .settings$circular_plot_position_link_active_base_opacity)),
-        list(name = "opacity_pos_link_default",
-             update = paste("position_link_opacity_adjustment *",
-                            .settings$circular_plot_position_link_base_opacity)),
-        list(name = "opacity_pos_link_inactive",
+        list(name = "position_link_default_opacity",
+             update = paste("position_link_opacity_adjustment *", .settings$circular_plot_position_link_base_opacity)),
+        list(name = "position_link_inactive_opacity",
              update = paste("position_link_opacity_adjustment *",
                             .settings$circular_plot_position_link_inactive_base_opacity)),
-        list(name = "opacity_pos_link_selected",
+        list(name = "position_link_selected_opacity",
              update = paste("position_link_opacity_adjustment *",
                             .settings$circular_plot_position_link_selected_base_opacity))
     )
 }
 
-.circular_plot_signals_events <- function() {
+# Creates signals that track hover and selection in the circular plot.
+.circular_plot_vega_signals_events <- function() {
     list(
-        # Mouseovered region.
+        # Hovered region ID.
         list(
-            name = "active_region",
+            name = "hovered_region",
             value = NULL,
             on = list(
                 list(events = "@region_arc:mouseover", update = "datum.id"),
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
-        # Mouseovered feature.
+        # Hovered feature's 1-based row.
         list(
-            name = "active_feature",
+            name = "hovered_feature_row",
             value = NULL,
             on = list(
                 list(events = "@feature_arc_1:mouseover", update = "datum.feature_row"),
@@ -104,7 +130,8 @@
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
-        # Selected regions.
+        # Selected region IDs for feature views 1 and 2.
+        # Clicking (or shift-clicking) an empty area of the plot clears view 1 (or 2).
         list(
             name = "selected_region_1",
             value = NULL,
@@ -134,9 +161,10 @@
             )
         ),
 
-        # Selected features.
+        # Selected feature rows.
+        # Clicking the feature view background clears the feature selection.
         list(
-            name = "selected_feature_1",
+            name = "selected_feature_row_1",
             value = NULL,
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "!event.shiftKey"),
@@ -152,7 +180,7 @@
             )
         ),
         list(
-            name = "selected_feature_2",
+            name = "selected_feature_row_2",
             value = NULL,
             on = list(
                 list(events = list(type = "click", markname = "region_arc", filter = "event.shiftKey"),
@@ -168,7 +196,8 @@
             )
         ),
 
-        # Selected position.
+        # Selected positions.
+        # TODO: remove; these signals are unused.
         list(
             name = "selected_position_1",
             value = NULL,

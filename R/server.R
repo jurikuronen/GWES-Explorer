@@ -328,7 +328,7 @@
 
     # Set up circular plot signal updates from the Shiny UI.
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "radius",
+                                    name = "circle_radius",
                                     value = input$circular_plot_radius)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "feature_view_1_radius",
@@ -337,7 +337,7 @@
                                     name = "feature_view_2_radius",
                                     value = input$circular_plot_feature_view_2_radius)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "rotate",
+                                    name = "circle_rotation",
                                     value = input$circular_plot_rotate)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "feature_view_1_rotation",
@@ -358,13 +358,13 @@
                                     name = "feature_view_2_flip_inwards",
                                     value = input$circular_plot_feature_view_2_flip_inwards)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "text_size_region",
+                                    name = "region_group_label_text_size",
                                     value = input$circular_plot_text_size_region)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "feature_label_text_size",
                                     value = input$circular_plot_feature_label_text_size)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "text_size_tooltip",
+                                    name = "feature_link_tooltip_text_size",
                                     value = input$circular_plot_text_size_tooltip)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "show_region_links",
@@ -373,8 +373,8 @@
                                     name = "show_position_links",
                                     value = input$circular_plot_show_position_links)
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    name = "opacity_region_link_adjustment",
-                                    value = input$circular_plot_opacity_region_link_adjustment)
+                                    name = "region_link_opacity_adjustment",
+                                    value = input$circular_plot_region_link_opacity_adjustment)
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     name = "position_link_opacity_adjustment",
                                     value = input$circular_plot_position_link_opacity_adjustment)

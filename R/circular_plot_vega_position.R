@@ -21,10 +21,10 @@
             transform = list(
                 .vega_formula("angle_1", .position_angle_expr("feature_data", "angle_1")),
                 .vega_formula("angle_2", .position_angle_expr("feature_data", "angle_2")),
-                .vega_formula("x_1", "origoX + (feature_view_1_radius - 5) * cos(PI * datum.angle_1 / 180)"),
-                .vega_formula("y_1", "origoY + (feature_view_1_radius - 5) * sin(PI * datum.angle_1 / 180)"),
-                .vega_formula("x_2", "origoX + (feature_view_2_radius - 5) * cos(PI * datum.angle_2 / 180)"),
-                .vega_formula("y_2", "origoY + (feature_view_2_radius - 5) * sin(PI * datum.angle_2 / 180)"),
+                .vega_formula("x_1", "center_x + (feature_view_1_radius - 5) * cos(PI * datum.angle_1 / 180)"),
+                .vega_formula("y_1", "center_y + (feature_view_1_radius - 5) * sin(PI * datum.angle_1 / 180)"),
+                .vega_formula("x_2", "center_x + (feature_view_2_radius - 5) * cos(PI * datum.angle_2 / 180)"),
+                .vega_formula("y_2", "center_y + (feature_view_2_radius - 5) * sin(PI * datum.angle_2 / 180)"),
                 .vega_formula("feature",
                               .vega_data_query("feature_data", "datum.feature_row - 1", "feature"))
             )
@@ -74,7 +74,7 @@
             update = list(
                 x = list(field = paste0("x_", selection)),
                 y = list(field = paste0("y_", selection)),
-                size = list(signal = "datum.weight * radius / 16"),
+                size = list(signal = "datum.weight * circle_radius / 16"),
                 opacity = list(value = 1)
             )
         )
@@ -104,10 +104,10 @@
                 ),
                 strokeWidth = list(field = "weight"),
                 strokeOpacity = list(
-                    list(test = .position_link_is_selected(), signal = "opacity_pos_link_selected"),
-                    list(test = .both_features_are_selected(), signal = "opacity_pos_link_inactive"),
-                    list(test = .is_connected_to_selected_feature(), signal = "opacity_pos_link_connected"),
-                    list(signal = "opacity_pos_link_default")
+                    list(test = .position_link_is_selected(), signal = "position_link_selected_opacity"),
+                    list(test = .both_features_are_selected(), signal = "position_link_inactive_opacity"),
+                    list(test = .is_connected_to_selected_feature(), signal = "position_link_active_opacity"),
+                    list(signal = "position_link_default_opacity")
                 )
             )
         )

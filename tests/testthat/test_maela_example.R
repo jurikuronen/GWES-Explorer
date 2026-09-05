@@ -78,6 +78,6 @@ test_that(".read_data loads the Maela example files and precomputes circular plo
                     mark_names))
 
     signal_names <- vapply(data$circular_plot_spec$signals, `[[`, character(1), "name")
-    expect_true(all(c("active_feature", "selected_feature_1", "selected_feature_2",
+    expect_true(all(c("hovered_feature_row", "selected_feature_row_1", "selected_feature_row_2",
                       "selected_position_1", "selected_position_2") %in% signal_names))
 })

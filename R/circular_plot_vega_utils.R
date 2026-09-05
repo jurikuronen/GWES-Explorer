@@ -89,8 +89,9 @@
     paste0("(selected_region_", selection, " != null)")
 }
 
-.is_active_region <- function(element) {
-    paste0("(", element, " === active_region)")
+# Returns an expression that checks whether a region is hovered.
+.is_hovered_region <- function(element) {
+    paste0("(", element, " === hovered_region)")
 }
 
 .is_selected_region <- function(element, selection) {
@@ -127,21 +128,23 @@
     .or(.is_one_of_selected_regions("parent.source"),
         .is_one_of_selected_regions("parent.target"))
 }
-.region_link_is_active <- function() {
-    .or(.is_active_region("parent.source"),
-        .is_active_region("parent.target"))
+# Returns an expression that checks whether a region link connects to the hovered region.
+.region_link_is_connected_to_hovered_region <- function() {
+    .or(.is_hovered_region("parent.source"),
+        .is_hovered_region("parent.target"))
 }
 
 .feature_is_selected <- function(selection) {
-    paste0("(selected_feature_", selection, " != null)")
+    paste0("(selected_feature_row_", selection, " != null)")
 }
 
-.is_active_feature <- function(element) {
-    paste0("(", element, " === active_feature)")
+# Returns an expression that checks whether a feature is hovered.
+.is_hovered_feature <- function(element) {
+    paste0("(", element, " === hovered_feature_row)")
 }
 
 .is_selected_feature <- function(element, selection) {
-    paste0("(", element, " === selected_feature_", selection, ")")
+    paste0("(", element, " === selected_feature_row_", selection, ")")
 }
 
 .some_feature_is_selected <- function() {

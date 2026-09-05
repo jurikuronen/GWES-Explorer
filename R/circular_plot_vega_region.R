@@ -6,26 +6,26 @@
 
 .circular_plot_vega_region_scales <- function() {
     list(
-        .vega_color_scale("color_scale_default",
+        .vega_color_scale("region_link_default_color_scale",
                           "linear",
                           "region_links",
                           "weight",
-                          list(signal = "color_scheme_default")),
-        .vega_color_scale("color_scale_active",
+                          list(signal = "region_link_default_color_palette")),
+        .vega_color_scale("region_link_hovered_color_scale",
                           "linear",
                           "region_links",
                           "weight",
-                          list(signal = "color_scheme_active")),
-        .vega_color_scale("color_scale_selected",
+                          list(signal = "region_link_hovered_color_palette")),
+        .vega_color_scale("region_link_active_color_scale",
                           "linear",
                           "region_links",
                           "weight",
-                          list(signal = "color_scheme_selected")),
-        .vega_color_scale("color_scale_inactive",
+                          list(signal = "region_link_active_color_palette")),
+        .vega_color_scale("region_link_inactive_color_scale",
                           "linear",
                           "region_links",
                           "weight",
-                          list(signal = "color_scheme_inactive"))
+                          list(signal = "region_link_inactive_color_palette"))
     )
 }
 
@@ -46,10 +46,10 @@
             transform = list(
                 list(type = "stratify", key = "id", parentKey = "parent"),
                 list(type = "tree", method = "tidy", size = c(1, 1), as = c("alpha", "beta", "depth", "children")),
-                .vega_formula("angle", "(rotate + extent * datum.alpha + 270) % 360"),
+                .vega_formula("angle", "(circle_rotation + circle_degrees * datum.alpha + 270) % 360"),
                 .vega_formula("bottomside", "inrange(datum.angle, [0, 180])"),
-                .vega_formula("x", "origoX + radius * datum.beta * cos(PI * datum.angle / 180)"),
-                .vega_formula("y", "origoY + radius * datum.beta * sin(PI * datum.angle / 180)")
+                .vega_formula("x", "center_x + circle_radius * datum.beta * cos(PI * datum.angle / 180)"),
+                .vega_formula("y", "center_y + circle_radius * datum.beta * sin(PI * datum.angle / 180)")
             )
         ),
         # Contains only the regions (hidden parent nodes removed).
@@ -86,7 +86,7 @@
                 dy = list(signal = "16 * (datum.bottomside ? 1 : -1)"),
                 angle = list(signal = "datum.bottomside ? datum.angle - 90 : datum.angle + 90"),
                 align = list(value = "center"),
-                fontSize = list(signal = "text_size_region"),
+                fontSize = list(signal = "region_group_label_text_size"),
                 fill = list(value = "black")
             )
         )
@@ -103,26 +103,26 @@
         from = list(data = "region_data"),
         encode = list(
             enter = list(
-                fill = list(signal = "color_region_arc")
+                fill = list(signal = "region_color")
             ),
             update = list(
-                x = list(signal = "origoX"),
-                y = list(signal = "origoY"),
+                x = list(signal = "center_x"),
+                y = list(signal = "center_y"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle - 0.95 * ",
                                                  .angular_distance("region_data", "angle"),
                                                  " / 2) * PI / 180")),
                 endAngle = list(signal = paste0("PI / 2 + (datum.angle + 0.95 * ",
                                                 .angular_distance("region_data", "angle"),
                                                 " / 2) * PI / 180")),
-                innerRadius = list(signal = "radius"),
-                outerRadius = list(signal = "radius + 10"),
+                innerRadius = list(signal = "circle_radius"),
+                outerRadius = list(signal = "circle_radius + 10"),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_one_of_selected_regions("datum.id"), signal = "opacity_selected"),
-                    list(test = .is_active_region("datum.id"), signal = "opacity_active"),
-                    list(test = connected_regions, signal = "opacity_connected"),
-                    list(test = .some_region_is_selected(), signal = "opacity_inactive"),
-                    list(signal = "opacity_default")
+                    list(test = .is_one_of_selected_regions("datum.id"), signal = "region_feature_selected_opacity"),
+                    list(test = .is_hovered_region("datum.id"), signal = "region_hovered_opacity"),
+                    list(test = connected_regions, signal = "region_connected_opacity"),
+                    list(test = .some_region_is_selected(), signal = "region_feature_inactive_opacity"),
+                    list(signal = "region_feature_default_opacity")
                 )
             )
         )
@@ -142,37 +142,37 @@
                 update = list(
                     stroke = list(
                         list(test = .region_link_is_selected(),
-                             scale = "color_scale_selected",
+                             scale = "region_link_active_color_scale",
                              signal = "parent.weight"),
-                        list(test = .region_link_is_active(),
-                             scale = "color_scale_active",
-                             signal = "opacity_active"),
+                        list(test = .region_link_is_connected_to_hovered_region(),
+                             scale = "region_link_hovered_color_scale",
+                             signal = "region_hovered_opacity"),
                         list(test = .both_regions_are_selected(),
-                             scale = "color_scale_inactive",
+                             scale = "region_link_inactive_color_scale",
                              signal = "parent.weight"),
                         list(test = .is_connected_to_selected_region(),
-                             scale = "color_scale_selected",
+                             scale = "region_link_active_color_scale",
                              signal = "parent.weight"),
                         list(test = .some_region_is_selected(),
-                             scale = "color_scale_inactive",
+                             scale = "region_link_inactive_color_scale",
                              signal = "parent.weight"),
-                        list(scale = "color_scale_default",
+                        list(scale = "region_link_default_color_scale",
                              signal = "parent.weight")
                     ),
                     strokeOpacity = list(
                         list(test = "!show_region_links", value = 0),
                         list(test = .region_link_is_selected(),
-                             signal = "opacity_region_link_adjustment * parent.weight"),
-                        list(test = .region_link_is_active(),
-                             signal = "opacity_region_link_active"),
+                             signal = "region_link_opacity_adjustment * parent.weight"),
+                        list(test = .region_link_is_connected_to_hovered_region(),
+                             signal = "region_link_hovered_opacity"),
                         list(test = .both_regions_are_selected(),
-                             signal = "opacity_region_link_inactive"),
+                             signal = "region_link_inactive_opacity"),
                         list(test = .and(.some_region_is_selected(),
                                          .negate(.is_connected_to_selected_region())),
-                             signal = "opacity_region_link_inactive"),
+                             signal = "region_link_inactive_opacity"),
                         list(signal = "parent.weight")
                     ),
-                    tension = list(signal = "tension"),
+                    tension = list(signal = "region_link_tension"),
                     x = list(field = "x"),
                     y = list(field = "y")
                 )

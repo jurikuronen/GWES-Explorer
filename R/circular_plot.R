@@ -14,7 +14,7 @@
                                     "selected_region_1",
                                     data$outliers_direct$Pos_1_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    "selected_feature_1",
+                                    "selected_feature_row_1",
                                     data$outliers_direct$Pos_1_feature_row[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_position_1",
@@ -23,7 +23,7 @@
                                     "selected_region_2",
                                     data$outliers_direct$Pos_2_region[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
-                                    "selected_feature_2",
+                                    "selected_feature_row_2",
                                     data$outliers_direct$Pos_2_feature_row[selected_row])
     vegawidget::vw_shiny_set_signal("circular_plot",
                                     "selected_position_2",

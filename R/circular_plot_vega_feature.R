@@ -27,10 +27,10 @@
                               paste0("(",
                                      .vega_get_region_angle(),
                                      " + feature_view_2_rotation + feature_view_2_degrees * (datum.angle_step - 0.5)) % 360")),
-                .vega_formula("x_1", paste0("origoX + feature_view_1_radius * cos(PI * datum.angle_1 / 180)")),
-                .vega_formula("y_1", paste0("origoY + feature_view_1_radius * sin(PI * datum.angle_1 / 180)")),
-                .vega_formula("x_2", paste0("origoX + feature_view_2_radius * cos(PI * datum.angle_2 / 180)")),
-                .vega_formula("y_2", paste0("origoY + feature_view_2_radius * sin(PI * datum.angle_2 / 180)")),
+                .vega_formula("x_1", paste0("center_x + feature_view_1_radius * cos(PI * datum.angle_1 / 180)")),
+                .vega_formula("y_1", paste0("center_y + feature_view_1_radius * sin(PI * datum.angle_1 / 180)")),
+                .vega_formula("x_2", paste0("center_x + feature_view_2_radius * cos(PI * datum.angle_2 / 180)")),
+                .vega_formula("y_2", paste0("center_y + feature_view_2_radius * sin(PI * datum.angle_2 / 180)")),
                 .vega_formula("leftside_1",
                               paste0("inrange((",
                                      .vega_get_region_angle(),
@@ -105,8 +105,8 @@
                 tooltip = .vega_get_feature_tooltip()
             ),
             update = list(
-                x = list(signal = "origoX"),
-                y = list(signal = "origoY"),
+                x = list(signal = "center_x"),
+                y = list(signal = "center_y"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle_",
                                                   selection,
                                                   " - 0.95 * datum.angle_step_size_",
@@ -121,9 +121,10 @@
                 outerRadius = list(signal = paste0("feature_view_", selection, "_radius")),
                 strokeOpacity = list(value = 0),
                 fillOpacity = list(
-                    list(test = .is_selected_feature("datum.feature_row", selection), signal = "opacity_selected"),
-                    list(test = .feature_is_selected(selection), signal = "opacity_inactive"),
-                    list(signal = "opacity_default")
+                    list(test = .is_selected_feature("datum.feature_row", selection),
+                         signal = "region_feature_selected_opacity"),
+                    list(test = .feature_is_selected(selection), signal = "region_feature_inactive_opacity"),
+                    list(signal = "region_feature_default_opacity")
                 )
             )
         )
@@ -142,14 +143,14 @@
                 baseline = list(value = "middle")
             ),
             update = list(
-                x = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
-                y = list(signal = "origoY - datum.length * text_size_tooltip / 2"),
+                x = list(signal = "center_x - (datum.x_1 - center_x) / 2"),
+                y = list(signal = "center_y - datum.length * feature_link_tooltip_text_size / 2"),
                 align = list(value = "center"),
-                fontSize = list(signal = "text_size_tooltip"),
+                fontSize = list(signal = "feature_link_tooltip_text_size"),
                 fontWeight = list(list(value = "normal")),
                 fill = list(value = "black"),
                 opacity = list(
-                    list(test = .is_active_feature("datum.feature_row"), value = 1),
+                    list(test = .is_hovered_feature("datum.feature_row"), value = 1),
                     list(value = 0)
                 )
             )
@@ -171,18 +172,22 @@
                 cornerRadius = list(value = 5)
             ),
             update = list(
-                xc = list(signal = "origoX - (datum.x_1 - origoX) / 2"),
-                y = list(signal = "origoY - datum.length * text_size_tooltip / 2 - text_size_tooltip"),
-                width = list(signal = "25 * text_size_tooltip"),
-                height = list(signal = "datum.length * (text_size_tooltip + 2) + text_size_tooltip"),
+                xc = list(signal = "center_x - (datum.x_1 - center_x) / 2"),
+                y = list(signal = paste("center_y - datum.length * feature_link_tooltip_text_size / 2 -",
+                                        "feature_link_tooltip_text_size")),
+                width = list(signal = "25 * feature_link_tooltip_text_size"),
+                height = list(
+                    signal = paste("datum.length * (feature_link_tooltip_text_size + 2) +",
+                                   "feature_link_tooltip_text_size")
+                ),
                 strokeOpacity = list(
                     list(test = "datum.length === 0", value = 0),
-                    list(test = .is_active_feature("datum.feature_row"), signal = "opacity_background"),
+                    list(test = .is_hovered_feature("datum.feature_row"), signal = "background_opacity"),
                     list(value = 0)
                 ),
                 fillOpacity = list(
                     list(test = "datum.length === 0", value = 0),
-                    list(test = .is_active_feature("datum.feature_row"), value = 0.4),
+                    list(test = .is_hovered_feature("datum.feature_row"), value = 0.4),
                     list(value = 0)
                 )
             )
@@ -203,12 +208,12 @@
                 fill = list(value = .settings$circular_plot_background_color),
                 stroke = list(value = "#000000"),
                 strokeWidth = list(value = 0.5),
-                fillOpacity = list(signal = "opacity_background"),
+                fillOpacity = list(signal = "background_opacity"),
                 strokeOpacity = list(value = 0.4)
             ),
             update = list(
-                x = list(signal = "origoX"),
-                y = list(signal = "origoY"),
+                x = list(signal = "center_x"),
+                y = list(signal = "center_y"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle + ",
                                                   rotation,
                                                   " - ",
