@@ -39,7 +39,7 @@
             name = "region_data_tree",
             values = region_data,
             transform = list(
-                list(type = "stratify", key = "id", parentKey = "parent"),
+                list(type = "stratify", key = "id", parentKey = "parent_id"),
                 list(type = "tree", method = "tidy", size = c(1, 1), as = c("alpha", "beta", "depth", "children")),
                 .vega_formula("angle", "(circle_rotation + circle_degrees * datum.alpha + 270) % 360"),
                 .vega_formula("bottomside", "inrange(datum.angle, [0, 180])"),
@@ -48,7 +48,7 @@
             )
         ),
         # Contains only the regions (hidden parent nodes removed).
-        .vega_simple_filter("region_data", "region_data_tree", "datum.draw")
+        .vega_simple_filter("region_data", "region_data_tree", "datum.is_region")
     )
 }
 
@@ -74,7 +74,7 @@
         type = "text",
         from = list(data = "region_data"),
         encode = list(
-            enter = list(text = list(field = "name"), baseline = list(value = "middle")),
+            enter = list(text = list(field = "group_coordinate_label"), baseline = list(value = "middle")),
             update = list(
                 x = list(field = "x"),
                 y = list(field = "y"),
@@ -133,7 +133,7 @@
             interactive = FALSE,
             from = list(data = "path"),
             encode = list(
-                enter = list(interpolate = list(value = "bundle"), strokeWidth = list(signal = "parent.count")),
+                enter = list(interpolate = list(value = "bundle"), strokeWidth = list(signal = "parent.stroke_width")),
                 update = list(
                     stroke = list(
                         list(test = .region_link_is_selected(),

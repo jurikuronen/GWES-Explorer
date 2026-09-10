@@ -66,7 +66,7 @@ test_that(".rescale_weights scales equal weights", {
 test_that(".precompute_circular_plot_data maps each outlier to its 1-based feature row", {
     data <- .make_precomputed_circular_plot_test_data()
 
-    expect_identical(data$gff$feature_regions, c(1L, 2L, 3L))
+    expect_identical(data$gff$feature_region_ids, c(1L, 2L, 3L))
     expect_identical(data$outliers_direct$Pos_1_feature_row, 1L)
     expect_identical(data$outliers_direct$Pos_2_feature_row, 2L)
     expect_identical(data$outliers_direct$Pos_1_feature, "cds1")

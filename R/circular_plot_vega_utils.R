@@ -65,10 +65,10 @@
 }
 
 # Initial Vega spec.
-.circular_plot_vega_spec <- function(data, dependencies) {
+.circular_plot_vega_spec <- function(data, region_links) {
     vegawidget::as_vegaspec(append(.initialize_circular_spec(), list(
         signals = .circular_plot_vega_signals(),
-        data = .circular_plot_vega_region_data(data, dependencies),
+        data = .circular_plot_vega_region_data(data, region_links),
         marks = .circular_plot_vega_region_marks(),
         scales = .circular_plot_vega_region_scales()
     )))

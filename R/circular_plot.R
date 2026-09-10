@@ -33,7 +33,7 @@
 # Precomputes necessary data for rendering the circular plot.
 .precompute_circular_plot_data <- function(data) {
     # Assign each GFF row to one of the circular plot's regions.
-    data$gff$feature_regions <- .compute_feature_regions(data, .settings$circular_plot_region_count)
+    data$gff$feature_region_ids <- .calculate_feature_region_ids(nrow(data$gff), .settings$circular_plot_region_count)
 
     # Find the feature containing each outlier position.
     outlier_feature_rows <- .cpp_find_outlier_feature_rows(data$gff$start,
@@ -48,13 +48,13 @@
     data$outliers_direct$Pos_2_feature_row <- position_2_feature_rows
     data$outliers_direct$Pos_1_feature <- data$gff$Name[position_1_feature_rows]
     data$outliers_direct$Pos_2_feature <- data$gff$Name[position_2_feature_rows]
-    data$outliers_direct$Pos_1_region <- data$gff$feature_regions[position_1_feature_rows]
-    data$outliers_direct$Pos_2_region <- data$gff$feature_regions[position_2_feature_rows]
+    data$outliers_direct$Pos_1_region <- data$gff$feature_region_ids[position_1_feature_rows]
+    data$outliers_direct$Pos_2_region <- data$gff$feature_region_ids[position_2_feature_rows]
 
     # Build the outer region slices and links.
-    circular_data <- .create_circular_data(data)
-    top_level_dependencies <- .create_top_level_links(data)
-    circular_plot_spec <- .circular_plot_vega_spec(circular_data, top_level_dependencies)
+    region_hierarchy <- .create_region_edge_bundling_hierarchy(data$gff$end)
+    region_links <- .create_region_links(data$outliers_direct)
+    circular_plot_spec <- .circular_plot_vega_spec(region_hierarchy, region_links)
 
     # Add the feature and position data used by the two inner views.
     feature_data <- .create_feature_data(data)
