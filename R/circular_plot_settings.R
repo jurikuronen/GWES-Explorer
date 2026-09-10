@@ -34,8 +34,8 @@
 # Vega color palette for region links with nothing selected.
 .settings$circular_plot_region_link_default_color_palette <- "purples"
 
-# Vega color palette for region links connected to the hovered-over region.
-.settings$circular_plot_region_link_hovered_color_palette <- "teals"
+# Color for region links connected to the hovered-over region.
+.settings$circular_plot_region_link_hovered_color <- "#006667"
 
 # Vega color palette for region links connected to the selected region, or connecting both selected regions.
 .settings$circular_plot_region_link_active_color_palette <- "reds"
