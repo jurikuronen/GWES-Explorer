@@ -187,7 +187,7 @@
                 ),
                 fillOpacity = list(
                     list(test = "datum.length === 0", value = 0),
-                    list(test = .is_hovered_feature("datum.feature_row"), value = 0.4),
+                    list(test = .is_hovered_feature("datum.feature_row"), signal = "background_opacity"),
                     list(value = 0)
                 )
             )

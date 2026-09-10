@@ -1,7 +1,7 @@
 Package: GWESExplorer
 Type: Package
 Title: Interactive Genome-Wide Epistasis Visualization Tool
-Version: 1.21.7
+Version: 1.21.8
 Author: Juri Kuronen, Johan Pensar
 Maintainer: Juri Kuronen <juri.kuronen@gmail.com>
 Description: GWES-Explorer is an interactive browser-based visualization tool for exploring
