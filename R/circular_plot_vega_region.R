@@ -162,7 +162,7 @@
                     strokeOpacity = list(
                         list(test = "!show_region_links", value = 0),
                         list(test = .region_link_is_selected(),
-                             signal = "region_link_opacity_adjustment * parent.weight"),
+                             signal = "region_link_selected_opacity"),
                         list(test = .region_link_is_connected_to_hovered_region(),
                              signal = "region_link_hovered_opacity"),
                         list(test = .both_regions_are_selected(),
@@ -170,7 +170,9 @@
                         list(test = .and(.some_region_is_selected(),
                                          .negate(.is_connected_to_selected_region())),
                              signal = "region_link_inactive_opacity"),
-                        list(signal = "parent.weight")
+                        list(test = .is_connected_to_selected_region(),
+                             signal = "region_link_active_opacity"),
+                        list(signal = "region_link_default_opacity * parent.weight")
                     ),
                     tension = list(signal = "region_link_tension"),
                     x = list(field = "x"),

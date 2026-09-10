@@ -87,6 +87,9 @@
         list(name = "region_link_inactive_opacity",
              update = paste("region_link_opacity_adjustment *",
                             .settings$circular_plot_region_link_inactive_base_opacity)),
+        list(name = "region_link_selected_opacity",
+             update = paste("region_link_opacity_adjustment *",
+                            .settings$circular_plot_region_link_selected_base_opacity)),
 
         # Outlier position links.
         list(name = "position_link_opacity_adjustment", value = 1),

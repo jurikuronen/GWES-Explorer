@@ -105,13 +105,13 @@
 .settings$circular_plot_region_feature_selected_opacity <- 1
 
 # Base opacity for region links.
-.settings$circular_plot_region_link_base_opacity <- 0.6
+.settings$circular_plot_region_link_base_opacity <- 1
 
 # Base opacity for links connected to the hovered-over region.
 .settings$circular_plot_region_link_hovered_base_opacity <- 1
 
 # Base opacity for region links connected to the selected region.
-.settings$circular_plot_region_link_active_base_opacity <- 0.5
+.settings$circular_plot_region_link_active_base_opacity <- 1
 
 # Base opacity for region links not connected to the selected region, or not connecting both selected regions.
 .settings$circular_plot_region_link_inactive_base_opacity <- 0.2
