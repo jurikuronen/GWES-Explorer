@@ -143,7 +143,7 @@
                 baseline = list(value = "middle")
             ),
             update = list(
-                x = list(signal = "center_x - (datum.x_1 - center_x) / 2"),
+                x = list(signal = "center_x - ((hovered_feature_view === 1 ? datum.x_1 : datum.x_2) - center_x) / 2"),
                 y = list(signal = "center_y - datum.length * feature_link_tooltip_text_size / 2"),
                 align = list(value = "center"),
                 fontSize = list(signal = "feature_link_tooltip_text_size"),
@@ -172,7 +172,7 @@
                 cornerRadius = list(value = 5)
             ),
             update = list(
-                xc = list(signal = "center_x - (datum.x_1 - center_x) / 2"),
+                xc = list(signal = "center_x - ((hovered_feature_view === 1 ? datum.x_1 : datum.x_2) - center_x) / 2"),
                 y = list(signal = paste("center_y - datum.length * feature_link_tooltip_text_size / 2 -",
                                         "feature_link_tooltip_text_size")),
                 width = list(signal = "25 * feature_link_tooltip_text_size"),

@@ -133,6 +133,20 @@
                 list(events = "mouseover[!event.item]", update = "null")
             )
         ),
+        # Hovered feature view.
+        list(
+            name = "hovered_feature_view",
+            value = NULL,
+            on = list(
+                list(events = "@feature_arc_1:mouseover", update = "1"),
+                list(events = "@feature_arc_2:mouseover", update = "2"),
+                list(events = "@feature_text_1:mouseover", update = "1"),
+                list(events = "@feature_text_2:mouseover", update = "2"),
+                list(events = "@feature_background_1:mouseover", update = "null"),
+                list(events = "@feature_background_2:mouseover", update = "null"),
+                list(events = "mouseover[!event.item]", update = "null")
+            )
+        ),
         # Selected region IDs for feature views 1 and 2.
         # Clicking (or shift-clicking) an empty area of the plot clears view 1 (or 2).
         list(
