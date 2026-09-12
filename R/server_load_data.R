@@ -40,7 +40,8 @@
                                                .escape_html(error_msg))))
     }
 
-    data$outliers <- data$outliers[order(data$outliers$Direct == FALSE), ]
+    # Ensure that the outliers are sorted by MI descending.
+    data$outliers <- data$outliers[order(-data$outliers$MI), ]
     data$outliers_direct <- data$outliers[data$outliers$Direct == TRUE, ]
 
     if (nrow(data$outliers_direct) == 0) {

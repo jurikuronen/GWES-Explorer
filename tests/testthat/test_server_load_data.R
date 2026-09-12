@@ -95,6 +95,29 @@ test_that(".read_outliers reads required columns", {
     )
 })
 
+test_that(".read_outliers sorts outliers by MI descending", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines(c("10 20 10 0 0.6",
+                 "30 40 10 1 0.3",
+                 "50 60 10 0 0.9",
+                 "70 80 10 1 0.8",
+                 "90 100 10 1 0.5"), outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "unsorted.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(data$outliers$Pos_1, c(50L, 70L, 10L, 90L, 30L))
+    expect_equal(data$outliers$MI, c(0.9, 0.8, 0.6, 0.5, 0.3))
+    expect_identical(data$outliers$Direct, c(FALSE, TRUE, FALSE, TRUE, TRUE))
+    expect_identical(data$outliers_direct$Pos_1, c(70L, 90L, 30L))
+    expect_equal(data$outliers_direct$MI, c(0.8, 0.5, 0.3))
+})
+
 test_that(".read_outliers reads the optional MI_wogaps column", {
     outliers_path <- tempfile(fileext = ".outliers")
     on.exit(unlink(outliers_path))
