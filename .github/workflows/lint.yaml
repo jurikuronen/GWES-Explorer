@@ -28,9 +28,11 @@ jobs:
         env:
           GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
         with:
-          extra-packages: any::lintr
+          extra-packages: any::lintr, local::.
           needs: lint
 
       - name: Lint package
         shell: Rscript {0}
+        env:
+          LINTR_ERROR_ON_LINT: "true"
         run: lintr::lint_package()

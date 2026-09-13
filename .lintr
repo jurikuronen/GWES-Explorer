@@ -6,4 +6,3 @@ linters: linters_with_defaults(
     object_name_linter = NULL,
     return_linter = NULL
   )
-error_on_lint: TRUE
