@@ -81,9 +81,9 @@ test_that(".precompute_circular_plot_data creates feature and position data", {
     position_data <- .get_vega_dataset(data$circular_plot_spec, "position_data")$values
 
     expect_named(feature_data,
-                 c("feature_row", "feature", "region", "angle_step", "step_size", "start", "end",
-                   "features_linked_to", "n_features_linked_to", "n_outliers",
-                   "n_self_links", "length"))
+                 c("feature_row", "feature", "region", "position_fraction", "position_step_size", "start", "end",
+                   "features_linked_to", "linked_feature_count", "outlier_count",
+                   "self_link_count", "features_linked_to_line_count"))
     expect_identical(feature_data$feature_row, c(1L, 2L, 3L))
     expect_identical(as.character(feature_data$feature), c("cds1", "IGR_0k", "cds2"))
     expect_identical(feature_data$region, c(1L, 2L, 3L))
@@ -95,10 +95,10 @@ test_that(".precompute_circular_plot_data creates feature and position data", {
     expect_identical(feature_data$features_linked_to[[2]],
                      c("Linked to:", "cds1 (1-100)", "0.8"))
     expect_null(feature_data$features_linked_to[[3]])
-    expect_identical(feature_data$n_features_linked_to, c(1L, 1L, 0L))
-    expect_identical(feature_data$n_outliers, c(1L, 1L, 0L))
-    expect_identical(feature_data$n_self_links, c(0L, 0L, 0L))
-    expect_identical(feature_data$length, c(3L, 3L, 0L))
+    expect_identical(feature_data$linked_feature_count, c(1L, 1L, 0L))
+    expect_identical(feature_data$outlier_count, c(1L, 1L, 0L))
+    expect_identical(feature_data$self_link_count, c(0L, 0L, 0L))
+    expect_identical(feature_data$features_linked_to_line_count, c(3L, 3L, 0L))
 
     expected_position_fields <- c("position", "feature_row", "region", "weight", "position_in_feature")
     expect_named(position_data[expected_position_fields], expected_position_fields)

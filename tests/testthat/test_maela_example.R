@@ -38,7 +38,7 @@ test_that(".read_data loads the Maela example files and precomputes circular plo
 
     expect_identical(nrow(feature_data), nrow(data$gff))
     expect_identical(feature_data$feature_row, seq_len(nrow(data$gff)))
-    expect_true(all(c("features_linked_to", "n_features_linked_to", "n_outliers", "n_self_links") %in%
+    expect_true(all(c("features_linked_to", "linked_feature_count", "outlier_count", "self_link_count") %in%
                     names(feature_data)))
     expect_identical(nrow(position_data), 272L)
     expect_identical(nrow(position_links), 2L * nrow(data$outliers_direct))
@@ -67,8 +67,8 @@ test_that(".read_data loads the Maela example files and precomputes circular plo
 
     expected_self_links <- sum(data$outliers_direct$Pos_1_feature_row ==
                                data$outliers_direct$Pos_2_feature_row)
-    expect_equal(sum(feature_data$n_self_links), expected_self_links)
-    expect_equal(sum(feature_data$n_outliers),
+    expect_equal(sum(feature_data$self_link_count), expected_self_links)
+    expect_equal(sum(feature_data$outlier_count),
                  2L * nrow(data$outliers_direct) - expected_self_links)
 
     mark_names <- vapply(data$circular_plot_spec$marks,

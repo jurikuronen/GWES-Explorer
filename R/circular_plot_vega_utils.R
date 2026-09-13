@@ -49,9 +49,9 @@
 .vega_get_feature_tooltip <- function() {
     list(signal = paste("{title: datum.feature,",
                         "'Location': datum.start + '-' + datum.end,",
-                        "'Outliers': datum.n_outliers,",
-                        "'Linked to': datum.n_features_linked_to,",
-                        "'Self-links': datum.n_self_links}"))
+                        "'Outliers': datum.outlier_count,",
+                        "'Linked to': datum.linked_feature_count,",
+                        "'Self-links': datum.self_link_count}"))
 }
 
 .initialize_circular_spec <- function() {

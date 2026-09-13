@@ -17,16 +17,16 @@
             name = "feature_data",
             values = feature_data,
             transform = list(
-                .vega_formula("angle_step_size_1", "feature_view_1_degrees * datum.step_size"),
-                .vega_formula("angle_step_size_2", "feature_view_2_degrees * datum.step_size"),
+                .vega_formula("angle_step_size_1", "feature_view_1_degrees * datum.position_step_size"),
+                .vega_formula("angle_step_size_2", "feature_view_2_degrees * datum.position_step_size"),
                 .vega_formula("angle_1",
                               paste0("(",
                                      .vega_get_region_angle(),
-                                     " + feature_view_1_rotation + feature_view_1_degrees * (datum.angle_step - 0.5)) % 360")),
+                                     " + feature_view_1_rotation + feature_view_1_degrees * (datum.position_fraction - 0.5)) % 360")),
                 .vega_formula("angle_2",
                               paste0("(",
                                      .vega_get_region_angle(),
-                                     " + feature_view_2_rotation + feature_view_2_degrees * (datum.angle_step - 0.5)) % 360")),
+                                     " + feature_view_2_rotation + feature_view_2_degrees * (datum.position_fraction - 0.5)) % 360")),
                 .vega_formula("x_1", paste0("center_x + feature_view_1_radius * cos(PI * datum.angle_1 / 180)")),
                 .vega_formula("y_1", paste0("center_y + feature_view_1_radius * sin(PI * datum.angle_1 / 180)")),
                 .vega_formula("x_2", paste0("center_x + feature_view_2_radius * cos(PI * datum.angle_2 / 180)")),
@@ -145,7 +145,7 @@
             ),
             update = list(
                 x = list(signal = "center_x - ((hovered_feature_view === 1 ? datum.x_1 : datum.x_2) - center_x) / 2"),
-                y = list(signal = "center_y - datum.length * feature_link_tooltip_text_size / 2"),
+                y = list(signal = "center_y - datum.features_linked_to_line_count * feature_link_tooltip_text_size / 2"),
                 align = list(value = "center"),
                 fontSize = list(signal = "feature_link_tooltip_text_size"),
                 fontWeight = list(list(value = "normal")),
@@ -174,20 +174,20 @@
             ),
             update = list(
                 xc = list(signal = "center_x - ((hovered_feature_view === 1 ? datum.x_1 : datum.x_2) - center_x) / 2"),
-                y = list(signal = paste("center_y - datum.length * feature_link_tooltip_text_size / 2 -",
+                y = list(signal = paste("center_y - datum.features_linked_to_line_count * feature_link_tooltip_text_size / 2 -",
                                         "feature_link_tooltip_text_size")),
                 width = list(signal = "25 * feature_link_tooltip_text_size"),
                 height = list(
-                    signal = paste("datum.length * (feature_link_tooltip_text_size + 2) +",
+                    signal = paste("datum.features_linked_to_line_count * (feature_link_tooltip_text_size + 2) +",
                                    "feature_link_tooltip_text_size")
                 ),
                 strokeOpacity = list(
-                    list(test = "datum.length === 0", value = 0),
+                    list(test = "datum.features_linked_to_line_count === 0", value = 0),
                     list(test = .is_hovered_feature("datum.feature_row"), signal = "background_opacity"),
                     list(value = 0)
                 ),
                 fillOpacity = list(
-                    list(test = "datum.length === 0", value = 0),
+                    list(test = "datum.features_linked_to_line_count === 0", value = 0),
                     list(test = .is_hovered_feature("datum.feature_row"), signal = "background_opacity"),
                     list(value = 0)
                 )
@@ -223,7 +223,7 @@
                                                   .vega_data_query(paste0("feature_data_selected_",
                                                                           selection),
                                                                    0,
-                                                                   "step_size"),
+                                                                   "position_step_size"),
                                                   " * ",
                                                   view_degrees,
                                                   ") * PI / 180")),
@@ -235,7 +235,7 @@
                                                 .vega_data_query(paste0("feature_data_selected_",
                                                                         selection),
                                                                  0,
-                                                                 "step_size"),
+                                                                 "position_step_size"),
                                                 " * ",
                                                 view_degrees,
                                                 ") * PI / 180")),
