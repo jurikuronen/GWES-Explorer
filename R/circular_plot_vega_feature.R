@@ -94,6 +94,7 @@
 }
 
 .circular_plot_vega_feature_marks_arcs <- function(selection) {
+    arc_width_fraction <- 1 - .settings$circular_plot_feature_gap_fraction
     list(
         type = "arc",
         from = list(data = paste0("feature_data_selected_", selection)),
@@ -109,12 +110,12 @@
                 y = list(signal = "center_y"),
                 startAngle = list(signal = paste0("PI / 2 + (datum.angle_",
                                                   selection,
-                                                  " - 0.95 * datum.angle_step_size_",
+                                                  " - ", arc_width_fraction, " * datum.angle_step_size_",
                                                   selection,
                                                   " / 2) * PI / 180")),
                 endAngle = list(signal = paste0("PI / 2 + (datum.angle_",
                                                 selection,
-                                                " + 0.95 * datum.angle_step_size_",
+                                                " + ", arc_width_fraction, " * datum.angle_step_size_",
                                                 selection,
                                                 " / 2) * PI / 180")),
                 innerRadius = list(signal = paste0("feature_view_", selection, "_radius - 5")),

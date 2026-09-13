@@ -6,7 +6,7 @@
             feature = data$gff$Name[region_features],
             region = region,
             angle_step = seq(0, 1, length.out = length(region_features)),
-            step_size = 1 / length(region_features),
+            step_size = 1 / max(1, length(region_features) - 1),
             start = data$gff$start[region_features],
             end = data$gff$end[region_features],
             stringsAsFactors = FALSE

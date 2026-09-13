@@ -74,6 +74,9 @@
 .settings$circular_plot_feature_view_1_degrees <- 45
 .settings$circular_plot_feature_view_2_degrees <- 45
 
+# Fraction of the angular distance between features left as spacing between the features.
+.settings$circular_plot_feature_gap_fraction <- 0.10
+
 # Feature view rotation in degrees.
 .settings$circular_plot_feature_view_1_rotation <- 0
 .settings$circular_plot_feature_view_2_rotation <- 0
