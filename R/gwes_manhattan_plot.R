@@ -13,7 +13,7 @@
     }
 
     # R CMD check hack.
-    Distance = MI = Direct = NULL
+    Distance <- MI <- Direct <- NULL
     min_mi <- min(data$outliers$MI)
     max_mi <- max(data$outliers$MI)
     max_distance <- max(data$outliers$Distance)
