@@ -8,6 +8,7 @@
 # R package build and check output.
 GWESExplorer_*.tar.gz
 *.Rcheck/
+/src/symbols.rds
 
 # Compiled files.
 *.o
