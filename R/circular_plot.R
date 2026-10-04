@@ -58,7 +58,7 @@
 
     # Add the feature and position data used by the two inner views.
     feature_data <- .create_feature_data(data$gff)
-    position_data <- .create_position_data(data)
+    position_data <- .create_position_data(data$outliers_direct, data$gff)
     position_links <- .cpp_create_bidirectional_position_links(data$outliers_direct, position_data)
     position_links$weight <- .rescale_weights(position_links$MI, 0.5, 1)
     feature_data <- .add_link_info_to_feature_data(feature_data, position_links)

@@ -15,7 +15,7 @@ test_that(".create_position_data keeps the highest-MI row for each position", {
         MI = c(0.4, 0.9, 0.6)
     )
 
-    result <- .create_position_data(data)
+    result <- .create_position_data(data$outliers_direct, data$gff)
 
     # Position 11 occurs in rows 1 and 2. Row 2 is retained because its MI is higher.
     # The remaining positions are sorted by their circular-plot region.
