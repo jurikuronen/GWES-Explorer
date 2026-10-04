@@ -24,7 +24,7 @@
     # Default columns for the outliers tables.
     .default_outlier_columns <- c("Pos_1", "Pos_2", "MI", "MI_wogaps", "Distance")
 
-    # Columns currently shown in the outliers tables.
+    # Columns for the initial outliers table.
     .outlier_columns <- .default_outlier_columns
 
     # Zoom ranges for the GWES Manhattan plot.
@@ -206,11 +206,11 @@
         .update_select_phenotype_input()
 
         # Keep MI_wogaps out of the tables when the optional sixth column was not provided.
-        .outlier_columns <<- intersect(.default_outlier_columns, names(data$outliers))
+        .outlier_columns <- intersect(.default_outlier_columns, names(data$outliers))
 
         # Add feature columns when GFF3 data was provided.
         if (!is.null(data$gff)) {
-            .outlier_columns <<- c(.outlier_columns, "Pos_1_feature", "Pos_2_feature")
+            .outlier_columns <- c(.outlier_columns, "Pos_1_feature", "Pos_2_feature")
         }
 
         # Render the tables and plots for the loaded data.
