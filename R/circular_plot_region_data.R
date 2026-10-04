@@ -80,7 +80,7 @@
 # Creates region links from the direct outliers.
 # - Region link width scales by the number of outliers within a link.
 # - Region link color and opacity scale by the highest MI outlier within a link.
-.create_region_links <- function(direct_outliers) {
+.create_region_links <- function(direct_outliers, min_mi, max_mi) {
     region_links <- data.frame(
         source = direct_outliers$Pos_1_region,
         target = direct_outliers$Pos_2_region,
@@ -100,7 +100,7 @@
     region_links <- region_links[!duplicated(region_links[c("source", "target")]), ]
 
     # Re-scale MI to use with color and opacity signals.
-    region_links$weight <- .rescale_weights(region_links$weight, 0.75, 1)
+    region_links$weight <- .rescale_values(region_links$weight, 0.75, 1, min_mi, max_mi)
 
     return(region_links)
 }

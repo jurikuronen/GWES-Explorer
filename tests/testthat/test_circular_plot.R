@@ -23,12 +23,15 @@
         Name = c("cds1", "IGR_0k", "cds2")
     )
 
-    # Link a position in the first CDS to a position in the generated IGR.
-    data$outliers_direct <- data.frame(
-        Pos_1 = 50L,
-        Pos_2 = 150L,
-        MI = 0.8
+    # The MI range for circular plot weights comes from all the outliers.
+    # The only direct outlier links a position in the first CDS to a position in the generated IGR.
+    data$outliers <- data.frame(
+        Pos_1 = c(250L, 50L, 100L),
+        Pos_2 = c(300L, 150L, 200L),
+        MI = c(1, 0.8, 0.2),
+        Direct = c(FALSE, TRUE, FALSE)
     )
+    data$outliers_direct <- data$outliers[data$outliers$Direct, ]
     data$circular_plot_spec <- NULL
 
     # This mutates data by mapping the endpoints to GFF rows and building the Vega specification.
@@ -55,12 +58,19 @@
     return(dataset$transform[[matching_formulas[[1L]]]]$expr)
 }
 
-test_that(".rescale_weights scales varying weights", {
-    expect_equal(.rescale_weights(c(2, 4, 6), 0.5, 1), c(0.5, 0.75, 1))
+test_that(".rescale_values maps values to the target range", {
+    expect_equal(.rescale_values(c(2, 4, 6), 0.5, 1, 2, 6), c(0.5, 0.75, 1))
+    expect_equal(.rescale_values(c(0, 0.25, 0.5, 0.75, 1), 0.1, 0.9, 0, 1),
+                 c(0.1, 0.3, 0.5, 0.7, 0.9))
+    expect_equal(.rescale_values(rep(4, 3), 0.5, 1, 0, 10), rep(0.7, 3))
 })
 
-test_that(".rescale_weights scales equal weights", {
-    expect_equal(.rescale_weights(rep(4, 3), 0.5, 1), rep(0.75, 3))
+test_that(".rescale_values rejects equal, reversed and non-finite range limits", {
+    invalid_ranges <- list(c(1, 1), c(2, 1), c(NA_real_, 1), c(0, Inf), c(-Inf, 1))
+    for (limits in invalid_ranges) {
+        expect_error(.rescale_values(0.5, 0.5, 1, limits[1], limits[2]), "Source range")
+        expect_error(.rescale_values(0.5, limits[1], limits[2], 0, 1), "Target range")
+    }
 })
 
 test_that(".precompute_circular_plot_data maps each outlier to its 1-based feature row", {
@@ -79,6 +89,7 @@ test_that(".precompute_circular_plot_data creates feature and position data", {
     data <- .make_precomputed_circular_plot_test_data()
     feature_data <- .get_vega_dataset(data$circular_plot_spec, "feature_data")$values
     position_data <- .get_vega_dataset(data$circular_plot_spec, "position_data")$values
+    region_links <- .get_vega_dataset(data$circular_plot_spec, "region_links")$values
 
     expect_named(feature_data,
                  c("feature_row", "feature", "region", "position_fraction", "position_step_size", "start", "end",
@@ -105,8 +116,10 @@ test_that(".precompute_circular_plot_data creates feature and position data", {
     expect_identical(position_data$position, c(50L, 150L))
     expect_identical(position_data$feature_row, c(1L, 2L))
     expect_identical(position_data$region, c(1L, 2L))
-    expect_equal(position_data$weight, c(0.75, 0.75))
-    expect_equal(position_data$position_in_feature, c(49 / 99, 49 / 99))
+    # The MI 0.8 of the direct link must be reweighted according to the full outliers MI range.
+    expect_equal(position_data$weight, c(0.875, 0.875))
+    expect_equal(region_links$weight, 0.9375)
+    expect_equal(position_data$position_in_feature, c(491 / 990, 491 / 990))
 })
 
 test_that(".precompute_circular_plot_data creates links with 1-based feature rows and 0-based position-data indices", {
@@ -125,7 +138,7 @@ test_that(".precompute_circular_plot_data creates links with 1-based feature row
     expect_identical(position_links$position_data_index_1, c(0L, 1L))
     expect_identical(position_links$position_data_index_2, c(1L, 0L))
     expect_identical(position_links$MI, c(0.8, 0.8))
-    expect_equal(position_links$weight, c(0.75, 0.75))
+    expect_equal(position_links$weight, c(0.875, 0.875))
 })
 
 test_that(paste(

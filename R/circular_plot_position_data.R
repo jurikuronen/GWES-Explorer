@@ -31,9 +31,6 @@
     position_data <- position_data[order(position_data$weight, decreasing = TRUE), ]
     position_data <- position_data[!duplicated(position_data$position), ]
 
-    # Rescale MI values to 0.5-1. To be used for clearer position marker sizes.
-    position_data$weight <- .rescale_weights(position_data$weight, 0.5, 1)
-
     # Finally sort back by region. This preserves the descending MI sort above within each region.
     position_data <- position_data[order(position_data$region), ]
 
@@ -43,7 +40,7 @@
     position_in_feature <- (position_data$position - feature_start) / feature_span
 
     # Move positions near either end inward for display.
-    position_data$position_in_feature <- pmin(0.9, pmax(0.1, position_in_feature))
+    position_data$position_in_feature <- .rescale_values(position_in_feature, 0.1, 0.9, 0, 1)
 
     return(position_data)
 }

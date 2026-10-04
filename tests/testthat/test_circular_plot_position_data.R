@@ -23,9 +23,6 @@ test_that(".create_position_data keeps the highest-MI row for each position", {
     expect_identical(result$feature_row, c(1L, 1L, 2L, 3L, 3L))
     expect_identical(result$region, c(1L, 1L, 2L, 3L, 3L))
 
-    # Selected MI values range from 0.4 to 0.9 and are rescaled to the range 0.5 to 1.
-    expect_equal(result$weight, c(1, 0.7, 0.5, 1, 0.7))
-
-    # Map positions within each feature to [0, 1], clamping them to [0.1, 0.9] for display.
-    expect_equal(result$position_in_feature, c(0.1, 0.9, 0.5, 0.5, 0.1))
+    # Positions within each feature are rescaled from [0, 1] to [0.1, 0.9].
+    expect_equal(result$position_in_feature, c(0.18, 0.86, 0.5, 0.5, 0.14))
 })
