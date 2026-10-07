@@ -1,3 +1,19 @@
+.expect_outliers_failure <- function(lines, message = "Failed to read outliers file.") {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines(lines, outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- suppressWarnings(.read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "test.outliers")
+    ))
+
+    expect_identical(result$success, .STATUS_FAILURE, info = paste(lines, collapse = "\n"))
+    expect_match(as.character(result$status), message, fixed = TRUE)
+    expect_null(data$outliers)
+}
+
 .minimum_circular_plot_range_length <- function() {
     .settings$circular_plot_region_count * 1000L
 }
@@ -75,6 +91,27 @@ test_that(".read_data leaves existing session data unchanged when loading fails"
     expect_identical(result$success, .STATUS_FAILURE)
     expect_identical(data$outliers, previous_outliers)
     expect_identical(data$circular_plot_spec, previous_circular_plot_spec)
+})
+
+test_that(".has_outliers_header detects headers", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    cases <- c(
+        "ab cde fghi jklmn opqrst" = TRUE,
+        "1 Pos_2 Distance Direct MI" = TRUE,
+        "10 20 10 1 0.5" = FALSE,
+        "TRUE 10 20 0.5 1e-5" = FALSE,
+        "1e-5 TRUE 10 20 0.5" = FALSE,
+        "0.5 1e-5 TRUE 10 20" = FALSE,
+        "20 0.5 1e-5 TRUE 10" = FALSE,
+        "10 20 0.5 1e-5 TRUE" = FALSE,
+        "10 20 10" = FALSE
+    )
+
+    for (row in names(cases)) {
+        writeLines(row, outliers_path)
+        expect_identical(.has_outliers_header(outliers_path), cases[[row]], info = row)
+    }
 })
 
 test_that(".read_outliers reads required columns", {
@@ -227,6 +264,39 @@ test_that(".read_outliers accepts additional columns", {
         names(data$outliers),
         c("Pos_1", "Pos_2", "Distance", "Direct", "MI", "MI_wogaps")
     )
+})
+
+test_that(".read_outliers rejects invalid data", {
+    valid_row <- "10 20 10 1 0.5 0.4"
+    invalid_rows <- c(
+        "30.5 40 10 1 0.8 0.7",
+        "30 TRUE 10 1 0.8 0.7",
+        "30 40 10.5 1 0.8 0.7",
+        "30 40 10 2 0.8 0.7",
+        "30 40 10 1 invalid 0.7",
+        "30 40 10 1 0.8 invalid",
+        "30 40 10"
+    )
+
+    for (row in invalid_rows) {
+        .expect_outliers_failure(c(valid_row, row))
+    }
+
+    .expect_outliers_failure("10 20 10")
+})
+
+test_that(".read_outliers rejects missing required values", {
+    for (input in c("NA", "")) {
+        for (column in seq_len(5L)) {
+            fields <- c("10", "20", "10", "1", "0.5", "0.4")
+            fields[column] <- input
+
+            .expect_outliers_failure(
+                c("30 40 10 1 0.8 0.7", paste(fields, collapse = " ")),
+                "Required outlier columns must not contain missing values (NA)."
+            )
+        }
+    }
 })
 
 test_that(".read_outliers rejects files without direct outlier links", {

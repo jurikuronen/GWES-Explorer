@@ -36,7 +36,7 @@
             stop("Outliers file must contain at least five columns.")
         }
 
-        stats::setNames(
+        outliers <- stats::setNames(
             readr::read_delim(
                 file = outliers_file$datapath,
                 delim = " ",
@@ -50,6 +50,13 @@
             ),
             column_names[seq_len(min(column_count, 6L))]
         )
+
+        readr::stop_for_problems(outliers)
+        if (anyNA(outliers[seq_len(5L)])) {
+            stop("Required outlier columns must not contain missing values (NA).")
+        }
+
+        outliers
     }, silent = TRUE)
 
     if (inherits(data$outliers, "try-error")) {
