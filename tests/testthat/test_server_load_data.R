@@ -195,10 +195,12 @@ test_that(".read_outliers fails on a file containing only a header", {
     writeLines("Pos_1 Pos_2 Distance Direct MI", outliers_path)
 
     data <- new.env(parent = emptyenv())
-    result <- .read_outliers(
+
+    # Suppress expected warning about column types and names for R 4.0.0 version's readr.
+    result <- suppressWarnings(.read_outliers(
         data,
         data.frame(datapath = outliers_path, name = "only-header.outliers")
-    )
+    ))
 
     expect_identical(result$success, .STATUS_FAILURE)
 })
@@ -287,13 +289,19 @@ test_that(".read_outliers rejects invalid data", {
 
 test_that(".read_outliers rejects missing required values", {
     for (input in c("NA", "")) {
+        # R 4.0.0 version's readr reports empty fields as parsing failures before the NA check.
+        expected_message <- "Failed to read outliers file."
+        if (input == "NA") {
+            expected_message <- "Required outlier columns must not contain missing values (NA)."
+        }
+
         for (column in seq_len(5L)) {
             fields <- c("10", "20", "10", "1", "0.5", "0.4")
             fields[column] <- input
 
             .expect_outliers_failure(
                 c("30 40 10 1 0.8 0.7", paste(fields, collapse = " ")),
-                "Required outlier columns must not contain missing values (NA)."
+                expected_message
             )
         }
     }
