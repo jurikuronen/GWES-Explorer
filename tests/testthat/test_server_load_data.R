@@ -9,9 +9,9 @@
         data.frame(datapath = outliers_path, name = "test.outliers")
     ))
 
-    expect_identical(result$success, .STATUS_FAILURE, info = paste(lines, collapse = "\n"))
-    expect_match(as.character(result$status), message, fixed = TRUE)
-    expect_null(data$outliers)
+    testthat::expect_identical(result$success, .STATUS_FAILURE, info = paste(lines, collapse = "\n"))
+    testthat::expect_match(as.character(result$status), message, fixed = TRUE)
+    testthat::expect_null(data$outliers)
 }
 
 .minimum_circular_plot_range_length <- function() {
