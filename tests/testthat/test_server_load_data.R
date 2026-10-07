@@ -95,6 +95,77 @@ test_that(".read_outliers reads required columns", {
     )
 })
 
+test_that(".read_outliers ignores a header", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines(c("ab cde fghi jklmn opqrst",
+                 "10 20 10 1 0.5",
+                 "30 40 10 1 0.8"), outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "header.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_named(data$outliers, c("Pos_1", "Pos_2", "Distance", "Direct", "MI"))
+    expect_identical(data$outliers$Pos_1, c(30L, 10L))
+    expect_identical(data$outliers$Pos_2, c(40L, 20L))
+    expect_equal(data$outliers$MI, c(0.8, 0.5))
+})
+
+test_that(".read_outliers accepts logical notation data", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines(c("10 20 10 TRUE 0.8",
+                 "30 40 10 FALSE 0.7",
+                 "50 60 10 T 0.6",
+                 "70 80 10 F 0.5"), outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "logical.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(data$outliers$Pos_1, c(10L, 30L, 50L, 70L))
+    expect_identical(data$outliers$Direct, c(TRUE, FALSE, TRUE, FALSE))
+    expect_identical(data$outliers_direct$Pos_1, c(10L, 50L))
+})
+
+test_that(".read_outliers accepts scientific notation data", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines(c("10 20 10 1 1e-5",
+                 "30 40 10 1 5E-6"), outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "scientific.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(data$outliers$Pos_1, c(10L, 30L))
+    expect_equal(data$outliers$MI, c(1e-5, 5e-6))
+})
+
+test_that(".read_outliers fails on a file containing only a header", {
+    outliers_path <- tempfile(fileext = ".outliers")
+    on.exit(unlink(outliers_path))
+    writeLines("Pos_1 Pos_2 Distance Direct MI", outliers_path)
+
+    data <- new.env(parent = emptyenv())
+    result <- .read_outliers(
+        data,
+        data.frame(datapath = outliers_path, name = "only-header.outliers")
+    )
+
+    expect_identical(result$success, .STATUS_FAILURE)
+})
+
 test_that(".read_outliers sorts outliers by MI descending", {
     outliers_path <- tempfile(fileext = ".outliers")
     on.exit(unlink(outliers_path))

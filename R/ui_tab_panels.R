@@ -97,8 +97,8 @@
 .ui_upload_data_main_panel <- function() {
     shiny::mainPanel(
         shiny::h3("SpydrPick outliers file (.outliers, .txt)"),
-        shiny::p("All plots require an outliers file in the SpydrPick format. The file must be space-delimited and ",
-                 "contain no header row. The first five columns, in this order, are required:"),
+        shiny::p("All plots require an outliers file in the SpydrPick format. The file must be space-delimited. ",
+                 "A header row is ignored. The first five columns, in this order, are required:"),
         shiny::tags$pre(
             style = "display: inline-block;",
             "Pos_1 Pos_2 Distance Direct MI"

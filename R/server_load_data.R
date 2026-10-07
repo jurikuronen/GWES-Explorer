@@ -1,3 +1,22 @@
+# Returns TRUE if the outliers file has a header row.
+.has_outliers_header <- function(filepath) {
+    first_line <- readr::read_lines(filepath, n_max = 1L)
+    if (length(first_line) == 0L) {
+        return(FALSE)
+    }
+
+    fields <- scan(text = first_line, what = character(), sep = " ", nmax = 5L, quiet = TRUE)
+
+    # Non-header fields must parse as either numbers or logicals.
+    # Assume the row is a header if any field fails both parsers.
+    parsed_as_numbers <- suppressWarnings(readr::parse_double(fields))
+    parsed_as_logicals <- suppressWarnings(readr::parse_logical(fields))
+
+    problems <- intersect(readr::problems(parsed_as_numbers)$row, readr::problems(parsed_as_logicals)$row)
+
+    return(length(problems) > 0)
+}
+
 # Reads a SpydrPick outliers file.
 .read_outliers <- function(data, outliers_file) {
     if (!("datapath" %in% colnames(outliers_file))) {
@@ -22,6 +41,7 @@
                 file = outliers_file$datapath,
                 delim = " ",
                 col_names = FALSE,
+                skip = if (.has_outliers_header(outliers_file$datapath)) 1L else 0L,
                 col_types = paste0(
                     substr("iiildd", 1L, min(column_count, 6L)),
                     # Skip columns after MI_wogaps.
