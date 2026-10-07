@@ -336,7 +336,12 @@
         if (read_gff_status$success == .STATUS_FAILURE) {
             return(read_gff_status)
         }
-        .precompute_circular_plot_data(loaded_data)
+        circular_plot_result <- try(.precompute_circular_plot_data(loaded_data), silent = TRUE)
+        if (inherits(circular_plot_result, "try-error")) {
+            return(.status(.STATUS_FAILURE, paste0("Failed to prepare circular plot.",
+                                                   "<br><br>",
+                                                   .escape_html(circular_plot_result))))
+        }
     }
 
     # List the files that were read.
