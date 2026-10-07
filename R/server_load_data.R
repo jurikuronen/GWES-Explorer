@@ -103,6 +103,12 @@
                                                .escape_html(error_msg))))
     }
 
+    # treeio/ape keeps quotation marks in the read data.
+    # They must be removed, otherwise the tip labels won't match the FASTA data.
+    if (inherits(data$tree, "phylo")) {
+        data$tree$tip.label <- sub("^(['\"])(.*)\\1$", "\\2", data$tree$tip.label)
+    }
+
     return(.status(.STATUS_SUCCESS, ""))
 }
 

@@ -615,3 +615,15 @@ test_that(".read_tree detects the format from file names", {
         expect_false(is.null(data$tree), info = case_name)
     }
 })
+
+test_that(".read_tree removes enclosing quotes", {
+    tree_path <- tempfile()
+    on.exit(unlink(tree_path))
+    writeLines("(A:1,'B':1,\"C\":1);", tree_path)
+    data <- new.env(parent = emptyenv())
+
+    result <- .read_tree(data, data.frame(datapath = tree_path, name = "tree.nwk"))
+
+    expect_identical(result$success, .STATUS_SUCCESS)
+    expect_identical(data$tree$tip.label, c("A", "B", "C"))
+})
