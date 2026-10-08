@@ -18,6 +18,9 @@
 
     # Zero represents the special value "No phenotype selected".
     if (selected_phenotype_column != 0) {
+        # Scale offsets with the tree width (gheatmap() handles width as a fraction, but offsets as absolute units).
+        tree_width <- diff(range(base_tree_plot$data$x, na.rm = TRUE))
+
         base_tree_plot <- ggtree::gheatmap(
             p = base_tree_plot,
             # R would turn the selected column into a vector without drop = FALSE; gheatmap() requires a data frame.
@@ -29,7 +32,7 @@
             color = NA,
             # Position the phenotype name text below the column.
             colnames_angle = input$tree_heatmap_column_label_angle,
-            colnames_offset_x = -input$tree_heatmap_column_label_offset_x,
+            colnames_offset_x = -input$tree_heatmap_column_label_offset_x * tree_width,
             colnames_offset_y = -input$tree_heatmap_column_label_offset_y,
             font.size = input$tree_heatmap_column_label_font_size,
             # Remove the unnecessary default "value" title.
@@ -56,6 +59,9 @@
     msa_positions_selected <- length(selected_outlier_rows) > 0
 
     if (msa_positions_selected) {
+        # Scale offsets with the tree width (gheatmap() handles width as a fraction, but offsets as absolute units).
+        tree_width <- diff(range(tree_plot$data$x, na.rm = TRUE))
+
         selected_outlier_positions <- data$outliers_direct[selected_outlier_rows, c("Pos_1", "Pos_2")]
         selected_msa_positions <- as.character(sort(unique(unlist(selected_outlier_positions, use.names = FALSE))))
 
@@ -76,13 +82,13 @@
             # it as defensive programming.
             data = data$msa[, selected_msa_positions, drop = FALSE],
             # Draw the MSA columns to the right of the tree with a small gap.
-            offset = 0.25,
+            offset = 0.25 * tree_width,
             width = 0.2,
             # Remove the default white cell outlines that make the heatmap colors look faded.
             color = NA,
             # Position the MSA position labels below their columns.
             colnames_angle = input$tree_heatmap_column_label_angle,
-            colnames_offset_x = -input$tree_heatmap_column_label_offset_x,
+            colnames_offset_x = -input$tree_heatmap_column_label_offset_x * tree_width,
             colnames_offset_y = -input$tree_heatmap_column_label_offset_y,
             font.size = input$tree_heatmap_column_label_font_size,
             # Remove the unnecessary default "value" title.
