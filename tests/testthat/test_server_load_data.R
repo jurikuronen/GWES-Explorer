@@ -624,6 +624,35 @@ test_that(".read_tree detects the format from file names", {
     }
 })
 
+test_that(".read_tree rejects multiple trees", {
+    tree_paths <- c(newick = tempfile(), nexus = tempfile())
+    on.exit(unlink(tree_paths))
+    writeLines(c("(A:1,B:1);", "(A:2,B:2);"), tree_paths[["newick"]])
+    writeLines(
+        c("#NEXUS", "Begin trees;", "Tree tree_1 = (A:1,B:1);", "Tree tree_2 = (A:2,B:2);", "End;"),
+        tree_paths[["nexus"]]
+    )
+
+    cases <- list(
+        "Newick" = data.frame(datapath = tree_paths[["newick"]], name = "tree.nwk"),
+        "Nexus" = data.frame(datapath = tree_paths[["nexus"]], name = "tree.nex")
+    )
+
+    for (case_name in names(cases)) {
+        data <- new.env(parent = emptyenv())
+
+        result <- .read_tree(data, cases[[case_name]])
+
+        expect_identical(result$success, .STATUS_FAILURE, info = case_name)
+        expect_identical(
+            as.character(result$status),
+            "Tree file must contain a single phylogenetic tree.",
+            info = case_name
+        )
+        expect_null(data$tree, info = case_name)
+    }
+})
+
 test_that(".read_tree removes enclosing quotes", {
     tree_path <- tempfile()
     on.exit(unlink(tree_path))

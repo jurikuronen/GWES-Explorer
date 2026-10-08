@@ -103,6 +103,11 @@
                                                .escape_html(error_msg))))
     }
 
+    if (inherits(data$tree, "multiPhylo")) {
+        data$tree <- NULL
+        return(.status(.STATUS_FAILURE, "Tree file must contain a single phylogenetic tree."))
+    }
+
     # treeio/ape keeps quotation marks in the read data.
     # They must be removed, otherwise the tip labels won't match the FASTA data.
     if (inherits(data$tree, "phylo")) {
