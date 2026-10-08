@@ -109,6 +109,14 @@
         data$tree$tip.label <- sub("^(['\"])(.*)\\1$", "\\2", data$tree$tip.label)
     }
 
+    # Tree estimation can sometimes produce negative lengths. These cause issues with ggtree that
+    # uses the branch lengths directly to draw the tree.
+    # Assume that a negative length can be interpreted similarly as zero lengths, i.e. no estimated
+    # difference/evolutionary distance, and set all such lengths to zero.
+    if (!is.null(data$tree$edge.length)) {
+        data$tree$edge.length <- pmax(data$tree$edge.length, 0)
+    }
+
     return(.status(.STATUS_SUCCESS, ""))
 }
 
