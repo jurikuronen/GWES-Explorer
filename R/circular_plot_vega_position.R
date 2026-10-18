@@ -19,8 +19,8 @@
             name = "position_data",
             values = position_data,
             transform = list(
-                .vega_formula("angle_1", .position_angle_expr("feature_data", "angle_1")),
-                .vega_formula("angle_2", .position_angle_expr("feature_data", "angle_2")),
+                .vega_formula("angle_1", .position_angle_expr(1)),
+                .vega_formula("angle_2", .position_angle_expr(2)),
                 .vega_formula("x_1", "center_x + (feature_view_1_radius - 5) * cos(PI * datum.angle_1 / 180)"),
                 .vega_formula("y_1", "center_y + (feature_view_1_radius - 5) * sin(PI * datum.angle_1 / 180)"),
                 .vega_formula("x_2", "center_x + (feature_view_2_radius - 5) * cos(PI * datum.angle_2 / 180)"),

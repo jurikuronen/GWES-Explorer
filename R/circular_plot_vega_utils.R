@@ -8,13 +8,11 @@
                   ")"))
 }
 
-.position_angle_expr <- function(dataset, angle_expr) {
-    return(paste0("(",
-                  .vega_data_query(dataset, "datum.feature_row - 1", angle_expr),
-                  " - ",
-                  .angular_distance(dataset, angle_expr),
-                  " / 2 + datum.position_in_feature * ",
-                  .angular_distance(dataset, angle_expr), ")"))
+# Returns an expression for an outlier position's angle in a feature view.
+.position_angle_expr <- function(selection) {
+    feature_angle <- .vega_data_query("feature_data", "datum.feature_row - 1", paste0("angle_", selection))
+    feature_angle_span <- .vega_data_query("feature_data", "datum.feature_row - 1", paste0("angle_span_", selection))
+    return(paste0("(", feature_angle, " + (datum.position_in_feature - 0.5) * ", feature_angle_span, ")"))
 }
 
 .vega_color_scale <- function(name, type, data, field, scheme) {
