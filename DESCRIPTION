@@ -20,6 +20,7 @@ Imports:
     ape, colourpicker, dplyr, DT, ggnewscale, ggplot2, ggtree, htmltools, readr, Rcpp, seqinr, shiny, shinyjs,
     shinyWidgets, stats, tibble, treeio, utils, vegawidget, viridis
 Suggests:
+    htmlwidgets,
     svglite,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
