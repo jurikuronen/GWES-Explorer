@@ -1,13 +1,3 @@
-# Computes difference in angle between two points in a dataset.
-# Assumes points at index 0 and 1 are within the same region.
-.angular_distance <- function(dataset, angle_expr) {
-    return(paste0("(",
-                  .vega_data_query(dataset, 1, angle_expr),
-                  " - ",
-                  .vega_data_query(dataset, 0, angle_expr),
-                  ")"))
-}
-
 # Returns an expression for an outlier position's angle in a feature view.
 .position_angle_expr <- function(selection) {
     feature_angle <- .vega_data_query("feature_data", "datum.feature_row - 1", paste0("angle_", selection))

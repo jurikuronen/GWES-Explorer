@@ -32,7 +32,20 @@
     )
 }
 
+# Creates two Vega datasets for the circular plot's region layout:
+#
+# - region_data_tree: contains tree data with regions as leaf nodes,
+#                     and hidden root and parent nodes to route curved links between regions.
+# - region_data: subset of the above that contains only the region nodes,
+#                with region angle spans already calculated for convenience.
+#
+# Based on Vega's edge-bundling example (https://vega.github.io/vega/examples/edge-bundling/), which implements the
+# method by Holten (2006), https://doi.org/10.1109/TVCG.2006.147.
 .circular_plot_vega_region_data_tree <- function(region_data) {
+    # Precondition: the tree must have multiple regions per group.
+    group_region_counts <- table(region_data$parent_id[which(region_data$is_region)])
+    stopifnot(all(group_region_counts > 1))
+
     list(
         # Full data already in tree format with hidden parent nodes for the regions.
         list(
@@ -40,6 +53,9 @@
             values = region_data,
             transform = list(
                 list(type = "stratify", key = "id", parentKey = "parent_id"),
+                # Vega's edge-bundling example transforms the tree layout to a circular layout.
+                # The default x/y coordinates are stored as alpha/beta and used to calculate the angle/radius,
+                # which are then converted to the circular plot's x/y coordinates.
                 list(type = "tree", method = "tidy", size = c(1, 1), as = c("alpha", "beta", "depth", "children")),
                 .vega_formula("angle", "(circle_rotation + circle_degrees * datum.alpha + 270) % 360"),
                 .vega_formula("bottomside", "inrange(datum.angle, [0, 180])"),
@@ -47,8 +63,28 @@
                 .vega_formula("y", "center_y + circle_radius * datum.beta * sin(PI * datum.angle / 180)")
             )
         ),
-        # Contains only the regions (hidden parent nodes removed).
-        .vega_simple_filter("region_data", "region_data_tree", "datum.is_region")
+        # Filtered data that only contains the regions (hidden parent nodes removed).
+        list(
+            name = "region_data",
+            source = "region_data_tree",
+            transform = list(
+                list(type = "filter", expr = "datum.is_region"),
+                # Aggregate data from a region group to calculate the angle spans:
+                # - group location in the tree (by min/max of alpha)
+                # - count of regions in the group
+                list(
+                    type = "joinaggregate",
+                    groupby = list("parent_id"),
+                    fields = list("alpha", "alpha", NULL),
+                    ops = c("min", "max", "count"),
+                    as = c("first_alpha", "last_alpha", "group_region_count")
+                ),
+                # Pre-calculate each region's angular span in degrees.
+                .vega_formula("angle_span",
+                              paste("circle_degrees * (datum.last_alpha - datum.first_alpha)",
+                                    "/ (datum.group_region_count - 1)"))
+            )
+        )
     )
 }
 
@@ -89,6 +125,7 @@
 }
 
 .circular_plot_vega_region_marks_arcs <- function() {
+    arc_width_fraction <- 1 - .settings$circular_plot_region_gap_fraction
     connected_regions <- paste("indata('region_links_connected_to_selected_region', 'source', datum.id)",
                                "||",
                                "indata('region_links_connected_to_selected_region', 'target', datum.id)")
@@ -103,12 +140,10 @@
             update = list(
                 x = list(signal = "center_x"),
                 y = list(signal = "center_y"),
-                startAngle = list(signal = paste0("PI / 2 + (datum.angle - 0.95 * ",
-                                                 .angular_distance("region_data", "angle"),
-                                                 " / 2) * PI / 180")),
-                endAngle = list(signal = paste0("PI / 2 + (datum.angle + 0.95 * ",
-                                                .angular_distance("region_data", "angle"),
-                                                " / 2) * PI / 180")),
+                startAngle = list(signal = paste0("PI / 2 + (datum.angle - ", arc_width_fraction,
+                                                  " * datum.angle_span / 2) * PI / 180")),
+                endAngle = list(signal = paste0("PI / 2 + (datum.angle + ", arc_width_fraction,
+                                                " * datum.angle_span / 2) * PI / 180")),
                 innerRadius = list(signal = "circle_radius"),
                 outerRadius = list(signal = "circle_radius + 10"),
                 strokeOpacity = list(value = 0),

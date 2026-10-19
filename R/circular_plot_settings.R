@@ -63,6 +63,9 @@
 .settings$circular_plot_region_group_count <- 12
 .settings$circular_plot_regions_per_group_count <- 10
 
+# Fraction of the angular distance between regions left as spacing between the regions.
+.settings$circular_plot_region_gap_fraction <- 0.05
+
 # Region link tension: 0 draws straight lines; increasing the value (until 1) relaxes the links through the center.
 .settings$circular_plot_region_link_tension <- 0.7
 
