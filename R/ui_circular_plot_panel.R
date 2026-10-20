@@ -24,7 +24,7 @@
                 inputId = "circular_plot_rotate",
                 label = "Circular plot rotation:",
                 min = 0,
-                max = 360,
+                max = 359,
                 value = .settings$circular_plot_rotation,
                 step = 1
             )
